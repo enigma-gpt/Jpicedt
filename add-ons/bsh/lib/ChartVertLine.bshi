@@ -1,0 +1,117 @@
+// ChartVertLine.bshi --- -*- coding: iso-8859-1 -*-
+// December 2, 2012 - jPicEdt 1.6, a picture editor for LaTeX.
+// Copyright (C) 2012 Vincent Belaïche
+//
+// Author: Vincent Belaïche <vincentb1@users.sourceforge.net>
+// Version: $Id: ChartVertLine.bshi,v 1.1 2012/12/02 18:02:58 vincentb1 Exp $
+// Keywords:
+// X-URL: http://www.jpicedt.org/
+//
+// Ce logiciel est régi par la licence CeCILL soumise au droit français et
+// respectant les principes de diffusion des logiciels libres. Vous pouvez
+// utiliser, modifier et/ou redistribuer ce programme sous les conditions
+// de la licence CeCILL telle que diffusée par le CEA, le CNRS et l'INRIA
+// sur le site "http://www.cecill.info".
+//
+// En contrepartie de l'accessibilité au code source et des droits de copie,
+// de modification et de redistribution accordés par cette licence, il n'est
+// offert aux utilisateurs qu'une garantie limitée.  Pour les mêmes raisons,
+// seule une responsabilité restreinte pèse sur l'auteur du programme,  le
+// titulaire des droits patrimoniaux et les concédants successifs.
+//
+// A cet égard  l'attention de l'utilisateur est attirée sur les risques
+// associés au chargement,  à l'utilisation,  à la modification et/ou au
+// développement et à la reproduction du logiciel par l'utilisateur étant
+// donné sa spécificité de logiciel libre, qui peut le rendre complexe à
+// manipuler et qui le réserve donc à des développeurs et des professionnels
+// avertis possédant  des  connaissances  informatiques approfondies.  Les
+// utilisateurs sont donc invités à charger  et  tester  l'adéquation  du
+// logiciel à leurs besoins dans des conditions permettant d'assurer la
+// sécurité de leurs systèmes et ou de leurs données et, plus généralement,
+// à l'utiliser et l'exploiter dans les mêmes conditions de sécurité.
+//
+// Le fait que vous puissiez accéder à cet en-tête signifie que vous avez
+// pris connaissance de la licence CeCILL, et que vous en avez accepté les
+// termes.
+//
+/// Commentary:
+
+// This BeanShell script can be used to draw message chart entity titles.
+//
+
+/// Code:
+
+public class ChartVertLineFactory
+{
+	BranchElement target;
+
+	private double y = 90;
+	private double h = 90;
+	private PicAttributeSet textPAS;
+	private PicAttributeSet linePAS;
+	private PicAttributeSet boxPAS;
+	String          formatStr = "%s";
+	// 0=no box, bit0=text in parbox, bit1=rectangle around it
+	int             boxIt = 0;
+	double          boxWidth    = 25;
+	double          boxHeight   = 10;
+	double          textVMargin = 1.5;
+	double          textHMargin = 1.5;
+
+
+	public PicAttributeSet getTextPAS(){ return this.textPAS; }
+	public PicAttributeSet getLinePAS(){ return this.linePAS; }
+	public PicAttributeSet getBoxPAS(){ return this.boxPAS; }
+
+	public void setYminYmax(double yMin, double yMax){
+		this.y = yMax;
+		this.h = yMax - yMin;
+	}
+
+	private void pasInit(){
+		textPAS = new PicAttributeSet();
+		textPAS.setAttribute(PicAttributeName.TEXT_HOR_ALIGN, PicText.HorAlign.CENTER);
+		textPAS.setAttribute(PicAttributeName.TEXT_VERT_ALIGN, PicText.VertAlign.BOTTOM);
+		linePAS = new PicAttributeSet();
+		boxPAS  = new PicAttributeSet();
+	}
+
+	public ChartVertLineFactory(BranchElement target){
+		this.target = target;
+		pasInit();
+	}
+
+	public void draw(double x, String str){
+		PicPoint pt1 = new PicPoint(x,y);
+		PicPoint pt2 = pt1.clone().translate(0,-h);
+		target.add(new PicMultiCurve(pt1, pt2, linePAS));
+
+		if(str != null){
+			Object[] args = { str};
+			str = String.format(formatStr, args);
+
+
+			if((boxIt&2) != 0){
+				PicParallelogram box =
+					new PicParallelogram(
+										 new PicPoint(x - 0.5*boxWidth, y),
+										 new PicPoint(x + 0.5*boxWidth, y),
+										 new PicPoint(x + 0.5*boxWidth, y + boxHeight),
+										 boxPAS);
+				target.add(box);
+			}
+
+			PicPoint txtPt = pt1.clone();
+
+			if((boxIt & 2) != 0)
+				txtPt.translate(0, boxHeight*0.5);
+			else
+				txtPt.translate(0, textVMargin);
+
+			target.add(new PicText(txtPt,
+								   str,
+								   textPAS));
+
+		}
+	}
+}

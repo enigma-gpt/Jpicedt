@@ -1,0 +1,78 @@
+%%Created by jPicEdt 1.6-pre1: mixed JPIC-XML/LaTeX format
+%%Sun Oct 31 20:59:27 CET 2010
+%%Begin JPIC-XML
+%<?xml version="1.0" standalone="yes"?>
+%<jpic x-min="0" x-max="40" y-min="0" y-max="40" auto-bounding="false">
+%<g lift-pen="0"
+%	 compound-mode="separate"
+%	 closed="false"
+%	>
+%<multicurve fill-style="solid"
+%	 stroke-color="#808080"
+%	 fill-color="#c0c0c0"
+%	 points="(25.15,2);(31.57,2);(38,20);(38,20);(38,20);(31.57,38);
+%	(25.15,38);(25.15,38);(25.15,2)"
+%	 stroke-width="1"
+%	 />
+%<multicurve fill-style="solid"
+%	 stroke-color="#808080"
+%	 fill-color="#c0c0c0"
+%	 points="(14.85,38);(8.43,38);(2,20);(2,20);(2,20);(8.43,2);
+%	(14.85,2);(14.85,2);(14.85,38)"
+%	 stroke-width="1"
+%	 />
+%<parallelogram stroke-style="dotted"
+%	 p3="(14.85,2)"
+%	 stroke-color="#00ff00"
+%	 p2="(14.85,38)"
+%	 p1="(2,38)"
+%	 stroke-dotsep="4"
+%	 stroke-width="2"
+%	 />
+%<parallelogram stroke-style="dotted"
+%	 p3="(38,2)"
+%	 stroke-color="#ff0000"
+%	 p2="(38,38)"
+%	 p1="(25.15,38)"
+%	 stroke-dotsep="4"
+%	 stroke-width="2"
+%	 />
+%<multicurve points="(17.43,2);(17.43,2);(17.43,2);(17.43,2);(17.43,2);(17.43,2);
+%	(17.43,2);(17.43,2);(17.43,2)"
+%	 />
+%<multicurve stroke-style="dashed"
+%	 stroke-color="#0000ff"
+%	 stroke-dasharray="3;3"
+%	 points="(20,20);(20,20);(34.14,20);(34.14,20)"
+%	 stroke-width="2"
+%	 />
+%</g>
+%</jpic>
+%%End JPIC-XML
+%PSTricks content-type (pstricks.sty package needed)
+%Add \usepackage{pstricks} in the preamble of your LaTeX file
+%You can rescale the whole picture (to 80% for instance) by using the command \def\JPicScale{0.8}
+\ifx\JPicScale\undefined\def\JPicScale{1}\fi
+\psset{unit=\JPicScale mm}
+\psset{linewidth=0.3,dotsep=1,hatchwidth=0.3,hatchsep=1.5,shadowsize=1,dimen=middle}
+\psset{dotsize=0.7 2.5,dotscale=1 1,fillcolor=black}
+\psset{arrowsize=1 2,arrowlength=1,arrowinset=0.25,tbarsize=0.7 5,bracketlength=0.15,rbracketlength=0.15}
+\begin{pspicture}(0,0)(40,40)
+{%
+\pscustom[linewidth=1,linecolor=gray,fillcolor=lightgray,fillstyle=solid]{\psbezier(25.15,2)(31.57,2)(38,20)(38,20)
+\psbezier(38,20)(31.57,38)(25.15,38)
+\psline(25.15,38)(25.15,2)
+\closepath}
+\pscustom[linewidth=1,linecolor=gray,fillcolor=lightgray,fillstyle=solid]{\psbezier(14.85,38)(8.43,38)(2,20)(2,20)
+\psbezier(2,20)(8.43,2)(14.85,2)
+\psline(14.85,2)(14.85,38)
+\closepath}
+\pspolygon[linewidth=2,linecolor=green,linestyle=dotted,dotsep=4](2,38)(14.85,38)(14.85,2)(2,2)
+\pspolygon[linewidth=2,linecolor=red,linestyle=dotted,dotsep=4](25.15,38)(38,38)(38,2)(25.15,2)
+\pscustom[]{\psbezier(17.43,2)(17.43,2)(17.43,2)(17.43,2)
+\psbezier(17.43,2)(17.43,2)(17.43,2)
+\psbezier(17.43,2)(17.43,2)(17.43,2)
+\closepath}
+\psline[linewidth=2,linecolor=blue,linestyle=dashed,dash=3 3](20,20)(34.14,20)
+}%
+\end{pspicture}

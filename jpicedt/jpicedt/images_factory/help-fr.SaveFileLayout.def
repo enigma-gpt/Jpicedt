@@ -1,0 +1,7 @@
+\newcommand*\IntlUserPreamble{Prologue libre pour l'utilisateur}
+\newcommand*\IntlJpicXmlStart{Balise début JPIC-XML enfoui}
+\newcommand*\IntlJpicXml{Partie en format propre~: JPIC-XML enfoui}
+\newcommand*\IntlJpicXmlEnd{Balise fin JPIC-XML enfoui}
+\newcommand*\IntlFormatted{Partie en format d'export~: ici du code PSTricks}
+\newcommand*\IntlUserPostambleStart{Balise début épilogue utilisateur}
+\newcommand*\IntlUserPostamble{Épilogue libre pour l'utilisateur}

@@ -1,0 +1,298 @@
+// Extend_line.bsh --- -*- coding: iso-8859-1 -*-
+// 2012-02-24 - jPicEdt 1.6, a picture editor for LaTeX.
+// Copyright (C) 2012 Vincent Belaïche
+//
+// Version: $Id: Extend_line.bsh,v 1.1 2012/02/26 06:20:47 vincentb1 Exp $
+// Keywords:
+// X-URL: http://www.jpicedt.org/
+//
+// Ce logiciel est régi par la licence CeCILL soumise au droit français et
+// respectant les principes de diffusion des logiciels libres. Vous pouvez
+// utiliser, modifier et/ou redistribuer ce programme sous les conditions
+// de la licence CeCILL telle que diffusée par le CEA, le CNRS et l'INRIA
+// sur le site "http://www.cecill.info".
+//
+// En contrepartie de l'accessibilité au code source et des droits de copie,
+// de modification et de redistribution accordés par cette licence, il n'est
+// offert aux utilisateurs qu'une garantie limitée.  Pour les mêmes raisons,
+// seule une responsabilité restreinte pèse sur l'auteur du programme,  le
+// titulaire des droits patrimoniaux et les concédants successifs.
+//
+// A cet égard  l'attention de l'utilisateur est attirée sur les risques
+// associés au chargement,  à l'utilisation,  à la modification et/ou au
+// développement et à la reproduction du logiciel par l'utilisateur étant
+// donné sa spécificité de logiciel libre, qui peut le rendre complexe à
+// manipuler et qui le réserve donc à des développeurs et des professionnels
+// avertis possédant  des  connaissances  informatiques approfondies.  Les
+// utilisateurs sont donc invités à charger  et  tester  l'adéquation  du
+// logiciel à leurs besoins dans des conditions permettant d'assurer la
+// sécurité de leurs systèmes et ou de leurs données et, plus généralement,
+// à l'utiliser et l'exploiter dans les mêmes conditions de sécurité.
+//
+// Le fait que vous puissiez accéder à cet en-tête signifie que vous avez
+// pris connaissance de la licence CeCILL, et que vous en avez accepté les
+// termes.
+//
+/// Commentary:
+
+// This BeanShell script copies the selection a given number of times,
+// translating each pasted element by (dx,dy).
+
+/// Code:
+import jpicedt.Localizer;
+import jpicedt.graphic.PicPoint;
+import jpicedt.graphic.SelectionHandler;
+import jpicedt.graphic.model.Element;
+import jpicedt.graphic.model.PicMultiCurve;
+import jpicedt.widgets.*;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import javax.swing.JOptionPane;
+
+setStrictJava(true);
+String scriptTitle = "Extend line BSH";
+
+if (canvas()==null) {
+	mdimgr.showMessageDialog("First open a board and select an object !",scriptTitle,JOptionPane.ERROR_MESSAGE);
+	return;
+}
+
+SelectionHandler sel = editorkit().getSelectionHandler();
+
+if (sel.isEmpty()) {
+	mdimgr.showMessageDialog("First select objects to be copied!",
+								  scriptTitle,
+								  JOptionPane.ERROR_MESSAGE);
+	return;
+}
+
+if(sel.size() != 1){
+	mdimgr.showMessageDialog("There must be only one line selected!",
+								  scriptTitle,
+								  JOptionPane.ERROR_MESSAGE);
+	return;
+}
+
+Element e = sel.get(0);
+if(!(e instanceof PicMultiCurve)){
+	mdimgr.showMessageDialog("Selected object must be a line!",
+								  scriptTitle,
+								  JOptionPane.ERROR_MESSAGE);
+}
+
+
+PicMultiCurve line = (PicMultiCurve)e;
+
+if(! line.isStraight(0)){
+	mdimgr.showMessageDialog("Selected line must be straight!",
+								  scriptTitle,
+								  JOptionPane.ERROR_MESSAGE);
+}
+
+if(line.getBezierPtsCount() != 4 || line.isClosed()){
+	mdimgr.showMessageDialog("Selected line must have a single segment!",
+								  scriptTitle,
+								  JOptionPane.ERROR_MESSAGE);
+}
+
+PicPoint pt1 = line.getCtrlPt(line.getFirstPointIndex(),null);
+PicPoint org = new PicPoint(pt1);
+PicPoint pt2 = line.getCtrlPt(line.getLastPointIndex(),null);
+PicPoint end = new PicPoint(pt2);
+PicVector dir = (new PicVector(org,end)).normalize();
+
+void proceed(int caseIndex){
+	switch(caseIndex){
+	case 0: // x1
+		if(dir.getX() == 0.0)
+			x1TF.setValue(pt1.getX());
+		else
+		{
+			double x1 = x1TF.getValue();
+			double lambda = (x1-org.getX())/ dir.getX();
+			setStrictJava(false);print("lambda="+lambda); //$$PROBE
+			double y1 = org.getY() + lambda*dir.getY();
+			setStrictJava(false);print("pt1="+pt1); //$$PROBE
+			pt1.setCoordinates(x1,y1);
+			setStrictJava(false);print("pt1="+pt1); //$$PROBE
+			line.setCtrlPt(line.getFirstPointIndex(),pt1);
+			line.setCtrlPt(line.getFirstPointIndex()+1,pt1);
+		}
+		break;
+	case 1: // y1
+		if(dir.getY() == 0.0)
+			y1TF.setValue(pt1.getY());
+		else
+		{
+			double y1 = y1TF.getValue();
+			double lambda = (y1-org.getY())/ dir.getY();
+			double x1 = org.getX() + lambda*dir.getX();
+			pt1.setCoordinates(x1,y1);
+			line.setCtrlPt(line.getFirstPointIndex(),pt1);
+			line.setCtrlPt(line.getFirstPointIndex()+1,pt1);
+		}
+		break;
+	case 2: // x2
+		if(dir.getX() == 0.0)
+			x2TF.setValue(pt2.getX());
+		else
+		{
+			double x2 = x2TF.getValue();
+			double lambda = (x2-org.getX())/ dir.getX();
+			double y2 = org.getY() + lambda*dir.getY();
+			pt2.setCoordinates(x2,y2);
+			line.setCtrlPt(line.getLastPointIndex(),pt2);
+			line.setCtrlPt(line.getLastPointIndex()-1,pt2);
+		}
+		
+		break;
+	case 3: // y2
+		if(dir.getY() == 0.0)
+			y2TF.setValue(pt2.getY());
+		else
+		{
+			double y2 = y2TF.getValue();
+			double lambda = (y2-org.getY())/ dir.getY();
+			double x2 = org.getX() + lambda*dir.getX();
+			pt2.setCoordinates(x2,y2);
+			line.setCtrlPt(line.getLastPointIndex(),pt2);
+			line.setCtrlPt(line.getLastPointIndex()-1,pt2);
+		}
+		break;
+	}
+}
+
+ActionListener al = new ActionListener(){
+		void actionPerformed(ActionEvent e){
+			if(e == null)
+			{
+				mdimgr.showMessageDialog("Null ActionEvent!", scriptTitle, JOptionPane.ERROR_MESSAGE);
+			}
+			else if(e.getSource() == x1TF)
+				proceed(0);
+			else if(e.getSource() == y1TF)
+				proceed(1);
+			else if(e.getSource() == x2TF)
+				proceed(2);
+			else if(e.getSource() == y2TF)
+				proceed(3);
+		}
+	};
+
+FocusListener fl = new FocusListener(){
+		void focusGained(FocusEvent e){
+			// do nothing
+		}
+		void focusLost(FocusEvent e){
+			if(e == null)
+			{
+				mdimgr.showMessageDialog("Null FocusEvent!", scriptTitle, JOptionPane.ERROR_MESSAGE);
+			}
+			else if(e.getSource() == x1TF)
+				proceed(0);
+			else if(e.getSource() == y1TF)
+				proceed(1);
+			else if(e.getSource() == x2TF)
+				proceed(2);
+			else if(e.getSource() == y2TF)
+				proceed(3);
+		}
+	};
+
+// create user pane :
+GridBagLayout gbl = new GridBagLayout();
+GridBagConstraints c = new GridBagConstraints();
+c.fill    = GridBagConstraints.HORIZONTAL;
+c.ipadx = 10;c.gridwidth = 2;
+JPanel box = new JPanel(new GridLayout(3,2,5,5));
+
+JPanel col = new JPanel(gbl);
+JLabel l = new JLabel("X1:");
+gbl.setConstraints(l,c);
+col.add(l);
+
+DecimalNumberField x1TF=new DecimalNumberField(pt1.getX(),10,false);
+c.ipadx = 0; c.gridwidth= GridBagConstraints.REMAINDER;
+gbl.setConstraints(x1TF,c);
+col.add(x1TF);
+x1TF.addActionListener(al);
+x1TF.addFocusListener(fl);
+box.add(col);
+
+l = new JLabel("Y1:");
+col = new JPanel(gbl);
+c.ipadx = 10;c.gridwidth = 2;
+gbl.setConstraints(l,c);
+col.add(l);
+
+DecimalNumberField y1TF=new DecimalNumberField(pt1.getY(),10,false);
+c.ipadx = 0; c.gridwidth= GridBagConstraints.REMAINDER;
+gbl.setConstraints(y1TF,c);
+col.add(y1TF);
+y1TF.addActionListener(al);
+y1TF.addFocusListener(fl);
+box.add(col);
+
+
+l = new JLabel("X2:");
+col = new JPanel(gbl);
+c.ipadx = 10;c.gridwidth = 2;
+gbl.setConstraints(l,c);
+col.add(l);
+
+DecimalNumberField x2TF=new DecimalNumberField(pt2.getX(),10,false);
+c.ipadx = 0; c.gridwidth= GridBagConstraints.REMAINDER;
+gbl.setConstraints(x2TF,c);
+col.add(x2TF);
+x2TF.addActionListener(al);
+x2TF.addFocusListener(fl);
+box.add(col);
+
+l = new JLabel("Y2:");
+col = new JPanel(gbl);
+c.ipadx = 10; c.gridwidth = 2;
+gbl.setConstraints(l,c);
+col.add(l);
+
+DecimalNumberField y2TF=new DecimalNumberField(pt2.getY(),10,false);
+c.ipadx = 0; c.gridwidth= GridBagConstraints.REMAINDER;
+gbl.setConstraints(y2TF,c);
+col.add(y2TF);
+y2TF.addActionListener(al);
+y2TF.addFocusListener(fl);
+box.add(col);
+
+
+
+JButton butOk = new JButton(Localizer.localize("button.OK"));
+c.gridwidth= 2;
+gbl.setConstraints(butOk,c);
+box.add(butOk);
+
+butOk.addActionListener(new ActionListener(){
+		void actionPerformed(ActionEvent e){
+			jf.dispose();
+		}
+});
+
+JButton butCancel = new JButton(Localizer.localize("button.Cancel"));
+c.gridwidth= GridBagConstraints.REMAINDER;
+gbl.setConstraints(butCancel,c);
+box.add(butCancel);
+butCancel.addActionListener(new ActionListener(){
+		void actionPerformed(ActionEvent e){
+			line.setCtrlPt(line.getFirstPointIndex(), org);
+			line.setCtrlPt(line.getFirstPointIndex()+1, org);
+			line.setCtrlPt(line.getLastPointIndex(), end);
+			line.setCtrlPt(line.getLastPointIndex()-1, end);
+			jf.dispose();
+		}
+});
+
+boolean modal = true;
+MDIComponent jf = mdimgr.createDialog(scriptTitle + "\u2026", modal, box);
+jf.setVisible(true);
+

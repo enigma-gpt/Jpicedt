@@ -1,0 +1,40 @@
+###
+### Installation settings
+###
+
+# Program version (can't be fetched from jpicedt.Version.getVersion() since jpicedt.jar is not installed yet !!!)
+app.version=@VERSION@
+
+# Info to display on first page of installer
+app.intro=intro.html
+# License pane :
+app.license=/help-files/license.html
+# Readme file (last page)
+app.readme=quickstart.html
+
+
+# Each component must have a name, a size, and a 'fileset'. The fileset is the
+# name of a resource, relative to the root of the JAR, where the list of files
+# is stored, newline delimited
+
+
+comp.jpicedt-program.name=jPicEdt application
+comp.jpicedt-program.tooltip=Core files
+
+comp.jpicedt-help.name=On-line help
+comp.jpicedt-help.tooltip=On-line documentation in HTML format
+
+comp.jpicedt-help.name=Scripts
+comp.jpicedt-help.tooltip=BeanShell scripts
+
+comp.jpicedt-apidoc.name=API documentation
+comp.jpicedt-apidoc.tooltip=API documentation for BeanShell scripts in HTML format
+
+comp.jpicedt-addons.name=add-ons
+comp.jpicedt-addons.tooltip=Scripts and documentation needed to run LaTeX and related programs from inside JPicEdt.
+
+comp.jpicedt-fragments.name=fragments
+comp.jpicedt-fragment.tooltip=a library of pictures and symbols  
+
+comp.jpicedt-resources.name=ressources
+comp.jpicedt-resources.tooltip=Contains template for DXF encoding.

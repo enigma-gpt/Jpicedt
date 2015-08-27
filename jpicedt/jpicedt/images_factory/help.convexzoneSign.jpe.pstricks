@@ -1,0 +1,85 @@
+%%Created by jPicEdt 1.6-pre1: mixed JPIC-XML/LaTeX format
+%%Tue Feb 07 22:38:03 CET 2012
+%%Begin JPIC-XML
+%<?xml version="1.0" standalone="yes"?>
+%<jpic x-min="0" x-max="28.33" y-min="2.5" y-max="16.25" auto-bounding="true">
+%<multicurve stroke-color="#0000ff"
+%	 points="(0,3.33);(0,3.33);(28.33,3.33);(28.33,3.33)"
+%	 />
+%<multicurve fill-style="solid"
+%	 stroke-color="#808080"
+%	 fill-color="#808080"
+%	 points="(4.21,2.5);(4.21,2.5);(25.79,2.5);(25.79,2.5);(25.79,2.5);(25.79,4.17);
+%	(25.79,4.17);(25.79,4.17);(17.63,4.17);(17.63,4.17);(17.63,4.17);(15,8.73);
+%	(15,8.73);(15,8.73);(12.37,4.17);(12.37,4.17);(12.37,4.17);(4.21,4.17);
+%	(4.21,4.17);(4.21,4.17);(4.21,2.5)"
+%	 />
+%<text text-vert-align="top"
+%	 anchor-point="(15,2.5)"
+%	 >
+%$P_1$
+%</text>
+%<g lift-pen="0"
+%	 compound-mode="separate"
+%	 closed="false"
+%	>
+%<multicurve points="(15,3.75);(15,3.75);(15,2.92);(15,2.92)"
+%	 />
+%<multicurve points="(14.58,3.33);(14.58,3.33);(15.42,3.33);(15.42,3.33)"
+%	 />
+%</g>
+%<g lift-pen="0"
+%	 compound-mode="separate"
+%	 closed="false"
+%	>
+%<multicurve points="(15,14.54);(15,14.54);(15,13.7);(15,13.7)"
+%	 />
+%<multicurve points="(14.58,14.12);(14.58,14.12);(15.42,14.12);(15.42,14.12)"
+%	 />
+%</g>
+%<text anchor-point="(15.83,14.17)"
+%	 text-hor-align="left"
+%	 >
+%$P_2$
+%</text>
+%<text text-vert-align="top"
+%	 anchor-point="(28.33,16.25)"
+%	 text-hor-align="right"
+%	 >
+%\ 
+%</text>
+%</jpic>
+%%End JPIC-XML
+%PSTricks content-type (pstricks.sty package needed)
+%Add \usepackage{pstricks} in the preamble of your LaTeX file
+%You can rescale the whole picture (to 80% for instance) by using the command \def\JPicScale{0.8}
+\ifx\JPicScale\undefined\def\JPicScale{1}\fi
+\psset{unit=\JPicScale mm}
+\newrgbcolor{userFillColour}{0 0 0}
+\psset{linewidth=0.3,dotsep=1,hatchwidth=0.3,hatchsep=1.5,shadowsize=1,dimen=middle}
+\psset{dotsize=0.7 2.5,dotscale=1 1,fillcolor=userFillColour}
+\psset{arrowsize=1 2,arrowlength=1,arrowinset=0.25,tbarsize=0.7 5,bracketlength=0.15,rbracketlength=0.15}
+\makeatletter\@ifundefined{Pst@correctAnglefalse}{}{\psset{correctAngle=false}}\makeatother
+\begin{pspicture}(0,0)(28.33,16.25)
+\psline[linecolor=blue](0,3.33)(28.33,3.33)
+\newrgbcolor{userLineColour}{0.5 0.5 0.5}
+\newrgbcolor{userFillColour}{0.5 0.5 0.5}
+\pspolygon[linecolor=userLineColour,fillcolor=userFillColour,fillstyle=solid](4.21,2.5)
+(25.79,2.5)
+(25.79,4.17)
+(17.63,4.17)
+(15,8.73)
+(12.37,4.17)
+(4.21,4.17)(4.21,2.5)
+\rput[t](15,2.5){$P_1$}
+{%
+\psline(15,3.75)(15,2.92)
+\psline(14.58,3.33)(15.42,3.33)
+}%
+{%
+\psline(15,14.54)(15,13.7)
+\psline(14.58,14.12)(15.42,14.12)
+}%
+\rput[l](15.83,14.17){$P_2$}
+\rput[tr](28.33,16.25){\ }
+\end{pspicture}

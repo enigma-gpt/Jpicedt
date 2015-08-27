@@ -1,0 +1,130 @@
+// Multi_rotate_selection.bsh --- -*- coding: iso-8859-1 -*-
+// July 8, 2006 - jPicEdt 1.4, a picture editor for LaTeX.
+// Copyright (C) 1999-2006 Sylvain Reynal
+//
+// Author: Sylvain Reynal
+//         Département de Physique
+//         École Nationale Supérieure de l'Électronique et de ses Applications (ÉNSÉA)
+//         6, avenue du Ponceau
+//         95014 CERGY CEDEX
+//         FRANCE
+//
+//         Tel : +33 130 736 245
+//         Fax : +33 130 736 667
+//         e-mail : reynal@ensea.fr
+//
+// Version: $Id: Multi_rotate_selection.bsh,v 1.2 2011/11/09 06:14:43 vincentb1 Exp $
+// Keywords: Beanshell
+// X-URL: http://www.jpicedt.org/
+//
+// Ce logiciel est régi par la licence CeCILL soumise au droit français et
+// respectant les principes de diffusion des logiciels libres. Vous pouvez
+// utiliser, modifier et/ou redistribuer ce programme sous les conditions
+// de la licence CeCILL telle que diffusée par le CEA, le CNRS et l'INRIA
+// sur le site "http://www.cecill.info".
+//
+// En contrepartie de l'accessibilité au code source et des droits de copie,
+// de modification et de redistribution accordés par cette licence, il n'est
+// offert aux utilisateurs qu'une garantie limitée.  Pour les mêmes raisons,
+// seule une responsabilité restreinte pèse sur l'auteur du programme,  le
+// titulaire des droits patrimoniaux et les concédants successifs.
+//
+// A cet égard  l'attention de l'utilisateur est attirée sur les risques
+// associés au chargement,  à l'utilisation,  à la modification et/ou au
+// développement et à la reproduction du logiciel par l'utilisateur étant
+// donné sa spécificité de logiciel libre, qui peut le rendre complexe à
+// manipuler et qui le réserve donc à des développeurs et des professionnels
+// avertis possédant  des  connaissances  informatiques approfondies.  Les
+// utilisateurs sont donc invités à charger  et  tester  l'adéquation  du
+// logiciel à leurs besoins dans des conditions permettant d'assurer la
+// sécurité de leurs systèmes et ou de leurs données et, plus généralement,
+// à l'utiliser et l'exploiter dans les mêmes conditions de sécurité.
+//
+// Le fait que vous puissiez accéder à cet en-tête signifie que vous avez
+// pris connaissance de la licence CeCILL, et que vous en avez accepté les
+// termes.
+//
+/// Commentary:
+
+// This BeanShell script copies the selection a given number of times,
+// rotating each pasted element by alpha (in degrees) along (x,y)
+
+/// Code:
+import jpicedt.graphic.PicPoint;
+import javax.swing.JOptionPane;
+
+import jpicedt.graphic.*;
+import jpicedt.graphic.model.PicGroup;
+import jpicedt.graphic.model.Element;
+import jpicedt.widgets.*;
+import jpicedt.Localizer;
+
+setStrictJava(true);
+String scriptTitle = "Multi Rotate BSH";
+
+if (canvas()==null) {
+	mdimgr.showMessageDialog("First open a board and select an object !",
+								  scriptTitle,JOptionPane.ERROR_MESSAGE);
+	return;
+}
+
+SelectionHandler sel = editorkit().getSelectionHandler();
+
+if (sel.isEmpty()) {
+	mdimgr.showMessageDialog("First select objects to be copied!",
+								  scriptTitle,
+								  JOptionPane.ERROR_MESSAGE);
+	return;
+}
+
+void proceed(){
+	int repeat = repeatTF.getValue();
+	if(repeat <= 0)
+		return;
+	double x   = xTF.getValue();
+	double y   = yTF.getValue();
+	double rotationAngle = Math.PI/180.0*rotationAngleTF.getValue();
+	
+	PicPoint ptOrg=new PicPoint(x,y);
+	ArrayList addedElements = new ArrayList();
+	for (int i = 1; i <= repeat; i++){
+		for(Element e : sel){
+			Element rotated = e.clone();
+			rotated.rotate(ptOrg, i*rotationAngle);
+			addedElements.add(rotated);
+		}
+	}
+	drawing().addAll(addedElements);
+}
+
+// create user pane :
+JPanel box = new JPanel(new GridLayout(5,2,5,5));
+box.add(new JLabel("Repeat Count:"));
+WholeNumberField repeatTF=new WholeNumberField(1,10); box.add(repeatTF);
+box.add(new JLabel("Rotation angle (degrees):"));
+DecimalNumberField rotationAngleTF=new DecimalNumberField(0,10,false); box.add(rotationAngleTF);
+box.add(new JLabel("Rotation point x-coordinate:"));
+DecimalNumberField xTF=new DecimalNumberField(0,10,false); box.add(xTF);
+box.add(new JLabel("Rotation point y-coordinate:"));
+DecimalNumberField yTF=new DecimalNumberField(0,10,false); box.add(yTF);
+
+JButton butOk = new JButton(Localizer.localize("button.OK"));
+box.add(butOk);
+butOk.addActionListener(new ActionListener(){ 
+		void actionPerformed(ActionEvent e){
+			proceed();
+			jf.dispose();
+		}
+});
+
+JButton butCancel = new JButton(Localizer.localize("button.Cancel"));
+box.add(butCancel);
+butCancel.addActionListener(new ActionListener(){ 
+		void actionPerformed(ActionEvent e){
+			jf.dispose();
+		}
+});
+
+boolean modal = true;
+MDIComponent jf = mdimgr.createDialog("Multi Rotate Selection\u2026", modal, box);
+jf.setVisible(true);

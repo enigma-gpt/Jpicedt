@@ -1,0 +1,24 @@
+@macro menuItem {arg}
+@kbd{\arg\}
+@end macro
+@macro dialogTab {arg}
+@kbd{\arg\}
+@end macro
+@macro dialogName {arg}
+``@kbd{\arg\}''
+@end macro
+@ifset APIDOC-LOCATION
+@set APIDOC-LOCATION ../../
+@end ifset
+@ifclear APIDOC-LOCATION
+@set APIDOC-LOCATION ../
+@end ifclear
+@macro warningMessage {arg}
+@cartouche
+@strong{\arg\}
+@end cartouche
+@end macro
+@set vc-repo http://jpicedt.cvs.sourceforge.net/viewvc/jpicedt/jpicedt/
+@c Purpose of flag dollar is to allow preventing VC system to interprete
+@c dollar in a VC key.
+@set dollar $

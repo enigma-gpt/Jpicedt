@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" 
+		  "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../jpe-help.css" />
+
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="CONTENT-TYPE" content=
+  "text/html; charset=us-ascii">
+  <meta name="author" content="Sylvain Reynal">
+  <meta name="translation" content=
+  "Jobst Hoffmann, Benjamin Poniatowski, Stephan Schulte">
+
+  <title>jPicEdt 1.6 Hilfe &ndash; Das Analysieren von Eingabedateien</title>
+</head>
+
+<body>
+  <h2>Das Analysieren von Eingabedateien</h2>
+
+  <p>Wenn Sie eine Zeichnung auf einen Datentr&auml;ger speichern, speichert
+  jPicEdt die Zeichnung gleich zweimal ab,</p>
+
+  <ul>
+  <li>einmal in einem besonderem Format namens JPIC-XML (JPIC-XML ist ein
+  speziell f&uuml;r jPicEdt geschneidertes XML Format; es ist sehr
+  &auml;hnlich zum weitverbreiteten <a href=
+  "http://www.w3.org/TR/SVG/">SVG</a> Format, hat aber zus&auml;tzlich noch
+  speziell an jPicEdt angepasste graphische Kennzeichen, welche in SVG nicht
+  bekannt sind),</li>
+
+  <li>und zum anderem in ein LaTeX Format ihrer Wahl (z.B. picture env, eepic
+  or PSTricks).</li>
+  </ul>
+
+  <p>Da sich sowohl der XML Code als auch der LaTeX Code in der selben Datei
+  befinden, wird der komplette XML Block mit Prozentzeichen auskommentiert,
+  damit die Datei auch richtig von LaTeX kompiliert werden kann. Der XML Code
+  erlaubt es jPicEdt die Zeichnung neuzuladen ohne auch nur eine winzige
+  Information zu verlieren, ein Feature welches das PSTricks Format nicht
+  garantieren kann (das eepic Format schon gar nicht).</p>
+
+  <p>Daher sucht jPicEdt, wenn man eine Eingabedatei analysiert, zuerst nach
+  einer JPIC-XML Pr&auml;ambel. Ist diese vorhanden, wird die Zeichnung auf
+  Basis des XML Code&acute;s neu aufgebaut (was bedeutet, dass s&auml;mtliche
+  sonstige &Auml;nderungen an anderen Stellen der Datei zu keinem Effekt
+  f&uuml;hren). Andernfalls (dies ist der Fall wenn Sie ein Bild &ouml;ffnen
+  welches per Hand oder in einer LaTeX-kompatiblen Software wie zum Beispiel
+  GnuPlot geschrieben wurde, oder wenn der XML Code gel&ouml;scht wurde),
+  beauftragt jPicEdt einen integrierten LaTeX-Parser, welcher zur Zeit
+  folgende drei Formate unterst&uuml;tzt: die Standard <code>picture</code>
+  Umgebung, das <code>eepic</code>-Paket und das PSTricks Paket (alle drei
+  k&ouml;nnen in einer einzelnen Datei kombiniert werden, in diesem Falle wird
+  nur die erste
+  <i>begin{(ps)picture}&hellip;end{(ps)picture}</i> Deklaration betrachtet).
+  Der LaTeX Parser kann mit einer Vielzahl von Syntax-<i>Abweichungen</i>
+  umgehen, sie brauchen sich also keine gro&szlig;en Sorgen dar&uuml;ber
+  machen, ob Ihre Syntax nun perfekt
+  <i>LaTeX-, <code>eepic</code>- or PSTricks-kompatibel</i> ist oder nicht,
+  denn der Parser wird eine recht informative Meldung ausgeben, falls er einen
+  Syntaxfehler, eine falsch formatierte Zahl, usw.  findet. Trotzdem empfehlen
+  wir folgende Regeln zu beachten :</p>
+
+  <ul>
+  <li>jPicEdt erwartet, dass ein <code>\unitlength</code> oder
+  <code>\psset{unit=xxx}</code> (oder xunit, yunit, runit) Kommando ganz am
+  Anfang ihrer Datei oder zumindest vor dem ersten Kommando steht, welches
+  verarbeitet werden soll; ist dies nicht der Fall, wird die Standard
+  unitlength angenommen, z.B. 1cm f&uuml;r PSTricks. bis ein solches Kommando
+  gefunden wird.</li>
+
+  <li>jPicEdt akzeptiert so gut wie alle Kommandos der LaTeX
+  <code>picture</code>-Umgebung, des
+  <code>epic</code>/<code>eepic</code> Pakets und des PSTricks Basispaktes,
+  wobei neuere Zusatzpakete noch nicht unterst&uuml;tzt werden, wie zum
+  Beispiel <code>pst-nodes.sty</code> oder
+  <code>pst-coils.sty</code>. <code>\multiput</code> (und sein PSTricks
+  Gegenst&uuml;ck) werden auch noch nicht verarbeitet. Ich wei&szlig;, dass es
+  einen sehr gro&szlig;en Druck gibt bzgl. der Unterst&uuml;tzung von Addons,
+  aber das ist ein wenig knifflig, das sag ich ihnen&hellip;</li>
+
+  <li>Es ist absolut zul&auml;ssig und m&ouml;glich LaTeX-,
+  <code>eepic</code>- and PSTricks-Kommandos in der selben Datei zu
+  vermischen. Die Standard Parameter von PSTricks (welche mit
+  <code>\psset</code> gesetzt werden) st&ouml;ren nicht die Benutzung von
+  LaTeX- oder <code>eepic</code> Parametern (z.B.
+  <code>linethickness</code>).</li>
+
+  <li>Anders als bei LaTeX-Boxen (z.B. <code>framebox</code>,&hellip;)
+  k&ouml;nnen sie hier kein wahres WYSIWYG Verhalten erwarten!  JPicEdt
+  verf&uuml;gt nicht &uuml;ber einen integrierten TeX Compiler, daher werden
+  auch nur eine begrenzte Menge an LR-Kommandos verarbeitet (genauer gesagt:
+  nur Kommandos, die sich auf die Bildumgebung beziehen, siehe <i>LaTeX, a
+  documentation preparation system, Leslie Lamport, S.97 und S.108</i>).</li>
+
+  <li>Der Parsingprozess endet entweder wenn das Ende der Datei erreicht ist,
+  oder falls ein <code>\end{picture}</code> (oder das Gegenst&uuml;ck f&uuml;r
+  PSTricks) gefunden wird.</li>
+
+  <li>Nat&uuml;rlich wird der alte Formattyp von jPicEdt 1.3.2 (mit einer
+  Unzahl von besonderen Kommentaren) weiterhin unterst&uuml;tzt !</li>
+  </ul>
+</body>
+</html>

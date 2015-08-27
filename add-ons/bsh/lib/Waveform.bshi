@@ -1,0 +1,1078 @@
+// Waveform.bshi --- -*- coding: iso-8859-1 -*-
+// December 2, 2012 - jPicEdt 1.6, a picture editor for LaTeX.
+// Copyright (C) 2012 Vincent Belaïche
+//
+// Author: Vincent Belaïche <vincentb1@users.sourceforge.net>
+// Version: $Id: Waveform.bshi,v 1.3 2013/02/28 21:37:52 vincentb1 Exp $
+// Keywords:
+// X-URL: http://www.jpicedt.org/
+//
+// Ce logiciel est régi par la licence CeCILL soumise au droit français et
+// respectant les principes de diffusion des logiciels libres. Vous pouvez
+// utiliser, modifier et/ou redistribuer ce programme sous les conditions
+// de la licence CeCILL telle que diffusée par le CEA, le CNRS et l'INRIA
+// sur le site "http://www.cecill.info".
+//
+// En contrepartie de l'accessibilité au code source et des droits de copie,
+// de modification et de redistribution accordés par cette licence, il n'est
+// offert aux utilisateurs qu'une garantie limitée.  Pour les mêmes raisons,
+// seule une responsabilité restreinte pèse sur l'auteur du programme,  le
+// titulaire des droits patrimoniaux et les concédants successifs.
+//
+// A cet égard  l'attention de l'utilisateur est attirée sur les risques
+// associés au chargement,  à l'utilisation,  à la modification et/ou au
+// développement et à la reproduction du logiciel par l'utilisateur étant
+// donné sa spécificité de logiciel libre, qui peut le rendre complexe à
+// manipuler et qui le réserve donc à des développeurs et des professionnels
+// avertis possédant  des  connaissances  informatiques approfondies.  Les
+// utilisateurs sont donc invités à charger  et  tester  l'adéquation  du
+// logiciel à leurs besoins dans des conditions permettant d'assurer la
+// sécurité de leurs systèmes et ou de leurs données et, plus généralement,
+// à l'utiliser et l'exploiter dans les mêmes conditions de sécurité.
+//
+// Le fait que vous puissiez accéder à cet en-tête signifie que vous avez
+// pris connaissance de la licence CeCILL, et que vous en avez accepté les
+// termes.
+//
+/// Commentary:
+
+// This BeanShell script can be used to draw waveforms.
+//
+
+/// Code:
+
+// HW Waveforms
+import jpicedt.graphic.model.*;
+import jpicedt.graphic.*;
+import java.lang.*;
+import java.util.*;
+
+/*
+    Example layout:
+
+    3 rows                               3 waves in a row
+   +---+ ^  yMax ---- ^ -------------   +---+
+   |   | |            |   yWaveHH       |   |
+   |   | | rowYPitch  v   ------------- |-<-|<-- yMaxMinusWaveHH
+   |   | |                              |   |
+   +---+ |- ^   -----+                  +---+
+   |   | |  | carriageReturnYSpace      |   |
+   +---+ v  v          \                +---+
+   |   |                \               |   |
+   |   |                 \              |   |
+   |   |                  \             |   |
+   +---+                   \            +---+ ^
+   |   |                    \           |   | |
+   +---+                     \          +---+ |              ^
+   |   |                      \         |   | | anywaveYPitch|
+   |   |                       \        |   | |              | 2*yWaveHH
+   |   |                        \       |   | |              |
+   +---+    yMin                 +----  +---+ v              v
+
+ */
+
+public class WaveformGap
+{
+        public double viewTimeSpan;
+        public double startTime;
+        public double endTime;
+        public WaveformGap(double viewTimeSpan, double startTime, double endTime){
+                this.viewTimeSpan = viewTimeSpan;
+                this.startTime  = startTime;
+                this.endTime    = endTime;
+        }
+}
+
+
+interface WaveformGapDisplaying
+{
+        /**
+         @param x0 x coordinate of the bottom left corner of the gap display rectangle
+         @param y0 y coordinate of the bottom left corner of the gap display rectangle
+         @param p0 number in [0,1], 0 if the display rectangle starts at beginning
+         of gap, otherwise defines point at which rectangle starts in gap, in
+         porportion of gap duration &mdash; case of a gap overlapping figure
+         leftmost side, i.e. gap actually starts in the previous row.
+         @param x1 x coordinate of the top right corner of the gap display rectangle
+         @param y1 y coordinate of the top right corner of the gap display rectangle
+         @param p1 number in [0,1], 1 if the display rectangle ends at end of gap,
+         otherwise defines point at which rectangle ends in gap, in porportion of
+         gap duration &mdash; case of a gap overlapping figure rightmost side,
+         i.e. gaps actually ends in next row.
+         */
+        void display(double x0, double y0, double p0, double x1, double y1, double p1);
+}
+
+public class WaveformGrayRectangleGapDisplayer implements WaveformGapDisplaying {
+        private BranchElement target;
+        PicAttributeSet pas;
+
+
+        public WaveformGrayRectangleGapDisplayer(BranchElement target, PicAttributeSet pas){
+                this.target = target;
+                this.pas    = pas;
+        }
+
+        public void display(double x0, double y0, double p0, double x1, double y1, double p1){
+                PicParallelogram ppg = new PicParallelogram(new PicPoint(x0,y0),
+                                                                                                    new PicPoint(x1,y0),
+                                                                                                    new PicPoint(x1,y1),
+                                                                                                    pas);
+                target.add(ppg);
+        }
+}
+
+
+public class WaveformEndPoint{
+        public PicPoint                 pt;
+        public PicAttributeSet  pas;
+        public int                          gapState;
+        public int                          drawingState;
+    public WaveformEndPoint(PicPoint pt, PicAttributeSet pas, int gapState, int drawingState){
+        this.pt = pt;
+        this.pas = pas;
+        this.gapState = gapState;
+        this.drawingState = drawingState;
+    }
+}
+
+public interface WaveformEndPointDisplaying
+{
+    void display(WaveformEndPoint wep);
+}
+
+public class WaveformEndPointDisplayer implements WaveformEndPointDisplaying {
+    private BranchElement target;
+    private double        yWaveHH;
+
+    double  dy, dx;
+
+
+    public WaveformEndPointDisplayer(BranchElement target, double yWaveHH, double anywaveYPitch){
+        this.target  = target;
+        this.yWaveHH = yWaveHH;
+
+        dy = Math.min(yWaveHH * 0.35,
+					  0.5 * anywaveYPitch - yWaveHH);
+        dx = dy * 0.5;
+    }
+
+    public void display(WaveformEndPoint wep){
+        if(wep.gapState == 1 
+		   || wep.gapState == 2 && wep.drawingState == 1){
+            PicPoint pt = wep.pt;
+            PicPoint pt0 = new PicPoint(pt).translate(0,dy);
+            PicPoint pt1 = new PicPoint(pt).translate(0,-dy);
+            PicPoint dPt0 = new PicPoint(pt).translate(dx,0);
+            PicPoint dPt1 = new PicPoint(pt).translate(-dx,0);
+            PicMultiCurve zigZag = new PicMultiCurve(pt0, wep.pas);
+			zigZag.getAttributeSet().setAttribute(PicAttributeName.LINE_STYLE,
+												  StyleConstants.LineStyle.SOLID);
+            zigZag.curveTo(dPt0, dPt1, pt1);
+            target.add(zigZag);
+        }
+    }
+}
+
+
+
+public class WaveFormFactory
+{
+    private PicAttributeSet defaultGapDisplayPAS;
+
+    private int waveformCurveNumber = 0;
+    private String waveformCurveNamePrefix = "Waveform ";
+
+    private BranchElement target;
+    private Vector        endPoints;
+
+    private PicMultiCurve newWaveForm(PicPoint pt,PicAttributeSet pas){
+        PicMultiCurve waveForm = new PicMultiCurve(pt, pas);
+        waveForm.setName(waveformCurveNamePrefix + Integer.toString(waveformCurveNumber++));
+        endPoints.add(new WaveformEndPoint(pt, pas, gapState, currentWaveDrawingState));
+        return waveForm;
+    }
+
+    private void closeWaveForm(PicMultiCurve waveForm){
+        target.add(waveForm);
+        PicPoint pt = waveForm.getCtrlPt(waveForm.getLastPointIndex(), null);
+        PicAttributeSet pas = waveForm.getAttributeSet();
+        endPoints.add(new WaveformEndPoint(pt, pas, gapState, currentWaveDrawingState));
+    }
+
+    public PicAttributeSet waveNameLabelPAS; // set constructor
+
+    public WaveFormFactory(){
+		this(new PicGroup());
+	}
+    public WaveFormFactory(BranchElement target){
+		this.target              = target;
+        this.waveNameLabelPAS    = new PicAttributeSet();
+        this.waveNameLabelPAS.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,PicText.HorAlign.RIGHT);
+
+        this.defaultGapDisplayPAS = new PicAttributeSet();
+        Color c = new Color(0xC8C8FF);
+        defaultGapDisplayPAS.setAttribute(PicAttributeName.FILL_COLOR, c);
+        defaultGapDisplayPAS.setAttribute(PicAttributeName.FILL_STYLE, StyleConstants.FillStyle.SOLID);
+        defaultGapDisplayPAS.setAttribute(PicAttributeName.LINE_COLOR, c);
+
+    }
+
+
+    public void customGapDisplay(WaveformGapDisplaying gapDisplayer){
+        double pastGapsAdvance = 0.0;
+        for(WaveformGap gap : gaps){
+            double viewStart = gap.startTime + pastGapsAdvance;
+            double viewEnd   = viewStart + gap.viewTimeSpan;
+            pastGapsAdvance -= gap.endTime - gap.startTime - gap.viewTimeSpan;
+
+            double xStart = (viewStart - this.startTime) * this.usToMm;
+            double xEnd = (viewEnd - this.startTime) * this.usToMm;
+            double crCountStart = Math.floor(xStart / this.xWidth);
+            double yStart = this.yMaxMinusWaveHH - crCountStart * this.rowYPitch;
+            double crCountEnd = Math.floor(xEnd / this.xWidth);
+            xStart += this.xMin - crCountStart * this.xWidth;
+            xEnd   += this.xMin - crCountStart * this.xWidth;
+            double x0, y0, p0, x1, y1, p1;
+            int iMax = (int)(crCountEnd - crCountStart);
+            for(int i = 0; i <= iMax; ++i){
+                double yUpperWaveBase = yStart - i * this.rowYPitch;
+                y1 = yUpperWaveBase + this.yWaveHH;
+                y0 = yUpperWaveBase - this.rowYPitch
+                    + this.carriageReturnYSpace
+                    + this.anywaveYPitch
+                    - this.yWaveHH;
+
+                x0 = i == 0 ? xStart : this.xMin;
+                p0 = i == 0 ? 0 : (this.xMax + (i-1) * this.xWidth - xStart )/(xEnd - xStart);
+
+                x1 = i == iMax ? xEnd - i * this.xWidth : this.xMax;
+                p1 = i == iMax ? 1.0 :  (this.xMax + i * this.xWidth - xStart )/(xEnd - xStart);
+
+                gapDisplayer.display(x0, y0, p0, x1, y1, p1);
+            }
+        }
+    }
+
+    public void gapDisplay(){
+        customGapDisplay(new WaveformGrayRectangleGapDisplayer(target, defaultGapDisplayPAS));
+    }
+
+    public void customEndPointDisplay(WaveformEndPointDisplaying endPointDisplayer){
+        for(WaveformEndPoint wep: endPoints)
+            endPointDisplayer.display(wep);
+    }
+
+    public void endPointDisplay(){
+        customEndPointDisplay(new WaveformEndPointDisplayer(this.target, this.yWaveHH, this.anywaveYPitch));
+    }
+
+    private double xMin = 20.0;
+    private double xWidth = 120.0;
+    private double xMax = xMin + xWidth;
+
+    // Highest wave baseline. This is the yMax of the whole diagram minus the
+    // wave half height (a.k.a. yWaveHH)
+    private double yMaxMinusWaveHH;
+
+    // vertical pitch of one row containing all the considered waveforms.
+    private double rowYPitch = 40.0;
+
+    // User interface
+    //=========================================================================
+    public void setTarget(BranchElement target){
+        this.target = target;
+    }
+    public BranchElement getTarget(){ return this.target; }
+
+    public double usToMm = 5*300; // 5 unitlength for one cycle @ 300MHz
+
+    // Wave name lable format control
+    //-------------------------------------------------------------------------
+    public Locale waveNameLabelLocale = null;
+    public String waveNameLabelFormat  = "%s";
+    public double waveNameLabelMarginSkip = 1.25;
+
+    // Vertical spacing control
+    //-------------------------------------------------------------------------
+    public double yMin = 10.0;
+    // vertical pitch from one waveform to subsequent wavefore within the same row
+    // that should be at least 2*yWaveHH + some space
+    public double anywaveYPitch = 10.0;
+    public double yWaveHH = 3.75; // half height of one wave
+    public double carriageReturnYSpace = 2.5; // additional vertical space every time a carriage return occurs
+
+    // Line format
+    private PicAttributeSet waveHighPAS = PicAttributeSet.DEFAULT_SET;
+    private PicAttributeSet waveLowPAS = PicAttributeSet.DEFAULT_SET;
+
+    public PicAttributeSet getWaveHighPAS(){
+        if(waveHighPAS == PicAttributeSet.DEFAULT_SET){
+            waveHighPAS = new PicAttributeSet(waveHighPAS);
+        }
+        return waveHighPAS;
+    }
+    public PicAttributeSet getWaveLowPAS(){
+        if(waveLowPAS == PicAttributeSet.DEFAULT_SET){
+            waveLowPAS = new PicAttributeSet(waveLowPAS);
+        }
+        return waveLowPAS;
+    }
+    public void setWavePAS(PicAttributeSet waveHighPAS,PicAttributeSet waveLowPAS){
+        this.waveHighPAS = waveHighPAS;
+        this.waveLowPAS = waveLowPAS;
+    }
+    public void setWavePAS(PicAttributeSet pas){
+        this.waveHighPAS = pas;
+        this.waveLowPAS = pas;
+    }
+
+
+    //=========================================================================
+    public void addGap(double startTime, double endTime, double viewTimeSpan)
+    {
+		//print("addGap(" + startTime + "," + endTime + "," + viewTimeSpan + ")");
+
+        if(endTime <= startTime){
+            mdimgr.showMessageDialog("Invalid gap, end time must be after start time","Waveform",JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(startTime < this.startTime){
+            mdimgr.showMessageDialog("Invalid gap, start time must not be less than this.startTime","Waveform",JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(endTime > this.endTime){
+            mdimgr.showMessageDialog("Invalid gap, start time must not be greater than this.endTime","Waveform",JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(gaps.size() > 0){
+            WaveformGap gap = gaps.lastElement();
+            if(startTime < gap.endTime){
+                mdimgr.showMessageDialog("Invalid gap, start time must not be less than previous gap end time","Waveform",
+                                         JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+        gaps.add(new WaveformGap( viewTimeSpan, startTime, endTime));
+
+    }
+
+    // Horizontal spacing control
+    //-------------------------------------------------------------------------
+    private double startTime = 0.0;
+    private double endTime = 3.0/23.0; // 3 cycles @ 23 MHz
+    public  double getXMin(){ return xMin; }
+    public  double getEndTime(){ return this.endTime; }
+    public  double raiseTime = 0.0005; // 0.5 ns
+    //=========================================================================
+    public void setTimeSpan(double startTime, double endTime){
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
+    //=========================================================================
+    // usToMm must be set before this call.
+    //-------------------------------------------------------------------------
+    public void setNoFold(){
+        // add 1.0e-3 to prevent unwanted extra folding
+        this.xWidth = this.usToMm * (endTime - startTime) + 1.0e-3;
+        this.xMax = this.xMin + this.xWidth;
+    }
+
+    //=========================================================================
+    // usToMm must be set before this call.
+    //-------------------------------------------------------------------------
+    public void setXminNoFold(double xMin){
+        this.xMin = xMin;
+        this.setNoFold();
+    }
+
+    //=========================================================================
+    public void setXminXmax(double xMin, double xMax){
+        this.xMin = xMin;
+        this.xMax = xMax;
+        this.xWidth = xMax - xMin;
+    }
+
+    //===========================================================================
+    // usToMm, Xmin and Xmax must be set before
+    // as well as gap list if any
+    //---------------------------------------------------------------------------
+    public void setEndTimeFromRowCount(int rowCount){
+        this.endTime = (this.xWidth * rowCount) / this.usToMm;
+        for(WaveformGap gap : gaps){
+            this.endTime += gap.endTime - gap.startTime - gap.viewTimeSpan;
+        }
+        this.endTime -= 1e-3 / this.usToMm; // to prevent unwanted extra folding
+    }
+
+
+
+    // current wave state (internal)
+    // ------------------------------------------------------------------------
+    private String currentWaveName;
+    private int        currentWaveNumber;
+    private double currentWaveStartX;
+    private double currentWaveX;
+    private double currentWaveY;
+    private double currentWaveT;
+    private String currentWaveState;
+    private PicMultiCurve currentWaveLow;
+    private PicMultiCurve currentWaveHigh;
+    private boolean currentWaveIsBinary;
+    private boolean currentWaveIsShownState;
+    private int         currentWaveBinaryLevel; // -1 or +1
+    private int         gapIndex;
+
+    // waveType
+    // 0 : binary (don't show state),
+    // 1 : binary (show state)
+    // 2 : other
+    private int        currentWaveType;
+
+    // Wave drawing state
+    // 0 : beginning of line = no new curve allocated
+    // 1 : within line = one curve allocated, pending
+    // 2 : point is set, not new curve allocated
+    // 3 : end of line
+    private int        currentWaveDrawingState;
+
+    // gap state
+    // 0 : out of gap
+    // 1 : in gap
+    private int gapState;
+
+
+    private Vector gaps = new Vector(3);
+
+
+
+    //================================================================================
+    private boolean isBinary(int type)
+    {
+        if(type < 2)
+            return true;
+        else
+            return false;
+    }
+
+    //================================================================================
+    // Set how many waveforms are to be displayed. This has to be called after
+    // any y-axis setting like yMin, anywaveYPitch, yWaveHH or carriageReturnYSpace.
+    //-------------------------------------------------------------------------
+    public void initAllBasic(int waveCount)
+    {
+        endPoints = new Vector((int)(waveCount * 2.1));
+
+        if(waveCount <= 0){
+            mdimgr.showMessageDialog
+                (
+                 "There shall be at least one !",
+                 "Waveform",
+                 JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        rowYPitch = (waveCount * anywaveYPitch)+carriageReturnYSpace;
+
+
+        double visibleTime = this.endTime - this.startTime;
+        for(WaveformGap gap: gaps){
+            visibleTime += gap.viewTimeSpan - gap.endTime + gap.startTime;
+        }
+        int rowCount = Math.ceil((visibleTime*usToMm)/xWidth);
+
+        yMaxMinusWaveHH = yMin
+            + rowCount * rowYPitch
+            - carriageReturnYSpace // => yMax, we need to subtract one
+                                   // carriageReturnYSpace because for rowCount
+                                   // rows, there are (rowCount-1) carriage returns.
+            - anywaveYPitch
+            + yWaveHH ;
+;
+
+    }
+
+    //=========================================================================
+    private void initBinaryLevel(String initialState){
+        if(currentWaveIsBinary)
+            {
+                if(initialState.equals("1"))
+                    currentWaveBinaryLevel = 1;
+                else
+                    currentWaveBinaryLevel = -1;
+            }
+        else
+            currentWaveBinaryLevel = -1;
+    }
+
+    // number : 0 .. waveCount
+    //
+    //================================================================================
+	/** Initialise un chronogramme.
+		@param number identificateut du chronogramme, de 0 à
+		<var>waveCount</var>-1, où <code>waveCount</code> est la paramètre passé
+		en argument à @link{initAllBasic}
+		@param name nom du chronogramme. Mettre à <code>null</null> pour ne pas
+		avoir d'étiquette.
+	 */
+    public void initCurrentWave(int number,String name,String initialState,int type)
+    {
+        // print("#############################################");
+        // print("#############################################");
+        // print("#############################################");
+        currentWaveName        = name;
+        currentWaveNumber = number;
+        currentWaveX       = xMin;
+
+        currentWaveY  = yMaxMinusWaveHH - number*anywaveYPitch;
+        currentWaveState = initialState;
+        currentWaveType = type;
+
+        currentWaveDrawingState = 0;
+        currentWaveT = this.startTime;
+
+        currentWaveIsBinary = isBinary(type);
+        currentWaveIsShownState = type != 0;
+
+        this.gapIndex     = 0;
+        this.gapState     = 0; // TODO check with init time.
+
+        initBinaryLevel(initialState);
+    }
+
+    public void displayGaps(){
+
+    }
+
+    /**
+     * Compute a point based on <code>time</code> and relative to one waveform
+     * identified by <code>anchorWaveNumber</code>.
+     * @param anchorWaveNumber, number from 0 to <var>N</var>-1, where
+     * <var>N</var> is the number of waveforms as passed to @link{initAllBasic}.
+     * @param vPos offset relative to the anchor wave baseline. Unit is yWaveHH,
+     * i.e. 0 is for baseline, 1.0 is for high state, and -1.0 for low state.
+     * @param pt null if getPoint allocate it, otherwise do a
+     * <code>setCoordinates</code> on the passed pt.
+     * @return point that
+     */
+    public PicPoint getPoint(int anchorWaveNumber,double vPos,double time, PicPoint pt){
+        double visibleTime = time;
+        for(WaveformGap gap : gaps){
+            if(time < gap.startTime)
+                break;
+            else if(time > gap.endTime)
+                visibleTime -= gap.endTime - gap.startTime - gap.viewTimeSpan;
+            else{
+                double t = time - gap.startTime;
+                if(gap.endTime != gap.startTime){
+                    t *= (-1+gap.viewTimeSpan/(gap.endTime - gap.startTime));
+                    visibleTime += t;
+                }
+                break;
+            }
+        }
+        double carriageReturnCount = Math.floor((visibleTime * this.usToMm) / this.xWidth);
+
+        double x = this.xMin + visibleTime * this.usToMm - this.xWidth * carriageReturnCount;
+        double y = this.yMaxMinusWaveHH
+            - carriageReturnCount * this.rowYPitch
+            - anchorWaveNumber * anywaveYPitch
+            + this.yWaveHH * vPos;
+
+        if(pt == null)
+            return new PicPoint(x,y);
+
+        pt.setCoordinates(x,y);
+        return pt;
+    }
+    public PicPoint getPoint(int anchorWaveNumber,double vPos,double time){
+        return getPoint(anchorWaveNumber, vPos, time, null);
+    }
+    public PicPoint getPoint(double vPos,double time){
+        return getPoint(this.currentWaveNumber, vPos, time, null);
+    }
+
+
+    public void setTimeState(double time, String state){
+
+        this.currentWaveState = state;
+        initBinaryLevel(state);
+
+        PicPoint pt = this.getPoint(this.currentWaveNumber, 0.0, time, null);
+        this.currentWaveX = pt.getX();
+        this.currentWaveY = pt.getY();
+        this.currentWaveT = time;
+        this.gapIndex = 0;
+        this.gapState = 0;
+        for(WaveformGap gap : gaps){
+            if(time < gap.startTime)
+                break;
+            if(time > gap.endTime)
+                ++ this.gapIndex;
+            else{
+                this.gapState = 1;
+                break;
+            }
+        }
+        if(currentWaveDrawingState == 0){
+            addNameLabel();
+            currentWaveDrawingState = 2;
+        }
+    }
+
+    /**
+     * Add a label for the start just buffer the latest transition, or the rightmost
+     * side of page. Label is from <code>currentWaveX</code> up to <code>endX</code>.
+     * @param endX end of labelled zone
+     */
+    private void waveLabelState(double endX)
+    {
+        if(!currentWaveIsShownState)
+            return;
+
+        PicText label = new PicText(new PicPoint((currentWaveX+endX)*0.5,currentWaveY),
+                                    currentWaveState,
+                                    PicAttributeSet.DEFAULT_SET);
+        target.add(label);
+    }
+
+    //================================================================================
+    private void addNameLabel()
+    {
+        if(currentWaveDrawingState == 0 && currentWaveName != null){
+            PicPoint pt = new PicPoint(xMin - waveNameLabelMarginSkip,currentWaveY);
+            Object[] args = {currentWaveName};
+            PicText text = new PicText(pt,
+                                       String.format(waveNameLabelLocale, waveNameLabelFormat, args),
+                                       waveNameLabelPAS);
+            target.add(text);
+        }
+    }
+
+    //================================================================================
+    public void addPoint(double time, String state)
+    {
+        PicPoint pt = null;
+        boolean      endOnRaise = false;
+        double   endOnRaiseRatio;
+        String   ondOnRaiseState;
+        if(time < this.startTime || time > this.endTime){
+            mdimgr.showMessageDialog
+                ("addPoint: invalid time, clipping it","Waveform",JOptionPane.ERROR_MESSAGE);
+            if(time < this.startTime)
+                time = this.startTime;
+            else{
+                if(time - this.raiseTime >= this.endTime
+                   || state.equals(this.currentWaveState)){
+                    // prevent transition, because the transition if any is not
+                    // visible anyhow as it would be after endTime
+                    state = this.currentWaveState;
+                    time = this.endTime;
+                }
+                else{
+                    endOnRaise = true;
+                    ondOnRaiseState = state;
+                    state = this.currentWaveState;
+                    endOnRaiseRatio = (this.endTime - time + this.raiseTime) / this.raiseTime;
+                    time -= this.raiseTime;
+                }
+
+            }
+        }
+
+        double nextX;
+		double nextT;
+        double savedXmax;
+        double gapXmax;
+        int    foldCountBeforeGap = 0;
+        double finalTime = time;
+        String finalState = state;
+        for(;;){
+            WaveformGap gap;
+            if(this.gapIndex < gaps.size()){
+                gap = gaps.get(this.gapIndex);
+                switch(this.gapState){
+                case 0: // out of gap
+                    if(time >= gap.startTime){
+						//print("Testing entering gap for waveform="+currentWaveNumber);
+						//print("xMax="+xMax);
+						//print("time="+time);
+						//print("state="+state);
+						//print("currentWaveX="+currentWaveX);
+						//print("currentWaveT="+currentWaveT);
+                        gapXmax       = currentWaveX + usToMm*(gap.startTime - currentWaveT);
+						//print("gapXmax="+gapXmax);
+
+						if(gapXmax < xMax){
+							//print("Yes entering gap");
+                            foldCountBeforeGap = 0;
+							savedXmax = xMax;
+                            xMax = gapXmax;
+							time = gap.startTime;
+							state = currentWaveState;
+							this.gapState = 2; // entering gap
+                        }
+						else{
+							//print("Postponed entering gap");
+							time  = Math.min(time - wff.raiseTime, gap.startTime);
+							state = currentWaveState;
+						}
+                    }
+                    break;
+                case 1: // in gap
+                    if(time > gap.endTime){
+                        // exiting the gap!
+						//print("exiting the gap!");
+						//print("prior currentWaveX=" + currentWaveX);
+                        currentWaveX += gap.viewTimeSpan * this.usToMm;
+                        currentWaveT = gap.endTime;
+						//print("2)currentWaveX="+currentWaveX);
+						//print("2)currentWaveT="+currentWaveT);
+						//print("xMax="+xMax);
+
+                        if(currentWaveX >= this.xMax){
+                            waveLabelState(xMax);
+
+                            // carriage return
+                            currentWaveX -= this.xWidth;
+                            currentWaveStartX = currentWaveX;
+                            currentWaveY -= rowYPitch;
+
+                            currentWaveDrawingState = 0;
+                            addNameLabel();
+                            currentWaveDrawingState = 2;
+                        }
+                        pt = new PicPoint(currentWaveX,
+                                          currentWaveY+currentWaveBinaryLevel*yWaveHH);
+                        currentWaveHigh = newWaveForm(pt, waveHighPAS);
+                        if(!currentWaveIsBinary){
+                            pt = new PicPoint(currentWaveX,
+                                              currentWaveY-currentWaveBinaryLevel*yWaveHH);
+                            currentWaveLow = newWaveForm(pt, waveLowPAS);
+                        }
+						addNameLabel();
+						currentWaveDrawingState = 1;
+                        this.gapState = 0;
+                        ++this.gapIndex;
+                    }
+                    break;
+                case 2: // gap has been entered
+					//print("(currentWaveHigh != null) =>" + (currentWaveHigh != null));
+					//print("currentWaveY="+currentWaveY);
+					//print("gapXmax="+gapXmax);
+					if(currentWaveHigh == null){
+						pt = new PicPoint(currentWaveX, currentWaveY+currentWaveBinaryLevel*yWaveHH);
+						currentWaveHigh = newWaveForm(pt, waveHighPAS);
+                        if(!currentWaveIsBinary && currentWaveLow == null){
+                            pt = new PicPoint(currentWaveX,
+                                              currentWaveY-currentWaveBinaryLevel*yWaveHH);
+                            currentWaveLow = newWaveForm(pt, waveLowPAS);
+                        }
+					}
+                    this.gapState = 1;
+                    xMax = savedXmax;
+					if(currentWaveX < gapXmax){
+						currentWaveHigh
+							.lineTo(new PicPoint(gapXmax,
+												 currentWaveY+currentWaveBinaryLevel*yWaveHH));
+					}
+					closeWaveForm(currentWaveHigh);
+					currentWaveHigh = null;
+					if(!currentWaveIsBinary){
+						if(currentWaveX < gapXmax){
+							currentWaveLow
+								.lineTo(new PicPoint(gapXmax,
+													 currentWaveY-currentWaveBinaryLevel*yWaveHH));
+						}
+						closeWaveForm(currentWaveLow);
+						currentWaveLow = null;
+					}
+					currentWaveX = gapXmax;
+					currentWaveT = gap.startTime;
+					//print("3)currentWaveX="+currentWaveX);
+					//print("3)currentWaveT="+currentWaveT);
+                    continue;
+
+                default:
+                    mdimgr.showMessageDialog
+                        (
+                         "INTERNAL ERROR: invalid gap state!",
+                         "Waveform",
+                         JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+
+            boolean transition = !state.equals(currentWaveState);
+            if(gapState != 1){
+                double deltaTime = time - currentWaveT;
+                nextT = currentWaveT + deltaTime;
+                nextX = currentWaveX + deltaTime * usToMm;
+                double noTrNextX;
+                if(transition){
+                    noTrNextX = nextX-this.raiseTime*usToMm;
+                }
+                else{
+                    noTrNextX = nextX;
+                }
+
+                if(currentWaveDrawingState == 2){
+                    pt = new PicPoint(currentWaveX,currentWaveY+currentWaveBinaryLevel*yWaveHH);
+                    currentWaveHigh = newWaveForm(pt, waveHighPAS);
+                    if(!currentWaveIsBinary){
+                        pt = new PicPoint(currentWaveX,currentWaveY-currentWaveBinaryLevel*yWaveHH);
+                        currentWaveLow = newWaveForm(pt, waveLowPAS);
+                    }
+                    currentWaveDrawingState = 1;
+                }
+
+                while(noTrNextX > xMax){
+
+                    // close current wave drawing if need be
+                    if(currentWaveDrawingState == 1){// within line
+
+                        pt = new PicPoint(xMax,currentWaveY+currentWaveBinaryLevel*yWaveHH);
+                        currentWaveHigh.lineTo(pt);
+                        closeWaveForm(currentWaveHigh);
+                        currentWaveHigh = null;
+                        if(!currentWaveIsBinary){
+                            pt = new PicPoint(xMax,currentWaveY-currentWaveBinaryLevel*yWaveHH);
+                            currentWaveLow.lineTo(pt);
+                            closeWaveForm(currentWaveLow);
+                            currentWaveLow = null;
+                        }
+                        waveLabelState(xMax);
+                        // carriage return
+                        currentWaveDrawingState = 0;
+                        currentWaveY -= rowYPitch;
+                        if(xWidth <= 0.0){
+                            error("invalid xWidth" + xWidth);
+                            break;
+                        }
+                        noTrNextX = noTrNextX - xWidth;
+                        nextX = nextX - xWidth;
+                        currentWaveStartX = xMin;
+						currentWaveT += (xMax - currentWaveX) / usToMm;
+                        currentWaveX = xMin;
+                    }
+
+                    // reallocate PicMultiCurve if need be
+                    if(currentWaveDrawingState == 0 && noTrNextX > xMax){
+
+                        addNameLabel();
+                        pt = new PicPoint(xMin,currentWaveY+currentWaveBinaryLevel*yWaveHH);
+                        currentWaveHigh = newWaveForm(pt, waveHighPAS);
+                        if(!currentWaveIsBinary){
+                            pt = new PicPoint(xMin,currentWaveY-currentWaveBinaryLevel*yWaveHH);
+                            currentWaveLow = newWaveForm(pt, waveLowPAS);
+                        }
+                        currentWaveDrawingState = 1;
+                    }
+
+                }// end of while(noTrNextX > xMax)
+
+                if(transition){
+                    waveLabelState(noTrNextX);
+                    // allocate curves if need be
+                    if(currentWaveDrawingState == 0){
+                        addNameLabel();
+                        pt = new PicPoint(xMin,currentWaveY+currentWaveBinaryLevel*yWaveHH);
+                        currentWaveHigh = newWaveForm(pt, waveHighPAS);
+                        if(!currentWaveIsBinary){
+                            pt = new PicPoint(xMin,currentWaveY-currentWaveBinaryLevel*yWaveHH);
+                            currentWaveLow = newWaveForm(pt, waveLowPAS);
+                        }
+                        currentWaveDrawingState = 1;
+                    }
+                    if(currentWaveDrawingState == 1){
+                        // terminate on-going
+                        pt = new PicPoint(noTrNextX,currentWaveY+currentWaveBinaryLevel*yWaveHH);
+                        currentWaveHigh.lineTo(pt);
+                        if(!currentWaveIsBinary){
+                            pt = new PicPoint(noTrNextX,currentWaveY-currentWaveBinaryLevel*yWaveHH);
+                            currentWaveLow.lineTo(pt);
+                        }
+                    }
+                    // transition occurs accross carriage return
+                    if(nextX > xMax){
+                        double ratio = (nextX-xMax)/(this.raiseTime*usToMm);
+                        // end current line
+                        pt = new PicPoint(
+                                          noTrNextX + ratio*(nextX-xMax),
+                                          currentWaveY+(1-2*ratio)*currentWaveBinaryLevel*yWaveHH);
+                        currentWaveHigh.lineTo(pt);
+                        closeWaveForm(currentWaveHigh);
+                        currentWaveHigh = null;
+                        if(!currentWaveIsBinary){
+                            pt = new PicPoint(
+                                              noTrNextX + ratio*(nextX-xMax),
+                                              currentWaveY-(1-2*ratio)*currentWaveBinaryLevel*yWaveHH);
+                            currentWaveLow.lineTo(pt);
+                            closeWaveForm(currentWaveLow);
+                            currentWaveLow = null;
+                        }
+                        currentWaveDrawingState = 0;
+
+                        // carriage return
+                        noTrNextX = noTrNextX - xWidth;
+                        nextX = nextX - xWidth;
+                        currentWaveY -= rowYPitch;
+                        if(foldCountBeforeGap != 0 && gapState == 2){
+                            if(-- foldCountBeforeGap == 0)
+                                xMax = gapXmax;
+                        }
+
+
+                        // begin newline
+                        pt = new PicPoint(xMin,currentWaveY+(1-2*ratio)*currentWaveBinaryLevel*yWaveHH);
+                        currentWaveHigh = newWaveForm(pt, waveHighPAS);
+                        if(!currentWaveIsBinary){
+                            pt = new PicPoint(xMin,currentWaveY-(1-2*ratio)*currentWaveBinaryLevel*yWaveHH);
+                            currentWaveLow = newWaveForm(pt, waveLowPAS);
+                        }
+                        addNameLabel();
+                        currentWaveDrawingState = 1;
+                    }
+                    // complete transition
+                    currentWaveBinaryLevel = -currentWaveBinaryLevel;
+                    pt = new PicPoint(nextX,currentWaveY+currentWaveBinaryLevel*yWaveHH);
+                    currentWaveHigh.lineTo(pt);
+                    if(!currentWaveIsBinary){
+                        pt = new PicPoint(nextX,currentWaveY-currentWaveBinaryLevel*yWaveHH);
+                        currentWaveLow.lineTo(pt);
+                    }
+                    currentWaveDrawingState = 1;
+                    currentWaveStartX = nextX;
+                }
+            }
+            else{
+                if(transition){
+                    currentWaveBinaryLevel = -currentWaveBinaryLevel;
+                }
+                nextX = currentWaveX;
+				nextT = currentWaveT;
+            }
+
+            if(time == finalTime
+               && (gapState != 1 || finalTime <= gap.endTime))
+                break;
+
+            time = finalTime;
+            state = finalState;
+        }
+
+        if(endOnRaise){
+            nextX = xMax;
+            state = ondOnRaiseState;
+            pt = new PicPoint(nextX,currentWaveY+(1-2*endOnRaiseRatio)*currentWaveBinaryLevel*yWaveHH);
+            currentWaveHigh.lineTo(pt);
+            if(!currentWaveIsBinary){
+                pt = new PicPoint(nextX,currentWaveY-(1-2*endOnRaiseRatio)*currentWaveBinaryLevel*yWaveHH);
+                currentWaveLow.lineTo(pt);
+            }
+        }
+
+        // wave state update
+        currentWaveX     = nextX;
+        currentWaveState = state;
+        currentWaveT     = nextT;
+    }
+
+    //================================================================================
+    public void close()
+    {
+        PicPoint pt = null;
+        if(currentWaveDrawingState == 0 && currentWaveX != currentWaveStartX){
+            // reallocate curves
+            addNameLabel();
+            pt = new PicPoint(xMin,currentWaveY+currentWaveBinaryLevel*yWaveHH);
+            currentWaveHigh = newWaveForm(pt, waveHighPAS);
+            if(!currentWaveIsBinary){
+                pt = new PicPoint(xMin,currentWaveY-currentWaveBinaryLevel*yWaveHH);
+                currentWaveLow = newWaveForm(pt, waveLowPAS);
+            }
+            currentWaveDrawingState = 1;
+        }
+        if(currentWaveDrawingState == 1){
+            waveLabelState(currentWaveX);
+
+            // add final point if need be
+            if(currentWaveX != currentWaveStartX && currentWaveHigh != null){
+                pt = new PicPoint(currentWaveX,currentWaveY+currentWaveBinaryLevel*yWaveHH);
+                currentWaveHigh.lineTo(pt);
+                if(!currentWaveIsBinary){
+                    pt = new PicPoint(currentWaveX,currentWaveY-currentWaveBinaryLevel*yWaveHH);
+                    currentWaveLow.lineTo(pt);
+                }
+            }
+            // add curves to drawing
+            if(currentWaveHigh != null)
+                closeWaveForm(currentWaveHigh);
+            currentWaveHigh = null;
+            if(!currentWaveIsBinary){
+                if(currentWaveLow != null)
+                    closeWaveForm(currentWaveLow);
+                currentWaveLow = null;
+            }
+            currentWaveDrawingState = 2;
+        }
+    }
+
+    //================================================================================
+    public void clock(
+                      int number,            //      number
+                      String name,           //      name
+                      double initialDelay, // delay before first transition
+                      double dutyCycle,          // ratio of state after 1st transition to inital state
+                      double period,       // clock period
+                      String initialState      // "0" or "1"
+                      )
+    {
+        this.initCurrentWave(number,name,initialState,0);
+        this.clockRun(initialDelay, dutyCycle, period,this.endTime);
+        this.close();
+    }
+
+    //=========================================================================
+    public void clockRun(double initialDelay,double dutyCycle,double period,double untilT){
+        String initialState = this.currentWaveState;
+        String otherState;
+        if(initialState.equals("1"))
+            otherState = "0";
+        else
+            otherState = "1";
+
+        if(untilT > this.endTime)
+            untilT = this.endtime;
+
+
+        double startT = this.currentWaveT+initialDelay;
+
+        int clockCycleNb = 0;
+        double oldT = startT;
+        for(;;){
+
+            double t = startT + ((clockCycleNb/2) + (clockCycleNb%2)*dutyCycle)*period;
+            String nextState = ((clockCycleNb%2) == 0)?otherState:initialState;
+
+            if(t > untilT){
+                if(t != oldT){
+                        t = untilT;
+                        // repeat previous state
+                        nextState = ((clockCycleNb%2) == 1)?otherState:initialState;
+                        this.addPoint(t,nextState);
+                }
+                break;
+            }
+            else{
+                this.addPoint(t,nextState);
+            }
+            oldT = t;
+            ++clockCycleNb;
+        }
+    }
+}
+
+// Local Variables:
+// End:

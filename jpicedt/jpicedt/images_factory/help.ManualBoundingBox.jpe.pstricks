@@ -1,0 +1,195 @@
+%%Created by jPicEdt 1.5-pre1: mixed JPIC-XML/LaTeX format
+%%Sun May 03 08:00:06 CEST 2009
+%%Begin JPIC-XML
+%<?xml version="1.0" standalone="yes"?>
+%<jpic x-min="0" x-max="115" y-min="0" y-max="95" auto-bounding="true">
+%<text anchor-point="(27.5,15)"
+%	 text-hor-align="right"
+%	 >
+%Very Long Input
+%</text>
+%<multicurve right-arrow="head"
+%	 points="(30,15);(30,15);(40,15);(40,15)"
+%	 />
+%<multicurve right-arrow="head"
+%	 points="(70,15);(70,15);(80,15);(80,15)"
+%	 />
+%<parallelogram p3="(70,0)"
+%	 p2="(40,0)"
+%	 p1="(40,30)"
+%	 />
+%<text anchor-point="(85,15)"
+%	 text-hor-align="left"
+%	 >
+%Very Long Output
+%</text>
+%<parallelogram stroke-style="dashed"
+%	 p3="(85,0)"
+%	 stroke-color="#ff0066"
+%	 p2="(85,30)"
+%	 p1="(27.5,30)"
+%	 stroke-dasharray="1;1"
+%	 />
+%<g lift-pen="0"
+%	 compound-mode="separate"
+%	 closed="false"
+%	>
+%<multicurve stroke-color="#ff0066"
+%	 points="(30,30);(31.67,32.06);(31.67,34.12);(30,36.18);(28.33,38.24);(30,40);
+%	(30,40)"
+%	 />
+%<text text-vert-align="bottom"
+%	 stroke-color="#ff0066"
+%	 anchor-point="(30.5,40)"
+%	 text-hor-align="left"
+%	 >
+%Incorrect bounding box
+%</text>
+%</g>
+%<text anchor-point="(27.5,70)"
+%	 text-hor-align="right"
+%	 >
+%Very Long Input
+%</text>
+%<multicurve right-arrow="head"
+%	 points="(30,70);(30,70);(40,70);(40,70)"
+%	 />
+%<multicurve right-arrow="head"
+%	 points="(70,70);(70,70);(80,70);(80,70)"
+%	 />
+%<parallelogram p3="(70,55)"
+%	 p2="(40,55)"
+%	 p1="(40,85)"
+%	 />
+%<text anchor-point="(85,70)"
+%	 text-hor-align="left"
+%	 >
+%Very Long Output
+%</text>
+%<parallelogram stroke-style="dashed"
+%	 p3="(115,55)"
+%	 stroke-color="#ff0066"
+%	 p2="(115,85)"
+%	 p1="(0,85)"
+%	 stroke-dasharray="1;1"
+%	 />
+%<g lift-pen="0"
+%	 compound-mode="separate"
+%	 closed="false"
+%	>
+%<multicurve stroke-color="#ff0066"
+%	 points="(80,85);(81.67,87.06);(81.67,89.12);(80,91.18);(78.33,93.24);(80,95);
+%	(80,95)"
+%	 />
+%<text text-vert-align="bottom"
+%	 stroke-color="#ff0066"
+%	 anchor-point="(80.5,95)"
+%	 text-hor-align="left"
+%	 >
+%Correct bounding box
+%</text>
+%</g>
+%<text text-vert-align="top"
+%	 anchor-point="(0,85)"
+%	 text-hor-align="left"
+%	 >
+%\ \relax
+%</text>
+%<text text-vert-align="bottom"
+%	 anchor-point="(115,55)"
+%	 text-hor-align="right"
+%	 >
+%\ \relax
+%</text>
+%<g lift-pen="0"
+%	 compound-mode="separate"
+%	 closed="false"
+%	>
+%<multicurve stroke-color="#ff0066"
+%	 points="(0,85);(0.95,87.48);(2.73,88.51);(5.35,88.09);(7.97,87.67);(8.66,90);
+%	(8.66,90)"
+%	 />
+%<text text-vert-align="bottom"
+%	 stroke-color="#ff0066"
+%	 anchor-point="(9.09,90.25)"
+%	 text-hor-align="left"
+%	 >
+%Blank space (``\textbackslash\ \textbackslash relax'') aligned top-left
+%</text>
+%</g>
+%<g lift-pen="0"
+%	 compound-mode="separate"
+%	 closed="false"
+%	>
+%<multicurve stroke-color="#ff0066"
+%	 points="(115,55);(113.91,52.52);(111.87,51.49);(108.87,51.91);(105.86,52.33);(105.07,50);
+%	(105.07,50)"
+%	 />
+%<text text-vert-align="top"
+%	 stroke-color="#ff0066"
+%	 anchor-point="(104.5,50)"
+%	 text-hor-align="right"
+%	 >
+%Blank space (``\textbackslash\ \textbackslash relax'') aligned bottom-right
+%</text>
+%</g>
+%</jpic>
+%%End JPIC-XML
+%PSTricks content-type (pstricks.sty package needed)
+%Add \usepackage{pstricks} in the preamble of your LaTeX file
+%You can rescale the whole picture (to 80% for instance) by using the command \def\JPicScale{0.8}
+\ifx\JPicScale\undefined\def\JPicScale{1}\fi
+\psset{unit=\JPicScale mm}
+\psset{linewidth=0.3,dotsep=1,hatchwidth=0.3,hatchsep=1.5,shadowsize=1,dimen=middle}
+\psset{dotsize=0.7 2.5,dotscale=1 1,fillcolor=black}
+\psset{arrowsize=1 2,arrowlength=1,arrowinset=0.25,tbarsize=0.7 5,bracketlength=0.15,rbracketlength=0.15}
+\begin{pspicture}(0,0)(115,95)
+\rput[r](27.5,15){Very Long Input}
+\psline{->}(30,15)(40,15)
+\psline{->}(70,15)(80,15)
+\pspolygon[](40,30)(40,0)(70,0)(70,30)
+\rput[l](85,15){Very Long Output}
+\newrgbcolor{userLineColour}{1 0 0.4}
+\pspolygon[linecolor=userLineColour,linestyle=dashed,dash=1 1](27.5,30)(85,30)(85,0)(27.5,0)
+{%
+\newrgbcolor{userLineColour}{1 0 0.4}
+\pscustom[linecolor=userLineColour]{\psbezier(30,30)(31.67,32.06)(31.67,34.12)(30,36.18)
+\psbezier(28.33,38.24)(30,40)(30,40)
+}
+\newrgbcolor{userLineColour}{1 0 0.4}
+\rput[bl](30.5,40){Incorrect bounding box}
+}%
+\rput[r](27.5,70){Very Long Input}
+\psline{->}(30,70)(40,70)
+\psline{->}(70,70)(80,70)
+\pspolygon[](40,85)(40,55)(70,55)(70,85)
+\rput[l](85,70){Very Long Output}
+\newrgbcolor{userLineColour}{1 0 0.4}
+\pspolygon[linecolor=userLineColour,linestyle=dashed,dash=1 1](0,85)(115,85)(115,55)(0,55)
+{%
+\newrgbcolor{userLineColour}{1 0 0.4}
+\pscustom[linecolor=userLineColour]{\psbezier(80,85)(81.67,87.06)(81.67,89.12)(80,91.18)
+\psbezier(78.33,93.24)(80,95)(80,95)
+}
+\newrgbcolor{userLineColour}{1 0 0.4}
+\rput[bl](80.5,95){Correct bounding box}
+}%
+\rput[tl](0,85){\ \relax}
+\rput[br](115,55){\ \relax}
+{%
+\newrgbcolor{userLineColour}{1 0 0.4}
+\pscustom[linecolor=userLineColour]{\psbezier(0,85)(0.95,87.48)(2.73,88.51)(5.35,88.09)
+\psbezier(7.97,87.67)(8.66,90)(8.66,90)
+}
+\newrgbcolor{userLineColour}{1 0 0.4}
+\rput[bl](9.09,90.25){Blank space (``\textbackslash\ \textbackslash relax'') aligned top-left}
+}%
+{%
+\newrgbcolor{userLineColour}{1 0 0.4}
+\pscustom[linecolor=userLineColour]{\psbezier(115,55)(113.91,52.52)(111.87,51.49)(108.87,51.91)
+\psbezier(105.86,52.33)(105.07,50)(105.07,50)
+}
+\newrgbcolor{userLineColour}{1 0 0.4}
+\rput[tr](104.5,50){Blank space (``\textbackslash\ \textbackslash relax'') aligned bottom-right}
+}%
+\end{pspicture}

@@ -1,0 +1,115 @@
+/*  jPicEdt, a picture editor for LaTeX.
+    Copyright (C) 1999-2006  Sylvain Reynal
+*/
+// Author: Sylvain Reynal
+//         Département de Physique
+//         École Nationale Supérieure de l'Électronique et de ses Applications (ENSEA)
+//         6, avenue du Ponceau
+//         95014 CERGY CEDEX
+//         FRANCE
+//
+// Tel : +33 130 736 245
+// Fax : +33 130 736 667
+// e-mail : reynal@ensea.fr
+// Version: $Id: PicParallelogramFormatter.java,v 1.11 2013/03/27 07:09:20 vincentb1 Exp $
+// Keywords:
+// X-URL: http://www.jpicedt.org/
+//
+// Ce logiciel est régi par la licence CeCILL soumise au droit français et respectant les principes de
+// diffusion des logiciels libres. Vous pouvez utiliser, modifier et/ou redistribuer ce programme sous les
+// conditions de la licence CeCILL telle que diffusée par le CEA, le CNRS et l'INRIA sur le site
+// "http://www.cecill.info".
+//
+// En contrepartie de l'accessibilité au code source et des droits de copie, de modification et de
+// redistribution accordés par cette licence, il n'est offert aux utilisateurs qu'une garantie limitée.  Pour
+// les mêmes raisons, seule une responsabilité restreinte pèse sur l'auteur du programme, le titulaire des
+// droits patrimoniaux et les concédants successifs.
+//
+// À cet égard l'attention de l'utilisateur est attirée sur les risques associés au chargement, à
+// l'utilisation, à la modification et/ou au développement et à la reproduction du logiciel par l'utilisateur
+// étant donné sa spécificité de logiciel libre, qui peut le rendre complexe à manipuler et qui le réserve
+// donc à des développeurs et des professionnels avertis possédant des connaissances informatiques
+// approfondies.  Les utilisateurs sont donc invités à charger et tester l'adéquation du logiciel à leurs
+// besoins dans des conditions permettant d'assurer la sécurité de leurs systèmes et ou de leurs données et,
+// plus généralement, à l'utiliser et l'exploiter dans les mêmes conditions de sécurité.
+//
+// Le fait que vous puissiez accéder à cet en-tête signifie que vous avez pris connaissance de la licence
+// CeCILL, et que vous en avez accepté les termes.
+//
+/// Commentary:
+
+//
+
+
+
+/// Code:
+
+package jpicedt.format.output.pstricks;
+
+import jpicedt.graphic.io.formatter.*;
+import jpicedt.graphic.*;
+import jpicedt.graphic.model.*;
+
+import java.awt.*;
+
+import static jpicedt.format.output.pstricks.PstricksConstants.*;
+import static jpicedt.graphic.model.StyleConstants.*;
+import static jpicedt.graphic.model.PicAttributeName.*;
+
+
+/**
+ * Pstricks formatter for PicParallelogram paraects.
+ * @author Vincent Guirardel, Sylvain Reynal
+ * @since jpicedt 1.4
+ * @version $Id: PicParallelogramFormatter.java,v 1.11 2013/03/27 07:09:20 vincentb1 Exp $
+ */
+public class PicParallelogramFormatter extends AbstractFormatter {
+
+	/** the Element this formatter acts upon */
+	private PicParallelogram para;
+	/** the producing factory */
+	private PstricksFormatter factory;
+
+	public Element getElement(){ return para; }
+
+	public PicParallelogramFormatter(PicParallelogram para, PstricksFormatter factory){
+		this.para = para;
+		this.factory=factory;
+	}
+
+	/**
+	 * \\psframe[param](x1,y1)(x2,y2) => not used anymore [SR:pending]<br>
+	 * \\pspolygon[param](x1,y1)...(x4,y4)
+	 */
+	public String format(){
+		StringBuffer buf = new StringBuffer(100); // 100 as initial capacity seems to be a good guess
+		// first handle possibly user-defined colours
+		PstricksFormatter.ParameterString paramStr = factory.createParameterString(para);
+		if (paramStr.isDefinedColourString()) buf.append(paramStr.getUserDefinedColourBuffer());
+
+		// pspolygon
+		buf.append("\\pspolygon");
+		buf.append("[");
+		buf.append(paramStr.getParameterBuffer());
+		buf.append("]");
+		buf.append(para.getCtrlPt(PicParallelogram.P_BL,null));
+		buf.append(para.getCtrlPt(PicParallelogram.P_BR,null));
+		buf.append(para.getCtrlPt(PicParallelogram.P_TR,null));
+		buf.append(para.getCtrlPt(PicParallelogram.P_TL,null));
+		buf.append(factory.getLineSeparator());
+
+		return buf.toString();
+	}
+
+	/*
+		// psframe
+		buf.append("\\psframe");
+		buf.append("[");
+		buf.append(paramStr.getParameterBuffer());
+		buf.append("]");
+		buf.append(para.getCtrlPt(PicRectangle.P_BL,null));
+		buf.append(para.getCtrlPt(PicRectangle.P_TR,null));
+	*/
+
+
+}

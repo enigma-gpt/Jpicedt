@@ -1,0 +1,44 @@
+@c version.texi.ant --- -*- coding: iso-8859-1; mode:Texinfo -*-
+@c jPicEdt, a picture editor for LaTeX.
+@c
+@c Copyright (C) 2012 Vincent Belaïche
+@c e-mail : vincentb1@users.sourceforge.net
+@c Version: $Id: version.texi.ant,v 1.1 2012/08/29 05:37:43 vincentb1 Exp $
+@c Keywords: 
+@c X-URL: http://www.jpicedt.org/
+@c
+@c Ce logiciel est régi par la licence CeCILL soumise au droit français
+@c et respectant les principes de diffusion des logiciels libres. Vous
+@c pouvez utiliser, modifier et/ou redistribuer ce programme sous les
+@c conditions de la licence CeCILL telle que diffusée par le CEA, le
+@c CNRS et l'INRIA sur le site "http://www.cecill.info".
+@c
+@c En contrepartie de l'accessibilité au code source et des droits de
+@c copie, de modification et de redistribution accordés par cette
+@c licence, il n'est offert aux utilisateurs qu'une garantie limitée.
+@c Pour les mêmes raisons, seule une responsabilité restreinte pèse sur
+@c l'auteur du programme, le titulaire des droits patrimoniaux et les
+@c concédants successifs.
+@c
+@c À cet égard l'attention de l'utilisateur est attirée sur les risques
+@c associés au chargement, à l'utilisation, à la modification et/ou au
+@c développement et à la reproduction du logiciel par l'utilisateur
+@c étant donné sa spécificité de logiciel libre, qui peut le rendre
+@c complexe à manipuler et qui le réserve donc à des développeurs et des
+@c professionnels avertis possédant des connaissances informatiques
+@c approfondies.  Les utilisateurs sont donc invités à charger et tester
+@c l'adéquation du logiciel à leurs besoins dans des conditions
+@c permettant d'assurer la sécurité de leurs systèmes et ou de leurs
+@c données et, plus généralement, à l'utiliser et l'exploiter dans les
+@c mêmes conditions de sécurité.  Le fait que vous puissiez accéder à
+@c cet en-tête signifie que vous avez pris connaissance de la licence
+@c CeCILL, et que vous en avez accepté les termes.
+@c
+@c Commentary:
+
+@c 
+
+@c Code:
+
+@set JPICEDT_VER  @VERSION@
+@set BUILDDATE @BUILDDATE@

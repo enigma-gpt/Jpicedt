@@ -1,0 +1,7 @@
+\newcommand*\IntlUserPreamble{Preamble to the user's guise}
+\newcommand*\IntlJpicXmlStart{Embedded JPIC-XML beginning markup}
+\newcommand*\IntlJpicXml{Proper format~: embedded JPIC-XML}
+\newcommand*\IntlJpicXmlEnd{Embedded JPIC-XML end markup}
+\newcommand*\IntlFormatted{Export format part: PSTricks in this case}
+\newcommand*\IntlUserPostambleStart{User postamble beginning markup}
+\newcommand*\IntlUserPostamble{Postamble to the user's guise}

@@ -1,0 +1,294 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" 
+		  "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+  <head>
+		<meta http-equiv="CONTENT-TYPE" content="text/html; charset=iso-8859-1">
+
+  <title>jpicedt.graphic package</title>
+  </head>
+
+  <body>
+    <p>jPicEdt library core classes and packages. Package structure follows the
+	model-view-controler paradigm. See documentation below for details about the VMC implementation in jPicEdt.<br>
+@since PicEdt 1.0</p>
+
+	<h2>Table of contents</h2>
+	<ul>
+	<li><a href="#VMC">The Model-View-Controler paradigm as implemented in jPicEdt</a></li>
+	<li><a href="#Model">The <code>Drawing</code> class and <code>Element</code> interface: a document model for vector-graphics</a></li>
+	<li><a href="#View">The <code>View</code> interface: rendering the model</a></li>
+	<li><a href="#DrawingEvents">The <code>DrawingEvent</code>'s dispatching scheme: keeping things in touch</a></li>
+	<li><a href="#Controler">The <code>EditorKit</code> class: processing UI events</a></li>
+	<li><a href="#Formater">The <code>FormaterFactory</code> class: exporting documents to LaTeX format</a></li>
+	<li><a href="#ContentType">The <code>ContentType</code> interface: lumping things together</a></li>
+	</ul>
+	
+	<h1><a name="VMC"> The Model-View-Controler paradigm as implemented in jPicEdt</a> </h1>
+ 
+	<p> [todo] a short introduction&hellip;</p>
+ 
+	<h1><a name="Model">The <code>Drawing</code> class and <code>Element</code> interface: a document model for vector-graphics</a></h1>
+ 
+ 	<p>
+	  The document model mostly comprises classes in
+	  the <code>jpicedt.graphic.model</code> package.  It is built on top of:
+	</p>
+	<ul>
+	<li> an <code>Element</code> interface: this specifies the general contract for graphics primitives 
+		 (see e.g. <a href="graphic/model/DefaultLeafElement.html">DefaultLeafElement</a>
+		 and its subclasses) or composite elements 
+		 (see e.g. <a href="graphic/model/BranchElement.html">BranchElement</a>
+		 and <a href="graphic/model/PicGroup.html">PicGroup</a>) 
+    	 which may be added to the model ;</li>
+	<li> a <code>Drawing</code> class: this is the document's model, designed as a <strong>tree-like</strong> container 
+		 for <code>Element</code>'s, 
+		 the tree structure being inforced by the
+	     capability of <code>Element</code>'s to have a parent and <em>possibly</em> children.</li>
+	<li> an event-dispatching scheme based on the <code>jpicedt.graphic.event.DrawingEvent</code> class: this allows
+	     <code>Element</code>'s to communicate with their hosting <code>Drawing</code>, 
+		 and the latter to post events to registered listeners
+		 interested in change in the document's content (e.g. views, selection-handlers, UI components,&hellip;).
+	</ul>
+	<p>The root-element of the document is actually an instance of <code>Drawing.RootElement</code> 
+	which inherits from <code>BranchElement</code>:
+	each <code>Element</code> that is directly added to the <code>Drawing</code> 
+	is actually added as a child of <code>Drawing.RootElement</code> ; 
+	yet this is rather internal machinery, and developpers may not have to bother with 
+	<code>RootElement</code>'s methods, and
+	might better use the <code>Drawing</code>'s API to alter the document's content. In a way, the <code>Drawing</code> class may be 
+	simultaneously considered as the hosting document AND the document's root-element.
+	<p>
+	Adding an <code>Element</code> to the <code>Drawing</code> thus effectively makes it a node a tree, 
+	where each node is able 
+	to communicate with its parent or <em>as it is</em> with its children. This makes it possible for any 
+	<code>Element</code> 
+	belonging to the model to post <code>DrawingEvent</code>'s to the entire tree, so that e.g. the hosting 
+	<code>Drawing</code> gets
+	eventually informed of changes that may have occured in the document's content. It is then up to the
+	the <code>Drawing</code> to decide whether to post these event or not to registered listeners.
+	
+
+	<h1><a name="View">The <code>View</code> interface: rendering the model</a></h1>
+ 	<p>The document's view is aimed at rendering a <code>Drawing</code> ; most classes related to the rendering of the model are
+	located in the <code>jpicedt.graphic.view</code> package ; besides, some other classes of interest may be found in the
+	various format-specific packages under <code>jpicedt.format</code>.
+ 	<p>Each <code>Drawing</code> may or may not have a view attached to it. Attaching a view to a model is required only
+	as soon as the model has to be rendered on screen. For instance, parsers create and populate a <code>Drawing</code>
+	without ever having to render it on screen. If a drawing has an associated view, then synchronization
+	between the view and the model is based on an event-dispatching mechanism similar to the 
+	AWT's event-dispatching scheme (see <a href="#DrawingEvents"><code>DrawingEvent</code>'s documentation</a> below).
+	<p>The view has a <dfn>pseudo tree-like structure</dfn> which mimics that of the associated <code>Drawing</code>, and is
+	based on a <strong>cross-reference</strong> mechanism:
+	every an <code>Element</code> may have a  <code>jpicedt.graphic.view.View</code> directly associated with it, in which
+	case the <code>View</code> also holds a reference to the <code>Element</code> it is associated with.
+	Hence this is a <em>pseudo</em> tree-like structure, in that an <code>Element</code>'s <code>View</code> doesn't hold any direct
+	reference to its parent's view ; instead, by holding a cross-reference to the <code>Element</code> it is associated with,
+	it indirectly knows of its parent's view by relying 
+	on the <code>Drawing</code> tree structure. To sum up: let <var>X</var> and <var>Y</var> be two <code>Element</code>'s of a <code>Drawing</code>, where <var>Y</var> denotes <var>X</var>'s child,
+	and <var>Xv</var>, <var>Yv</var> the view attached to them ; then for <var>Yv</var>
+	to reach its parent's view, it must rely on the following mechanism:</p> 
+
+	<table style="text-align:center" border="1">
+	<tr><th>Model</th><th>&nbsp;</th><th>View</th></tr>
+	<tr><td><var>X</var></td><td>&rarr;: <code>getView()</code></td><td><var>Xv</var></td></tr>
+	<tr><td>&uarr;: <code>getParent()</code></td><td>&nbsp;</td><td>&nbsp;</td></tr>
+	<tr><td><var>Y</var></td><td>&larr;: <code>getElement()</code></td><td><var>Yv</var></td></tr>
+	</table>
+
+	<h2><code>ViewFactory</code>'s</h2>
+
+	<p>The view-tree is basically populated by
+	calling <code>Drawing.setViewTree(ViewFactory f)</code>, as soon 
+	as one wants the model to be rendered. The given
+	<code>jpicedt.graphic.view.ViewFactory</code> 
+	knows how to produce <code>View</code>'s that are appropriate for each <code>Element</code> ; hence, there may be (and there
+	are in effect) different <code>ViewFactory</code>'s depending on the kind of content-type to be rendered (e.g. PsTricks,
+	eepic/epic, SVG-XML,&hellip;). This approach allows <code>ViewFactory</code>'s to be plugged on-the-fly by <code>EditorKit</code>'s when
+	the content-type of the model to be rendered changes.
+	
+	<p>
+	For the sake of clarity, the view-tree populating during <code>PECanvas</code>'s initialization
+	is illustrated hereafter in sketchy outlines:
+	<ul>
+	<li> at some early point in <code>PECanvas</code>'s contructor, <code>setContentType()</code> is called with the kind of content-type
+	    given as argument to the constructor ;</li> 
+	<li> this in turn calls <code>setEditorKitForContentType()</code>: a new <code>EditorKit</code> approriate for the given content-type
+	is created, then linked to the hosting canvas (through a call to <code>EditorKit.install(canvas)</code>, which
+	allows <code>MouseEvent</code>'s to be properly dispatched to the editor-kit) ;</li>
+	<li> then a new <code>Drawing</code> is created (usually by asking the editor-kit to create one that is appropriate for 
+	the given content-type, although jpicedt currently models all content-types with the same <code>Drawing</code> class)</li>
+	<li> the editor-kit is asked  to create a <code>ViewFactory</code> appropriate for the given content-type 
+		(see documentation: <a href="#ViewFactoryWrapper">EditorKit.ViewFactoryWrapper</a>)
+	<li> the view-tree associated with the model is then populated by this factory through a call to
+		<code>Drawing.setViewTree(view-factory)</code>: this actually
+		calls <code>setViewFromFactory(view-factory)</code> on <code>Drawing.RootElement</code>, 
+		which populates the rest of the tree by calling <code>setViewFromFactory(view-factory)</code> on all of its children.</li>
+	</ul>
+	
+	
+	<h2>(Re)painting things</h2>
+	<p> Whenever the content of an <code>Element</code> changes, the <code>View</code> associated with the <code>Element</code> is asked to update itself
+	by means of the <code>changedUpdate()</code> method:  this usually means
+	(as implemented in <code>DefaultViewFactory</code>) synchronizing 
+	some cached data with the <code>Element</code> (a Shape, a Stroke, &hellip;). 
+	This however is not enough for the <strong>real</strong> screen to reflect the change: for that to happen, the hosting JComponent
+	must be asked to repaint itself through the asynchronous AWT's repaint mechanism.<br>
+	Now because any <code>View</code> belonging to the view-tree knows of its hosting
+	container (= the Swing component that <strong>really</strong>  
+	paints things, usually an instance of <code>PECanvas</code>, 
+	it can easily &mdash; by means of the <code>repaint()</code> method in the <code>View</code> interface &mdash; 
+	ask the container to repaint itself (or a part of itself, see documentation in 
+	 <a href="graphic/view/AbstractView#repaint(java.awt.geom.Rectangle2D)">graphic.view.AbstractView.repaint()</a>).
+	This indirectly invokes, through the asynchronous AWT painting mechanism,
+	<code>paintComponent()</code> on <code>PECanvas</code>, 
+	 the latter being implemented so as to invoke the following <code>paint()</code> methods:
+	</p>
+	<ul>
+	<li> on the <code>Grid</code> object attached to the <code>PECanvas</code>; </li>
+	<li> on the <dfn>root-view</dfn> associated
+	with <code>Drawing.RootElement</code> (this view is implemented as an
+	inner class of <code>EditorKit</code>, see documentation
+	about <a href="#ViewFactoryWrapper">EditorKit.RootView</a> below):  
+		this in turn invokes the <code>paint()</code> method on every child of this view ;</li>
+	<li> on the <code>EditorKit</code> in which this <code>PECanvas</code> is installed: this will first invoke <code>paint()</code> on <code>EditorKit.SelectionHandler</code>,
+		i.e. paint the highligher (small green/red squares for <code>Element</code>'s control-points, tangents for Bezier
+		curves, etc&hellip;), and then invoke <code>paint()</code> on
+		the <code>MouseTool</code> that is currently active in <code>EditorKit</code> 
+		(this allows this <code>MouseTool</code> to do some specific rendering that makes sense with the operation
+		being currently carried out, e.g. painting a selection rectangle, &hellip;).</li>
+	</ul>
+
+	
+	  
+	<h1><a name="DrawingEvents">The <code>DrawingEvent</code>'s dispatching scheme:
+	keeping things in touch</a></h1>
+	 <p> A <code>Drawing</code> has the capability of posting <code>DrawingEvent</code>'s to registered listeners to signal a change
+ 	in the content of the model it holds. This may be used e.g. by <code>View</code>'s, selection-handlers, or by any part
+	of the UI to keep their state synchronized with the content of the model. Besides, <code>DrawingEvent</code>'s contain enough
+	information regarding the change in the document's content to allow receivers to efficiently optimize
+	their re-synchronization with the model.
+	
+	<p>
+	As implemented in the <code>AbstractElement</code> abstract class, 
+	any change in the content of an <code>Element</code>, e.g. by calling the <code>setPoint</code> method, eventually
+	calls <code>fireChangedUpdate</code>: this in turn 
+	<ul>
+	<li>forces the associated <code>View</code> (if any) to keep its state
+		synchronized with the model by calling <code>view.changedUpdate</code> (hence in this abstract implementation of
+		the <code>Element</code> interface, the view/model synchronization is based on a direct peer-to-peer messaging, rather
+		than by registering the entire view tree as a DrawingListener, and waiting for the event to reach the 
+		top of the <code>Drawing</code>'s tree-model until the <code>View</code> can update ifself ; this is probably faster, yet this
+		scheme doesn't make use of all the capacilities of the event-dispatching scheme).
+		
+	<li><strong>forwards the event to the parent</strong> of the element, by calling <code>parent.forwardChangedUpdate</code>:
+		<ol><li>first, this give a chance to the parent to update some of its geometrical properties immediately
+		(see e.g. <a href="graphic/model/PicGroup.html">PicGroup</a>: 
+		there, the group's bounding-box must be kept up-to-date with the bounding-box of the
+		group's children, and the group's view be updated immediately) ;</li> 
+		<li>then, this allows the event to <strong>propagate upward</strong> until it eventually reached
+		<code>Drawing.RootElement</code>, which then enables its hosting <code>Drawing</code> to dispatch the event to registered listeners.</li>
+		</ol>
+	</li>
+	</ul>
+	<p>This mechanism is illustrated in the figure below:</p>
+	<p style="text-align:center">
+	<img src="doc-files/eventdispatching.png" alt="Event dispatching mechanism">
+	</p>
+
+	<h1><a name="Controler">The <code>EditorKit</code> class: processing UI events</a></h1>
+	<p>[todo]</p>
+	<h2><a name="ViewFactoryWrapper">How <code>EditorKit</code> creates <code>ViewFactory</code>'s
+	&hellip;</a></h2>
+	<p>
+	There are two important inner classes in <code>EditorKit</code> for that matter: <code>ViewFactoryWrapper</code> and <code>RootView</code>.
+	These classes currently have package access, hence documentation about them is mainly aimed at helping developpers
+	to get some grasp of the machinery behind the <code>EditorKit</code> class.
+	<p>
+	An instance of <code>EditorKit</code> is usually instanciated by a <code>ContentType</code>, 
+	which thereby provides it with an approriate 
+	<code>ViewFactory</code>. However, this <code>ViewFactory</code> may to all probabilities inherit from 
+	<code>DefaultViewFactory</code>, since it is
+	by far the easiest way for developpers to implement their own content-type classes. Yet if <code>DefaultViewFactory</code>
+	can create <code>View</code>'s for every <code>Element</code> in the
+	graphic.model package, it doesn't provide any <dfn>root-view</dfn> to be 
+	associated with <code>Drawing.RootElement</code>: basically, such a view has to:
+	<ul>
+	<li> react to <code>DrawingEvent</code>'s posted
+		by <code>Drawing.RootElement</code> (this is the case e.g. when a new <code>Element</code> is added to the drawing), by forcing
+		the hosting Swing container (probably a <code>PECanvas</code>) to repaint itself ;</li> 
+	<li> implement the
+		mouse-event-related <code>hitTest()</code> method specified in the <a href="graphic/view/View.html">View</a> 
+		interface so as to dispatch to all the <code>Element</code>'s in the <code>Drawing</code> successively.</li>
+	<li> maintain a reference to the hosting container (=<code>PECanvas</code>), so that any view in the tree may retrieve its
+		container by asking its root-element. Since <code>RootView</code> is an inner class of <code>EditorKit</code>, and <code>EditorKit</code> has a reference
+		on the <code>PECanvas</code> it is installed in (see
+		the <code>install()</code> method), this was pretty easy to
+		implement.</li> 
+	</ul>
+	<p>
+	Hence we have defined an inner class of <code>EditorKit</code> for that
+	purpose: when asked to create a <code>View</code> for 
+	a <code>Drawing.RootElement</code>, <code>ViewFactoryWrapper</code> returns a
+	specific <code>RootView</code> (also implemented as  
+	an inner class of <code>EditorKit</code>) ;
+	otherwise it delegates to the <code>ViewFactory</code> provided as a constructor
+	to <code>EditorKit</code>; actually, <code>ViewFactoryWrapper</code> 
+	may even do better, since it first checks if the <code>Element</code> to create the <code>View</code> for does implement the
+	<code>ViewFactory</code> interface itself, in which case the given <code>Element</code> is asked FIRST to create a <code>View</code> for &hellip; itself
+	(this allows developpers to <em>lasily</em> design new <code>Element</code>'s without having to extend the whole <code>DefaultViewFactory</code>
+	machinery: they'd just have to make their new <code>Element</code>
+	implement the <code>createView()</code> method ; of course this approach
+	is valid as long as the rendering of the new <code>Element</code> doesn't depend on the current content-type being installed
+	in <code>PECanvas</code>).
+	
+	<h2><a name="SelectionHandler"><code>SelectionHandler</code>: selecting, copying,
+	pasting.</a></h2>
+	<p>[todo]</p>
+	<h2><a name="MouseTools"><code>MouseTool</code>'s: pluggable behaviour for mouse-event
+	handlers</a></h2>
+	<p>[todo]</p>
+	<h2><a name="MouseTools"><code>PEAction</code>'s: sharing action-handlers across
+	jPicEdt</a></h2>
+	<p>[todo]</p>
+	
+<h1><a name="FormaterFactory">The <code>FormaterFactory</code> class: exporting documents to LaTeX format</a></h1>
+
+	<p>[todo]</p>
+	
+	<h1><a name="ContentType">The <code>ContentType</code> interface: lumping things
+	together</a></h1> 
+	<p>
+	  The <code>jpicedt.graphic.ContentType</code> class <dfn>lumps</dfn> the three
+	  components of the VMC paradigm together, since it is able to create
+	  components appropriate for the kind of content-type it represents. In
+	  particular, this class knows how to create an <code>EditorKit</code>,
+	  which is enough to create the two remaining components by
+	  calling <code>kit.createDefaultDrawing</code>
+	  and <code>kit.createDefaultViewFactory</code>.</p>
+	<p>
+	Besides, <code>ContentType</code> is able to create a <code>jpicedt.graphic.io.FormaterFactory</code>
+	which knows how to format a <code>Drawing</code> to ASCII text. </p>
+	<p>
+	Concrete implementation of <code>ContentType</code>'s,
+	together with there associated factories, are located in subpackages of 
+	<code>jpicedt.format</code>. There currently exists content-types for PsTricks, LaTeX's picture environment,
+	and the eepic package.
+	</p>
+	<h2>Contributing a new content-type</h2>
+	<p>
+	Contributing a new content-type (e.g. PostScript, metapost, &hellip;) therefore imposes:
+	</p>
+	<ul>
+	<li> To write a new implementation of the <code>ContentType</code> interface ;</li>
+	<li> Possibly subclass <code>DefaultViewFactory</code> if specialized rendering behaviour is needed (e.g. no colour rendering)</li>
+	<li> Write a new <code>FormatterFactory</code> ;</li>
+	<li> Possibly write a new parser if one want jPicEdt to be able to import files based on this content-type.
+	     The easiest way to plug a new parser to the main parser tree is to add it to the <code>DefaultParser</code>
+		 by calling the <code>addGrammar</code> method. [todo:more documentation about implementing parsers].
+	</li>
+	</ul>
+
+	<p>Last-upd: January 20th 2003</p>
+  </body>
+</html>

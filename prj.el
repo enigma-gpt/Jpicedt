@@ -1,0 +1,13 @@
+(jde-project-file-version "1.0")
+(jde-set-variables
+ '(jde-db-option-application-args (quote ("--debug")))
+ '(jde-global-classpath (quote ("./dist/lib/jpicedt.jar")))
+ '(jde-javadoc-return-tag-template "\"* @return \" (jde-javadoc-a type)
+ \" \" (jde-javadoc-code type) \" value\\n* @since jPicEdt 1.6\"")
+ '(jde-db-option-classpath (quote ("./dist/lib/jpicedt.jar")))
+ '(jde-run-application-class "jpicedt.JPicEdt")
+ '(jde-javadoc-version-tag-template "\"* @since jPicEdt 1.6\\n* @version $Id: prj.el,v 1.6 2013/07/26 06:10:56 vincentb1 Exp $\"")
+ '(jde-javadoc-param-tag-template "\"* @param \" name \" une  valeur \" (jde-javadoc-code type)")
+ '(jde-ant-buildfile "build.xml")
+ '(jde-build-function (quote jde-ant-build))
+ '(jde-sourcepath (quote ("./jpicedt/jpicedt" "./jpicedt/jpicedt/format" "./jpicedt/jpicedt/format/input" "./jpicedt/jpicedt/format/input/dxf" "./jpicedt/jpicedt/format/input/eepic" "./jpicedt/jpicedt/format/input/latex" "./jpicedt/jpicedt/format/input/pstricks" "./jpicedt/jpicedt/format/input/util" "./jpicedt/jpicedt/format/output" "./jpicedt/jpicedt/format/output/dxf" "./jpicedt/jpicedt/format/output/eepic" "./jpicedt/jpicedt/format/output/latex" "./jpicedt/jpicedt/format/output/pstricks" "./jpicedt/jpicedt/format/output/tikz" "./jpicedt/jpicedt/format/output/util" "./jpicedt/jpicedt/graphic" "./jpicedt/jpicedt/graphic/doc-files" "./jpicedt/jpicedt/graphic/event" "./jpicedt/jpicedt/graphic/grid" "./jpicedt/jpicedt/graphic/io" "./jpicedt/jpicedt/graphic/io/formatter" "./jpicedt/jpicedt/graphic/io/parser" "./jpicedt/jpicedt/graphic/io/util" "./jpicedt/jpicedt/graphic/model" "./jpicedt/jpicedt/graphic/model/doc-files" "./jpicedt/jpicedt/graphic/toolkit" "./jpicedt/jpicedt/graphic/toolkit/cursor" "./jpicedt/jpicedt/graphic/util" "./jpicedt/jpicedt/graphic/view" "./jpicedt/jpicedt/graphic/view/highlighter" "./jpicedt/jpicedt/images" "./jpicedt/jpicedt/test" "./jpicedt/jpicedt/ui" "./jpicedt/jpicedt/ui/action" "./jpicedt/jpicedt/ui/dialog" "./jpicedt/jpicedt/ui/internal" "./jpicedt/jpicedt/ui/util" "./jpicedt/jpicedt/util" "./jpicedt/jpicedt/util/math" "./jpicedt/jpicedt/widgets" "./dist/installer"))))

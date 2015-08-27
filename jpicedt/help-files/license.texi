@@ -1,0 +1,62 @@
+\input texinfo   @c -*- mode: texinfo; coding: iso-8859-15 -*-
+@c %**start of header
+@setfilename license.info
+@settitle Contrat de licence @acronym{CeCILL} v2
+@documentlanguage fr
+@documentencoding ISO-8859-15
+
+@copying
+@iftex
+@table @asis
+@item English version
+ @acronym{jPicEdt} is a free software released under the terms of the @acronym{CeCILL} v2
+ license which you can read in chapter 1 of this document.
+@item  Version fran@,{c}aise
+ @acronym{jPicEdt} est logiciel libre publi@'e sous les conditions de la licence
+ @acronym{CeCILL} v2 rappel@'ee au chapitre second de ce document.
+@end table
+@end iftex
+@end copying
+
+@titlepage
+@title Contrat de licence @acronym{CeCILL} v2
+@subtitle @acronym{CeCILL} v2 license agreement
+@author CEA, CNRS, INRIA
+
+@c  The following two commands
+@c  start the copyright page.
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@iftex
+@c So the toc is printed at the start.
+@contents
+@end iftex
+
+@ifnottex
+@c --------------------------------------------------------------------------------
+@node Top,English version
+@top Contrat de licence @acronym{CeCILL} v2
+@end ifnottex
+
+@menu
+* English version:: @acronym{jPicEdt} is a free software released under the terms of the @acronym{CeCILL} v2 license.
+* Version française:: @acronym{jPicEdt} est logiciel libre publié sous les conditions de la licence @acronym{CeCILL} v2.
+@end menu
+
+@node English version,Version française,Top,Top
+
+@include en/CeCILLv2.texi
+
+@node Version française,,English version,Top
+
+@include fr/CeCILLv2.texi
+
+@bye
+
+@c Local Variables:
+@c mode: texinfo
+@c TeX-master: t
+@c End:

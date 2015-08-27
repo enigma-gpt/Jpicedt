@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" 
+		  "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+	<meta http-equiv="CONTENT-TYPE" content="text/html; charset=iso-8859-1">
+	<title>jpicedt.format.input.util package</title>
+  </head>
+
+  <body>
+    <p>This package contains helper classes for building a parser based on the well-known RegExp scheme,
+    yet with a strong object-oriented approach in mind. Keyword <b>human-readibility</b> ! </p>
+    <p> The base superclass of this package is the <code>AbstractRegularExpression</code> class. Two
+    daughter classes then help building a grammar tree, namely 
+    <code>AlternateExpression</code> and <code>SequenceExpression</code>, 
+    which perform RegExp-like <b>OR</b> and <b>AND</b> operations respectively.
+    <p>
+    Regular expressions work hand-in-hand with two important classes :
+    an instance of the <code>Context</code> class, 
+    which is used to feed successive pieces of text to the set of reg-exp's that build up 
+    the grammar tree, and an instance of the <code>Pool</code> class, 
+    which allows regular expression to share data across the whole grammar tree.
+    A <code>RootExpression</code> might then help building a stand-alone parser, by serving as a communication hub
+    between the context, the pool and the various regular expressions that build up the tree.
+    <p>
+    We make use of the classical <b>callback</b> mechanism to process parsing events, yet 
+    instead of using a unique, separate content-handler (e.g. as in most XML/HTML parsers), 
+    each <code>AbstractRegularExpression</code>
+    has its own content-handler, which is part of the same class, and is implemented
+    in the core of the <code>action(ParserEvent e)</code> method. This allows subclasses to 
+    easily specialize content-handling behaviour only, by simply overiding the latter method.
+    (see e.g. <code>InstanciationExpression</code> for an example).
+    <p>
+    As a rule of thumb, developpers should as much as possible avoid dealing directly 
+    with the Context instance in their own implementations, and rather rely on existing
+    helper classes, since the latters already encapsulate much of the tricky communication scheme. 
+    To set the stage, classes <code>LiteralExpression</code>, <code>NumericalExpression</code>,
+    <code>StatementExpression</code> and <code>WordExpression</code> comprise a minimal set
+    of helpers from which it might be easy to build a rather complicated grammar rule.
+    Besides, classes <code>OptionalExpression</code> and <code>RepeatExpression</code> allow
+    to handle RegExp-like <code>*</code>, <code>+</code> and <code>?</code> operations quite easily.
+  </body>
+</html>

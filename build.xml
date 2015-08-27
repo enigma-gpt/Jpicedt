@@ -1,0 +1,685 @@
+<?xml version="1.0"?>
+
+<!-- Version: $Id: build.xml,v 1.58 2013/10/31 02:32:57 vincentb1 Exp $-->
+<!-- You need third-party libraries to compile (BeanShell, M OSX jarbundler and gnu.regexp) ; see README.SRC.txt for details -->
+
+<!-- ======================================================================= -->
+<!-- ANT-Makefile for jPicEdt                                                -->
+<!-- ======================================================================= -->
+
+<project name="jpicedt" default="compile" basedir="." >
+
+  <!-- ===================================================================== -->
+  <!-- PROPERTIES                                                            -->
+  <!-- ===================================================================== -->
+  <property name="version.in.filename" value="1_6-pre1" />
+  <property name="version.in.title" value="1.6-pre1" />
+  <property name="modified" value="10/07/2009" />
+  <property name="build.sysclasspath" value ="ignore" />
+
+  <property name="Name" value="jPicEdt" />
+  <property name="classpath" value="/usr/lib/java/jre/lib/core.jar:/usr/lib/java/jre/lib/graphics.jar:/usr/lib/java/jre/lib/xml.jar" />
+  <dirname  property="base.dir" file="build.xml"/>
+  <property name="src.dir" value="${base.dir}/jpicedt" />
+  <property name="addons.dir" value="${base.dir}/add-ons" />
+
+  <!-- compilation : set to "modern" if you don't have jikes installed; note that java 1.5 may trigger excessive warnings due to weak template check -->
+  <property name="build.compiler" value="modern" />
+
+
+  <!-- dist and installer -->
+  <property name="dist.dir" value="dist" />
+  <property name="dist-resources.dir" value="dist" />
+  <!-- <property name="dist-resources.dir" value="dist/installer/resources" /> -->
+
+  <!-- javadoc -->
+  <property name="javadocs.src.dir" value="api-doc" /> <!-- this dir MUST exits ! -->
+  <property name="javadocs.dir" value="${dist-resources.dir}/api-doc" /> <!-- this dir MUST exits ! -->
+  <property name="packages" value="jpicedt.*" />
+  <property name="jdkdocs.dir" value="http://docs.oracle.com/javase/6/docs/api/" />
+
+  <!-- encoding -->
+  <property name="encoding.type" value="ISO8859-1" />
+
+
+  <!-- ===================================================================== -->
+  <!-- ALL                                                                   -->
+  <!-- ===================================================================== -->
+
+  <target name="all" depends="jarsrc,javadocs,help" description="Create install-jar, source jar and javadocs">
+	<antcall target="install-jar" />
+	<antcall target="tgzmanual" />
+  </target>
+
+  <target name="rebuild-all" depends="clean-all" description="Create install-jar, source jar and javadocs from scratch">
+	<antcall target="all" />
+  </target>
+
+  <!-- ===================================================================== -->
+  <!-- INIT                                                                  -->
+  <!-- ===================================================================== -->
+
+  <target name="init" description="Update VERSION and BUILDATE in Version.java and version.texi">
+	<!-- platrage d'un bogue d'ant mauvais échappement des double-quote dans les valeurs d'argument -->
+	<condition property="msw-dqec" value="\" else="">
+	  <or>
+		<os family="dos"/>
+		<os family="windows" />
+		<os family="winnt" />
+		<os family="win9x" />
+	  </or>
+	</condition>
+	<echo message="msw-dqec=${msw-dqec}" />
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Update VERSION and BUILDATE in Version.java -->
+    <copy file="${src.dir}/jpicedt/Version.java.ant" toFile="${src.dir}/jpicedt/Version.java" overwrite="yes">
+      <filterset>
+        <filter token="VERSION" value="${version.in.title}"/>
+        <filter token="BUILDDATE" value="${DSTAMP}"/>
+      </filterset>
+    </copy>
+    <copy file="${src.dir}/help-files/texi/version.texi.ant"
+		  toFile="${src.dir}/help-files/texi/version.texi" overwrite="yes">
+      <filterset>
+        <filter token="VERSION" value="${version.in.title}"/>
+        <filter token="BUILDDATE" value="${DSTAMP}"/>
+      </filterset>
+    </copy>
+    <!-- copy i18n_en to i18n (security) -->
+    <copy file="${src.dir}/lang/i18n_en.properties" toFile="${src.dir}/lang/i18n.properties" overwrite="yes" />
+  </target>
+
+  <!-- ===================================================================== -->
+  <!-- COMPILE jpicedt.*                                                     -->
+  <!-- ===================================================================== -->
+
+  <target name="compile" depends="init" description="Compiles jpicedt.* classes.">
+    <javac srcdir="${src.dir}"
+    	   destdir="${src.dir}"
+           classpath="${src.dir}:${classpath}"
+	   includes="jpicedt/**/*.java"
+           debug="on" deprecation="on" optimize="off"
+           encoding="${encoding.type}">
+    </javac>
+  </target>
+
+  <target name="clean-class" description="Delete jpicedt.* classes">
+  	<delete>
+		<fileset dir="${src.dir}/jpicedt" includes="**/*.class"/>
+	</delete>
+  </target>
+
+  <!-- ===================================================================== -->
+  <!-- CREATE JPICEDT JAR LIBRARY                                            -->
+  <!-- ===================================================================== -->
+
+  <target name="jar" depends="compile,license,native2ascii" description="Create the jpicedt.jar library">
+
+    <mkdir dir="${dist-resources.dir}/lib" />
+    <jar jarfile="${dist-resources.dir}/lib/jpicedt.jar" compress="yes"
+         basedir="${src.dir}"
+	 includes="jpicedt/**,bsh/**,gnu/**,lang/i18n.properties"
+	 excludes="**/*.java"
+         manifest="${src.dir}/meta-inf/manifest.mf"
+    />
+
+  </target>
+
+
+  <target name="clean-jar" description="Delete jpicedt.jar archive">
+  	<delete verbose="yes" dir="${dist-resources.dir}/lib" />
+  	<delete verbose="yes" file="${base.dir}/jpicedt_env.jar" />
+  </target>
+
+  <!-- ===================================================================== -->
+  <!-- LANG NATIVE2ASCII CONVERSION OF NON LATIN ALPHABET                    -->
+  <!-- ===================================================================== -->
+  <target name="native2ascii"  depends="native2ascii.check"  unless="native2ascii.norun"
+		  description="Convert utf8 localization files to default encoding for the JVM">
+	<native2ascii encoding="UTF-8"
+				  includes="utf8_*.properties"
+				  src="${src.dir}/lang"
+				  dest="${src.dir}/lang">
+	  <globmapper from="utf8_*" to="toberecommented_*" />
+	</native2ascii>
+	<apply executable="perl" dir="${base.dir}">
+	  <arg path="javaprop-re-comment.pl"/>
+	  <arg value="--header" />
+	  <arg line="&quot;THIS FILE IS GENERATED AUTOMATICALLY, DO NOT EDIT #&quot;" />
+	  <arg value="--header" />
+	  <arg line="&quot;SOURCE FILE IS THE CORRESPONDING utf8_* FILE      #&quot;" />
+	  <arg value="--header" />
+	  <arg line="&quot;================================================= #&quot;" />
+	  <arg value="--input"/>
+	  <srcfile/>
+	  <arg value="--output"/>
+	  <targetfile/>
+	  <fileset dir="${src.dir}/lang" includes="toberecommented_*.properties"/>
+	  <globmapper from="toberecommented_*" to="${src.dir}/lang/*" />
+	</apply>
+	<delete verbose="yes" >
+	  <fileset file="${src.dir}/lang/toberecommented_*.properties"/>
+	</delete>
+  </target>
+
+  <target name="native2ascii.check" >
+	<uptodate property="native2ascii.norun">
+	  <srcfiles dir="${src.dir}/lang" includes="utf8_*.properties"/>
+	  <globmapper from="utf8_*" to="*" />
+	</uptodate>
+  </target>
+
+  <target name="clean-lang" description="Delete all i18n_*.properties files that are automatically generated from an utf8_i18n_*.properties coresponding file" >
+	<delete file="${src.dir}/lang/ru_i18n.properties" />
+	<delete file="${src.dir}/lang/pl_i18n.properties" />
+	<!-- Does not work, no way to use a mapper on the source file collection
+		 <delete>
+		   <mappedresources>
+             <fileset dir="${src.dir}/lang" includes="utf8_*.properties"/>
+             <globmapper from="utf8_*" to="*"/>
+		   </mappedresources>
+		 </delete>
+	-->
+  </target>
+  <!-- ===================================================================== -->
+  <!-- JAVADOC                                                               -->
+  <!-- ===================================================================== -->
+
+  <target name="javadocs" depends="jpicedt_env-props,dist-javadocs, init"
+		  description="Generate project documentation in the ${javadocs.dir} directory">
+    <mkdir dir="${javadocs.dir}" />
+
+    <javadoc packagenames="${packages}"
+             sourcepath="${src.dir}"
+             destdir="${javadocs.dir}"
+             author="true"
+             version="true"
+             use="true"
+             windowtitle="${Name} ${version.in.title} API documentation"
+             doctitle="${Name} ${version.in.title} API documentation"
+	     header="&lt;adress&gt;&lt;a href=&quot;http://www.jpicedt.org&quot;&gt;http://www.jpicedt.org&lt;a&gt;&lt;/adress&gt;"
+	     footer="&lt;adress&gt;&lt;a href=&quot;http://www.jpicedt.org&quot;&gt;http://www.jpicedt.org&lt;a&gt;&lt;/adress&gt;"
+             bottom="Submit a bug : &lt;a href=&quot;mailto:syd@jpicedt.org&quot;&gt;syd@jpicedt.org&lt;a&gt;"
+             link="${jdkdocs.dir}"
+             overview="${javadocs.dir}/overview.html"
+             maxmemory="128m"
+             encoding="${encoding.type}"
+    />
+	<tempfile property="temp.file" />
+	<echo message="Scanning for HTML files for setting favicon..."/>
+	<condition property="find.util" value="find.bat" else="find">
+	  <or>
+		<os family="dos"/>
+		<os family="windows" />
+		<os family="winnt" />
+		<os family="win9x" />
+	  </or>
+	</condition>
+	<exec executable="${find.util}"
+		  dir="${base.dir}"
+		  output="${temp.file}">
+	  <arg path="${javadocs.dir}" />
+	  <arg value="-name" />
+	  <arg value="*.html" />
+	  <arg value="-o" />
+	  <arg value="-name" />
+	  <arg value="*.htm" />
+	</exec>
+	<exec executable="perl" dir="${base.dir}">
+	  <arg path="setfavicon.pl"/>
+	  <arg value="--icon" />
+	  <arg path="${dist.dir}/jpicedt/images/appicon.${jpicedt_env.appicon}.png" />
+	  <arg value="--format" />
+	  <arg value="&lt;link rel=${msw-dqec}&quot;icon${msw-dqec}&quot; href=${msw-dqec}&quot;%s${msw-dqec}&quot; type=${msw-dqec}&quot;image/png${msw-dqec}&quot; sizes=${msw-dqec}&quot;48x48${msw-dqec}&quot;/&gt;" />
+	  <arg value="--page-list"/>
+	  <arg path="${temp.file}"/>
+	</exec>
+	<delete file="${temp.file}"/>
+  </target>
+
+  <target name="clean-doc"  description="Delete project documentation">
+  	<delete includeEmptyDirs="true" quiet="yes" verbose="yes">
+		<fileset dir="${javadocs.dir}"
+			excludes="**/overview.html,**/*.png,**/*.gif,**/*.jpg"/>
+	</delete>
+  </target>
+
+  <target name="clean-help"  description="Delete manuals">
+  	<delete verbose="yes"  >
+	  <dirset dir="${src.dir}/help-files" >
+		<patternset>
+		  <include name="*.t2d"/>
+		</patternset>
+	  </dirset>
+	</delete>
+	<delete dir="${src.dir}/help-files/lang/" />
+	<delete file="${src.dir}/help-files/texi/version.texi" />
+	<delete dir="${dist-resources.dir}/help-files" />
+  </target>
+
+  <!-- ===================================================================== -->
+  <!-- COMPILE installer.*                                                     -->
+  <!-- ===================================================================== -->
+
+  <target name="compile-installer" depends="jpicedt_env"
+		  description="Compiles Installer classes.">
+    <javac srcdir="${dist.dir}" destdir="${dist.dir}"
+           classpath="${dist.dir}:${base.dir}/jpicedt_env.jar:${classpath}"
+		   includes="installer/**/*.java"
+           debug="on" deprecation="on" optimize="off"
+           encoding="${encoding.type}">
+    </javac>
+  </target>
+  <target name="jpicedt_env"
+		  description="Paquetage jpicedt_env mis en commun entre jpicedt et l'installeur" >
+	<javac srcdir="${src.dir}/jpicedt/jpicedt_env" destdir="${src.dir}/jpicedt/jpicedt_env"
+		   classpath="${src.dir}:${classpath}"
+		   includes="**/*.java"
+           debug="on" deprecation="on" optimize="off"
+           encoding="${encoding.type}"/>
+    <jar jarfile="${base.dir}/jpicedt_env.jar" compress="no"
+         basedir="${src.dir}"
+		 includes="jpicedt/jpicedt_env/**"
+		 excludes="**/*.java" />
+  </target>
+
+  <target name="clean-installer-class" description="Delete Installer classes">
+  	<delete>
+		<fileset dir="${dist.dir}/installer" includes="**/*.class"/>
+	</delete>
+  </target>
+
+  <!-- ===================================================================== -->
+  <!-- CREATE jpicedt_install.jar                                            -->
+  <!-- ===================================================================== -->
+
+  <target name="dist" depends="dist-javadocs" description="Create distribution files for installer">
+
+    <!-- copy directories of interest from CVS tree to dist -->
+    <mkdir dir="${dist-resources.dir}" />
+    <copy toDir="${dist-resources.dir}/jpe-resources"><fileset dir="${src.dir}/jpe-resources" /></copy>
+    <copy toDir="${dist-resources.dir}/lang">
+	  <fileset dir="${src.dir}/lang" includes="*.properties" excludes="utf8_*.properties" />
+	</copy>
+    <copy toDir="${dist-resources.dir}/macros"><fileset dir="${addons.dir}/bsh" /></copy>
+    <copy toDir="${dist-resources.dir}/add-ons/unix"><fileset dir="${addons.dir}/unix" /></copy>
+    <copy toDir="${dist-resources.dir}/add-ons/windows"><fileset dir="${addons.dir}/windows" /></copy>
+    <copy toDir="${dist-resources.dir}/add-ons/TeX-macros"><fileset dir="${addons.dir}/TeX-macros" /></copy>
+    <copy toDir="${dist-resources.dir}/fragments"><fileset dir="${addons.dir}/fragments" /></copy>
+  </target>
+
+  <target name="dist-javadocs" description="Prepare distribution files for javadocs (aka API doc)" >
+    <copy toDir="${dist-resources.dir}/api-doc">
+	<fileset dir="${javadocs.src.dir}" excludes="*.ant"/>
+	</copy>
+    <copy file="${javadocs.src.dir}/overview.html.ant"
+		  toFile="${dist-resources.dir}/api-doc/overview.html" overwrite="yes">
+      <filterset>
+        <filter token="VERSION" value="${version.in.title}"/>
+        <filter token="BUILDDATE" value="${DSTAMP}"/>
+      </filterset>
+    </copy>
+  </target>
+
+  <target name="license" depends="license.check" if="license.run">
+	<mkdir dir="${dist-resources.dir}/help-files/" />
+	<apply executable="makeinfo"
+		   dir="${dist-resources.dir}/help-files/" >
+	  <arg value="--no-split"/>
+      <arg value="--html"/>
+	  <arg value="--css-ref=jpe-help.css"/>
+	  <arg value="-c" />
+	  <arg value="EXTRA_HEAD=&lt;link rel=${msw-dqec}&quot;icon${msw-dqec}&quot; href=${msw-dqec}&quot;../jpicedt/images/appicon.${jpicedt_env.appicon}.png${msw-dqec}&quot; type=${msw-dqec}&quot;image/png${msw-dqec}&quot; sizes=${msw-dqec}&quot;48x48${msw-dqec}&quot;/&gt;" />
+	  <arg value="-I"/>
+	  <arg path="${src.dir}/help-files/" />
+	  <srcfile/>
+	  <fileset file="${src.dir}/help-files/license.texi"/>
+	</apply>
+	<apply executable="makeinfo"
+		   dir="${dist-resources.dir}/" >
+      <arg value="--plaintext"/>
+      <arg value="--no-split"/>
+      <arg value="-o"/>
+	  <targetfile/>
+	  <mergemapper to="${dist-resources.dir}/COPYING.txt"/>
+	  <srcfile/>
+	  <fileset file="${src.dir}/help-files/license.texi"/>
+	</apply>
+  </target>
+  <target name="license.check">
+    <condition property="license.run">
+	  <not>
+		<and>
+		  <uptodate
+			 targetfile="${dist-resources.dir}/COPYING.txt" >
+			<srcfiles dir= "${src.dir}/help-files" includes="license.texi,fr/CeCILLv2.texi,en/CeCILLv2.texi"/>
+		  </uptodate>
+		  <uptodate
+			 targetfile="${dist-resources.dir}/help-files/license.html" >
+			<srcfiles dir= "${src.dir}/help-files" includes="license.texi,fr/CeCILLv2.texi,en/CeCILLv2.texi"/>
+		  </uptodate>
+		</and>
+	  </not>
+    </condition>
+  </target>
+
+  <target name="help" description="Génère les manuels à partir des sources Texinfo"
+		  depends="help-html-onefile,help-html-split,help-pdf" />
+  <target name="help-init">
+    <copy toDir="${dist-resources.dir}/help-files/img">
+	  <fileset dir="${src.dir}/jpicedt/images"
+			   includes="action.convexzone.*.png,action.ui.*.png,action.editorkit.*.png,action.draw.*.png,attributes.FillStyle*.png"/>
+	</copy>
+	<copy toDir="${dist-resources.dir}/help-files/">
+	  <fileset dir="${src.dir}/help-files" includes="jpe-help.css"/>
+	</copy>
+	<copy toDir="${dist-resources.dir}/help-files/img">
+	  <fileset dir="${src.dir}/help-files/img" includes="*.png,*.svg,*.gif,*.jpg"/>
+	</copy>
+	<antcall target="lang-iterator">
+	  <param name="lang-iterator-target" value="dist-lang-specific-img" />
+	</antcall>
+  </target>
+  <target name="dist-lang-specific-img">
+	<copy toDir="${dist-resources.dir}/help-files/img/${lang-id}">
+	  <fileset dir="${src.dir}/help-files/${lang-id}/img" includes="*.png,*.svg,*.gif,*.jpg" />
+	</copy>
+  </target>
+  <target name="i18n-texi" depends="native2ascii" >
+    <mkdir dir="${src.dir}/help-files/lang" />
+	<apply executable="perl" dir="${base.dir}">
+	  <arg path="javaprop2texiflag.pl"/>
+	  <arg value="--header"/>
+	  <arg value="CE FICHIER EST GÉNÉRÉ AUTOMATIQUEMENT, NE PAS ÉDITER!" />
+	  <arg value="--header"/>
+	  <arg value="=====================================================" />
+	  <arg value="--prefix"/>
+	  <arg value="i18n-"/>
+	  <arg value="--input"/>
+	  <srcfile/>
+	  <arg value="--output"/>
+	  <targetfile/>
+	  <fileset file="${src.dir}/lang/i18n_*.properties"/>
+	  <mapper type="glob" from="*.properties" to="${src.dir}/help-files/lang/*.texi" />
+	</apply>
+  </target>
+
+  <target name="help-html-split" depends="i18n-texi,help-init,init,jpicedt_env-props">
+	<apply executable="makeinfo"
+		   dir="${dist-resources.dir}/help-files/" >
+	  <arg value="--verbose"/>
+      <arg value="--html"/>
+      <arg value="-D"/>
+      <arg value="APIDOC-LOCATION"/>
+      <arg value="-c"/>
+      <arg value="IMAGE_LINK_PREFIX=../" />
+	  <arg value="-c" />
+	  <arg value="EXTRA_HEAD=&lt;link rel=${msw-dqec}&quot;icon${msw-dqec}&quot; href=${msw-dqec}&quot;../../jpicedt/images/appicon.${jpicedt_env.appicon}.png${msw-dqec}&quot; type=${msw-dqec}&quot;image/png${msw-dqec}&quot; sizes=${msw-dqec}&quot;48x48${msw-dqec}&quot;/&gt;" />
+	  <arg value="--css-ref=jpe-help.css"/>
+	  <arg value="-I"/>
+	  <arg path="${src.dir}/help-files/" />
+	  <srcfile />
+	  <fileset file="${src.dir}/help-files/*.texi"/>
+	</apply>
+  </target>
+
+  <target name="help-html-onefile" depends="i18n-texi,help-init,init,jpicedt_env-props">
+	<apply executable="makeinfo"
+		   dir="${dist-resources.dir}/help-files/" >
+	  <arg value="--verbose"/>
+      <arg value="--html"/>
+	  <arg value="--no-split"/>
+	  <arg value="-c" />
+	  <arg value="EXTRA_HEAD=&lt;link rel=${msw-dqec}&quot;icon${msw-dqec}&quot; href=${msw-dqec}&quot;../jpicedt/images/appicon.${jpicedt_env.appicon}.png${msw-dqec}&quot; type=${msw-dqec}&quot;image/png${msw-dqec}&quot; sizes=${msw-dqec}&quot;48x48${msw-dqec}&quot;/&gt;" />
+	  <arg value="--css-ref=../jpe-help.css"/>
+	  <arg value="-I"/>
+	  <arg path="${src.dir}/help-files/" />
+	  <srcfile />
+	  <fileset file="${src.dir}/help-files/*.texi"/>
+	</apply>
+  </target>
+
+  <target name="help-pdf" depends="i18n-texi,help-init,init">
+	<apply executable="texi2dvi"
+		   dir="${src.dir}/help-files/" >
+      <arg value="--pdf"/>
+      <arg value="-I"/>
+      <arg path="${dist-resources.dir}/help-files/"/>
+      <arg value="--tidy"/>
+      <arg value="-o"/>
+	  <targetfile />
+	  <srcfile />
+	  <fileset file="${src.dir}/help-files/*.texi"/>
+	  <mapper type="glob" from="*.texi" to="${dist-resources.dir}/help-files/*.pdf" />
+	</apply>
+  </target>
+
+  <target name="jpicedt_env-props" description="Get properties from jpicedt_env">
+    <javac srcdir="${src.dir}"
+    	   destdir="${src.dir}"
+           classpath="${src.dir}:${classpath}"
+		   includes="jpicedt/jpicedt_env/EnvConstants.java"
+           debug="on" deprecation="on" optimize="off"
+           encoding="${encoding.type}">
+    </javac>
+	<tempfile property="temp.file"/>
+	<java classname="jpicedt.jpicedt_env.EnvConstants">
+	  <arg value="--store-properties"/>
+	  <arg value="${temp.file}"/>
+	  <classpath location="${src.dir}"/>
+	</java>
+	<property file="${temp.file}" prefix="jpicedt_env"/>
+	<delete file="${temp.file}" />
+  </target>
+
+  <target name="clean-dist" description="Delete distribution files, except help files which have their own clean-help target for that.">
+
+    <delete dir="${dist-resources.dir}/jpe-resources"/>
+    <delete dir="${dist-resources.dir}/lang"/>
+    <delete dir="${dist-resources.dir}/macros"/>
+    <delete dir="${dist-resources.dir}/add-ons"/>
+    <delete dir="${dist-resources.dir}/fragments"/>
+    <delete dir="${dist-resources.dir}/api-doc"/>
+
+  </target>
+
+  <target name="make-file-list" depends="compile-installer,dist" description="Build installer spec files">
+     <echo message="Rebuilding file list for installer..." />
+     <java classname="installer.MakeFileList">
+	   <arg value="${base.dir}"/>
+       <classpath location="dist"></classpath>
+     </java>
+  </target>
+
+  <target name="install-jar" depends="jar,make-file-list,help" description="Create the jpicedt-install.jar executable">
+
+    <copy file="${src.dir}/jpicedt/install.props.ant" toFile="${dist.dir}/installer/install.props"
+		  overwrite="yes">
+      <filterset>
+        <filter token="VERSION" value="${version.in.title}"/>
+      </filterset>
+    </copy>
+
+    <jar jarfile="jpicedt-install_${version.in.filename}_${DSTAMP}.jar" compress="yes"
+         basedir="${dist.dir}"
+		 excludes="**/*.java,**/*.*~"
+         manifest="${dist.dir}/installer/install.mf"
+    />
+    <jar jarfile="jpicedt-install_${version.in.filename}_${DSTAMP}.jar" compress="yes"
+         update="true"
+         basedir="${src.dir}"
+		 includes="jpicedt/jpicedt_env/**"
+		 excludes="**/*.java,**/*.*~"
+    />
+
+  </target>
+
+  <target name="update-install-jar"
+		  depends="compile-installer,jar"
+		  description="Create the jpicedt-install.jar executable assuming that the documentation and the API doc is already there. No compression, objective is to minimize compilation time for installer development purpose">
+    <jar jarfile="jpicedt-install_${version.in.filename}_${DSTAMP}.jar" compress="no"
+         basedir="${dist.dir}"
+		 update="yes"
+		 excludes="**/*.java,**/*.*~"
+         manifest="${dist.dir}/installer/install.mf"
+    />
+    <jar jarfile="jpicedt-install_${version.in.filename}_${DSTAMP}.jar"
+		 compress="no"
+		 update="yes"
+         basedir="${src.dir}"
+		 includes="jpicedt/jpicedt_env/**/*.*"
+		 excludes="**/*.java,**/*.*~"
+    />
+  </target>
+
+
+  <target name="clean-install-jar" description="Delete jpicedt-install.jar archive">
+  	<tstamp/>
+  	<delete file="jpicedt-install_${version.in.filename}_${DSTAMP}.jar" />
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- MACOS specific                                                      -->
+  <!-- =================================================================== -->
+
+  <taskdef
+  	name="jarbundler"
+  	classname="net.sourceforge.jarbundler.JarBundler"
+	classpath="osx/jarbundler-2.2.0.jar" />
+
+  <target name="make-macos-app"  depends="init" description="Make a Mac OS X app bundle (broken)">
+  	<mkdir dir="osx/release" />
+  	<jarbundler
+		dir="osx/release"
+		verbose="true"
+		showPlist="true"
+		name="JPicEdt"
+		mainclass="jpicedt.JPicEdt"
+		jar="dist/lib/jpicedt.jar"
+		icon="osx/jpicedt.icns"
+		shortname="jPicEdt"
+                signature="JPDT"
+                stubfile="osx/jpicedt"
+                jvmversion="1.5+"
+		vmoptions="-Xmx96m"
+                version="${version.in.title}"
+                infostring="JPicEdt, a picture editor for LaTeX (c) Sylvain Reynal"
+                build="${version.in.filename}_${DSTAMP}"
+                bundleid="jpicedt"
+                helpbookfolder="jpicedt/help-files"
+                helpbookname="en/index.html" >
+
+	<javaproperty name="apple.laf.useScreenMenuBar" value="true"/>
+	<javaproperty name="apple.awt.brushMetal" value="true"/>
+	<javaproperty name="apple.awt.showGrowBox" value="false"/>
+	<!-- Associate document types with this application -->
+	<documenttype name="jPicEdt PSTricks document" extensions="pst" role="Editor"/>
+	<documenttype name="jPicEdt Eepic document" extensions="pic" role="Editor"/>
+
+	</jarbundler>
+
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- SOURCE ARCHIVES                                                     -->
+  <!-- =================================================================== -->
+
+  <!-- build jar including sources, resources, images... ready for rebuild -->
+  <target name="jarsrc" description="Creates a JAR archive containing everything that's necessary to rebuild the project">
+    <tstamp/>
+    <jar jarfile="jpicedt_${version.in.filename}_${DSTAMP}.src.jar" compress="yes"
+         basedir="."
+		 excludes="**/.xvpics/**,${src.dir}/bsh/**,**/*.jar,**/*.class,**/CVS/**"
+    />
+
+  </target>
+  <target name="clean-jarsrc" description="Delete the JAR-SRC archive (see target jarsrc)">
+  	<tstamp/>
+	<delete file="jpicedt_${version.in.filename}_${DSTAMP}.src.jar" />
+  </target>
+
+  <!-- =================================================================== -->
+  <!--  MANUAL ARCHIVES                                                    -->
+  <!-- =================================================================== -->
+  <target name="tgzmanual" description="Creates a TGZ archive containing manuals for unzipping on the site"
+		  depends="jpicedt_env-props,help,javadocs"		  >
+	<mkdir   dir="${base.dir}/manual" />
+	<antcall target="lang-iterator">
+	  <param name="lang-iterator-target" value="tgzmanual-onelang" />
+	</antcall>
+	<mkdir   dir="${base.dir}/manual/jpicedt/images" />
+	<copy file="${src.dir}/jpicedt/images/appicon.${jpicedt_env.appicon}.png"
+		  toFile="${base.dir}/manual/jpicedt/images/appicon.${jpicedt_env.appicon}.png"/>
+	<mkdir   dir="${base.dir}/manual/api-doc" />
+	<copy toDir="${base.dir}/manual/api-doc" >
+	  <fileset dir="${dist-resources.dir}/api-doc" />
+	</copy>
+	<tar destfile="${base.dir}/manual_${version.in.filename}_${DSTAMP}.tar"
+		 longfile="gnu"
+		 basedir="${base.dir}/manual" />
+	<gzip src="${base.dir}/manual_${version.in.filename}_${DSTAMP}.tar"
+		  destfile="${base.dir}/manual_${version.in.filename}_${DSTAMP}.tgz"/>
+	<delete file="${base.dir}/manual_${version.in.filename}_${DSTAMP}.tar"/>
+  </target>
+  <target name="tgzmanual-onelang" description="Sub of 'tgzmanual'">
+	<mkdir dir="${base.dir}/manual/jpicedt-${lang-id}" />
+	<copy file="${dist-resources.dir}/help-files/${lang-id}.html"
+		  toFile="${base.dir}/manual/jpicedt-${lang-id}/jpicedt-${lang-id}.html"/>
+	<gzip src="${base.dir}/manual/jpicedt-${lang-id}/jpicedt-${lang-id}.html"
+		  destfile="${base.dir}/manual/jpicedt-${lang-id}/jpicedt-${lang-id}.html.gz"/>
+	<mkdir dir="${base.dir}/manual/jpicedt-${lang-id}/html_node" />
+	<mkdir dir="${base.dir}/manual/jpicedt-${lang-id}/img" />
+	<copy toDir="${base.dir}/manual/jpicedt-${lang-id}/html_node">
+	  <fileset dir="${dist-resources.dir}/help-files/${lang-id}/" includes="*.html"  />
+	</copy>
+	<copy toDir="${base.dir}/manual/jpicedt-${lang-id}/img">
+	  <fileset dir="${dist-resources.dir}/help-files/img/" includes="*.png,*.svg,*.jpg,*.gif"  />
+	</copy>
+	<mkdir dir="${base.dir}/manual/jpicedt-${lang-id}/img/${lang-id}/" />
+	<copy toDir="${base.dir}/manual/jpicedt-${lang-id}/img/${lang-id}/">
+	  <fileset dir="${src.dir}/help-files/${lang-id}/img/" includes="*.png,*.svg,*.jpg,*.gif"  />
+	</copy>
+	<tar destfile="${base.dir}/manual/jpicedt-${lang-id}/jpicedt-${lang-id}.html_node.tar"
+		 longfile="gnu"
+		 basedir="${base.dir}/manual/jpicedt-${lang-id}/html_node" />
+	<gzip src="${base.dir}/manual/jpicedt-${lang-id}/jpicedt-${lang-id}.html_node.tar"
+        destfile="${base.dir}/manual/jpicedt-${lang-id}/jpicedt-${lang-id}.html_node.tar.gz"/>
+	<delete file="${base.dir}/manual/jpicedt-${lang-id}/jpicedt-${lang-id}.html_node.tar" />
+	<copy file="${dist-resources.dir}/help-files/${lang-id}.pdf"
+		  toFile="${base.dir}/manual/jpicedt-${lang-id}/jpicedt-${lang-id}.pdf"/>
+	<tar destfile="${base.dir}/manual/jpicedt-${lang-id}/jpicedt-${lang-id}.texi.tar"
+		 longfile="gnu"
+		 includes="${src.dir}/help-files/${lang-id}.texi,${src.dir}/help-files/texi/version.texi,${src.dir}/help-files/*/*.texi"
+		 basedir="${base.dir}/manual/jpicedt-${lang-id}/html_node" />
+	<gzip src="${base.dir}/manual/jpicedt-${lang-id}/jpicedt-${lang-id}.texi.tar"
+        destfile="${base.dir}/manual/jpicedt-${lang-id}/jpicedt-${lang-id}.texi.tar.gz"/>
+	<delete file="${base.dir}/manual/jpicedt-${lang-id}/jpicedt-${lang-id}.texi.tar"/>
+  </target>
+  <target name="clean-tgzmanual" description="Delete the manual a TGZ archive" >
+	<delete verbose="yes" dir="${base.dir}/manual" />
+	<delete file="${base.dir}/manual_*.tgz"/>
+  </target>
+  <target name="lang-iterator" >
+	<antcall target="${lang-iterator-target}" >
+	  <param name="lang-id" value="fr" />
+	</antcall>
+	<antcall target="${lang-iterator-target}" >
+	  <param name="lang-id" value="en" />
+	</antcall>
+	<antcall target="${lang-iterator-target}" >
+	  <param name="lang-id" value="de" />
+	</antcall>
+  </target>
+
+  <!-- ===================================================================== -->
+  <!-- CLEAN                                                                 -->
+  <!-- ===================================================================== -->
+
+  <target name="clean-all" depends="clean-class,clean-installer-class,clean-dist,clean-install-jar,clean-jar,clean-jarsrc,clean-doc,clean-help,clean-tgzmanual"
+	  description="Run all clean-XXXX tasks" />
+
+
+</project>
+
+<!-- End of build.xml -->

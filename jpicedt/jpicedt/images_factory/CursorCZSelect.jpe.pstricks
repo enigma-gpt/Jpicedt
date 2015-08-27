@@ -1,0 +1,135 @@
+%%Created by jPicEdt 1.6-pre1: mixed JPIC-XML/LaTeX format
+%%Fri Jan 18 22:28:58 CET 2013
+%%Begin JPIC-XML
+%<?xml version="1.0" standalone="yes"?>
+%<jpic x-min="0" x-max="40" y-min="0" y-max="40" auto-bounding="false">
+%<ellipse p3="(12.5,7.5)"
+%	 p2="(12.5,27.5)"
+%	 p1="(32.5,27.5)"
+%	 closure="open"
+%	 angle-end="0"
+%	 angle-start="0"
+%	 stroke-width="0.75"
+%	 />
+%<multicurve fill-style="solid"
+%	 stroke-color="#808080"
+%	 fill-color="#808080"
+%	 points="(27.5,27.5);(27.5,27.5);(22.5,18.84);(22.5,18.84);(22.5,18.84);(17.5,27.5);
+%	(17.5,27.5);(17.5,27.5);(27.5,27.5)"
+%	 />
+%<multicurve fill-style="solid"
+%	 stroke-color="#808080"
+%	 fill-color="#808080"
+%	 points="(27.5,7.5);(27.5,7.5);(22.5,16.16);(22.5,16.16);(22.5,16.16);(17.5,7.5);
+%	(17.5,7.5);(17.5,7.5);(27.5,7.5)"
+%	 />
+%<multicurve fill-style="solid"
+%	 stroke-color="#808080"
+%	 fill-color="#808080"
+%	 points="(32.5,12.5);(32.5,12.5);(23.84,17.5);(23.84,17.5);(23.84,17.5);(32.5,22.5);
+%	(32.5,22.5);(32.5,22.5);(32.5,12.5)"
+%	 />
+%<parallelogram p3="(32.5,7.5)"
+%	 stroke-color="#0000ff"
+%	 p2="(32.5,27.5)"
+%	 p1="(12.5,27.5)"
+%	 stroke-width="0.75"
+%	 />
+%<multicurve fill-style="solid"
+%	 stroke-color="#808080"
+%	 fill-color="#808080"
+%	 points="(12.5,12.5);(12.5,12.5);(21.16,17.5);(21.16,17.5);(21.16,17.5);(12.5,22.5);
+%	(12.5,22.5);(12.5,22.5);(12.5,12.5)"
+%	 />
+%<parallelogram fill-style="solid"
+%	 p3="(25,5)"
+%	 stroke-color="#ffafaf"
+%	 p2="(25,8.75)"
+%	 fill-color="#ffafaf"
+%	 p1="(21.25,8.75)"
+%	 />
+%<parallelogram fill-style="solid"
+%	 p3="(25,26.25)"
+%	 stroke-color="#ffafaf"
+%	 p2="(25,30)"
+%	 fill-color="#ffafaf"
+%	 p1="(21.25,30)"
+%	 />
+%<parallelogram fill-style="solid"
+%	 p3="(35,15)"
+%	 stroke-color="#ffafaf"
+%	 p2="(35,18.75)"
+%	 fill-color="#ffafaf"
+%	 p1="(31.25,18.75)"
+%	 />
+%<parallelogram fill-style="solid"
+%	 p3="(15,15)"
+%	 stroke-color="#ffafaf"
+%	 p2="(15,18.75)"
+%	 fill-color="#ffafaf"
+%	 p1="(11.25,18.75)"
+%	 />
+%<multicurve fill-style="solid"
+%	 fill-color="#ffffff"
+%	 points="(9.38,20.32);(9.38,25.47);(2.5,37.5);(2.5,37.5);(2.5,37.5);(14.53,30.63);
+%	(19.69,30.63);(24.85,30.63);(17.97,25.47);(17.97,25.47);(17.97,25.47);(35.16,8.28);
+%	(38.6,6.57);(42.03,4.85);(35.16,-2.03);(33.44,1.41);(31.72,4.85);(14.53,22.04);
+%	(14.53,22.04);(14.53,22.04);(9.38,15.16)"
+%	 />
+%</jpic>
+%%End JPIC-XML
+%PSTricks content-type (pstricks.sty package needed)
+%Add \usepackage{pstricks} in the preamble of your LaTeX file
+%You can rescale the whole picture (to 80% for instance) by using the command \def\JPicScale{0.8}
+\ifx\JPicScale\undefined\def\JPicScale{1}\fi
+\psset{unit=\JPicScale mm}
+\newrgbcolor{userFillColour}{0 0 0}
+\psset{linewidth=0.3,dotsep=1,hatchwidth=0.3,hatchsep=1.5,shadowsize=1,dimen=middle}
+\psset{dotsize=0.7 2.5,dotscale=1 1,fillcolor=userFillColour}
+\psset{arrowsize=1 2,arrowlength=1,arrowinset=0.25,tbarsize=0.7 5,bracketlength=0.15,rbracketlength=0.15}
+\makeatletter\@ifundefined{Pst@correctAnglefalse}{}{\psset{correctAngle=false}}\makeatother
+\begin{pspicture}(0,0)(40,40)
+\rput{0}(22.5,17.5){\psellipse[linewidth=0.75](0,0)(10,10)}
+\newrgbcolor{userLineColour}{0.5 0.5 0.5}
+\newrgbcolor{userFillColour}{0.5 0.5 0.5}
+\pspolygon[linecolor=userLineColour,fillcolor=userFillColour,fillstyle=solid](27.5,27.5)
+(22.5,18.84)
+(17.5,27.5)(27.5,27.5)
+\newrgbcolor{userLineColour}{0.5 0.5 0.5}
+\newrgbcolor{userFillColour}{0.5 0.5 0.5}
+\pspolygon[linecolor=userLineColour,fillcolor=userFillColour,fillstyle=solid](27.5,7.5)
+(22.5,16.16)
+(17.5,7.5)(27.5,7.5)
+\newrgbcolor{userLineColour}{0.5 0.5 0.5}
+\newrgbcolor{userFillColour}{0.5 0.5 0.5}
+\pspolygon[linecolor=userLineColour,fillcolor=userFillColour,fillstyle=solid](32.5,12.5)
+(23.84,17.5)
+(32.5,22.5)(32.5,12.5)
+\pspolygon[linewidth=0.75,linecolor=blue](12.5,27.5)(32.5,27.5)(32.5,7.5)(12.5,7.5)
+\newrgbcolor{userLineColour}{0.5 0.5 0.5}
+\newrgbcolor{userFillColour}{0.5 0.5 0.5}
+\pspolygon[linecolor=userLineColour,fillcolor=userFillColour,fillstyle=solid](12.5,12.5)
+(21.16,17.5)
+(12.5,22.5)(12.5,12.5)
+\newrgbcolor{userLineColour}{1 0.69 0.69}
+\newrgbcolor{userFillColour}{1 0.69 0.69}
+\pspolygon[linecolor=userLineColour,fillcolor=userFillColour,fillstyle=solid](21.25,8.75)(25,8.75)(25,5)(21.25,5)
+\newrgbcolor{userLineColour}{1 0.69 0.69}
+\newrgbcolor{userFillColour}{1 0.69 0.69}
+\pspolygon[linecolor=userLineColour,fillcolor=userFillColour,fillstyle=solid](21.25,30)(25,30)(25,26.25)(21.25,26.25)
+\newrgbcolor{userLineColour}{1 0.69 0.69}
+\newrgbcolor{userFillColour}{1 0.69 0.69}
+\pspolygon[linecolor=userLineColour,fillcolor=userFillColour,fillstyle=solid](31.25,18.75)(35,18.75)(35,15)(31.25,15)
+\newrgbcolor{userLineColour}{1 0.69 0.69}
+\newrgbcolor{userFillColour}{1 0.69 0.69}
+\pspolygon[linecolor=userLineColour,fillcolor=userFillColour,fillstyle=solid](11.25,18.75)(15,18.75)(15,15)(11.25,15)
+\newrgbcolor{userFillColour}{1 1 1}
+\pscustom[fillcolor=userFillColour,fillstyle=solid]{\psbezier(9.38,20.32)(9.38,25.47)(2.5,37.5)(2.5,37.5)
+\psbezier(2.5,37.5)(14.53,30.63)(19.69,30.63)
+\psbezier(24.85,30.63)(17.97,25.47)(17.97,25.47)
+\psbezier(17.97,25.47)(35.16,8.28)(38.6,6.57)
+\psbezier(42.03,4.85)(35.16,-2.03)(33.44,1.41)
+\psbezier(31.72,4.85)(14.53,22.04)(14.53,22.04)
+\psbezier(14.53,22.04)(9.38,15.16)(9.38,20.32)
+\closepath}
+\end{pspicture}

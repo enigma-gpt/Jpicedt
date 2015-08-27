@@ -1,0 +1,105 @@
+#+TAGS: @underway(w) @feature(f) @refactor(r) @bug(b)
+
+[1_6-pre] 
+
+* CODE DESIGN
+
+* FORMATER/PARSER
+
+** TODO  simplify FormatterFactory architecture (esp. createFormatter) 
+so as to make it easier for developpers to build their own content-type w/o
+having to bother at length with obscure implementation details.  This may
+imply :
++ creating an AbstractFormatterFactory, with e.g. abstract methods like
+  createParallelogramFormatter, createEllipseFormatter,...
++ enforcing the need for subclasser to implement a default
+  ElementNotSupportedFormatter fetching the comment-string (e.g. "%" or "//")
+  from the factory, in order to properly comment the JPIC-XML prolog
+** include PostScript formatter 								  :@underway:
+** support for EPIC format (that is, w/o EEPIC macros). :@feature:
+** Pstricks : add \psstyle :@feature:
+** implement opaque and transparent dashes in LaTeX or eepic mode, as well as dotted style. :@feature:
+** modularize (aka plug-ins) formaters and parsers. :@feature:
+Load installed ContentType dynamically (need own classloader);
+The point will be to allow users to write their own plug-in to provide a support for their own
+graphic elements, formatter (m4, picTeX,...), etc...
+
+* MODEL
+
+** TODO Drawing and EditorKit 
+add a "copyListeners(Drawing src)" and ibid. in EditorKit, so that plugging a
+new kit/drawing from PECanvas doesn't raise the need for registered listeners
+to do a re-registration.
+**  PicAttributeSet : add "equals()" method (useful for BSH) ; maybe also in AbstractElement. :@feature:
+**  init PicAttributeSet from an XML file :@feature:
+** TODO overstrike colour
+** TODO gradient paint (need using Graphics2D.clip())
+**  PicGroup : add EditPointConstraint "ROTATE" to perform a rotation when calling setPoint() ; ibid. with SHEARING. :@feature:
+**  create a Drawing interface on top of the current implementation of Drawing (change it to DefaultDrawing) :@refactor:
+**  add static and dynamic geometric transformations. :@feature:
+
+* VIEW + TOOLKIT
+
+**  DockableAttributesCustomizer : in order to gray out panels or widgets which :@feature:
+are irrelevant with the content-type of the currently active canvas, add a
+isSupportedAttribute(PicAttributeName) method to the ContentType interface,
+from where on each panels would know what field should be grayed out, if any.
+
+** TODO multi-curves : implement support of GlobalEditPointConstraints (see mail from Vincent)
+** TODO improve "shearing" transforms. Currently implemented in BSH macro only.
+** TODO PicGroup : add EditPointConstraint's to manage rescaling of groups containing PicCircle's => SIMILITUDE, SCALING, SHEARING,...
+as well as an exception mechanism (TransformationNotSupportedException)
+allowing the caller to adapt its behaviour if rescaling the group is to be
+constrained to e.g. a similitude.
+**  add "cutter" tool allowing to cut any shape (this would necessarily transform it into a MultiCurve) :@feature:
+**  (re)introduce the "shortened display" for texts which are too long. :@feature:
+**  View.repaint and getContainer : add the possibility for a View :@feature:
+to have more than one hosting container (aka multi-view).
+**  add \\pscustom-like Element ; probably requires creating a :@feature:
+EnhancedGeneralPath supporting arcs as well as bezier curves (see Batik
+project)
+
+* Documentation
+** TODO add mouse icones in convexezone.html
+** convert documentation to the Texinfo format			 :@feature:
+This would allow to be independant from medium and produce with the same
+source code PDF files or info files in addition  to HTML format. This would
+also allow to use Texinfo editing mode of emacs to write documentation, which
+is more practical than directly typing HTML code.
+** TODO add documentation for command line & environnement variables
+
+** TODO add documentation for following icons
+
+action.draw.BezierCubic.png action.draw.BezierQuad.png action.draw.Polygon.png
+action.draw.Put.png action.editorkit.ActivateSnap.png
+action.editorkit.CenterViewport.png action.editorkit.Copy.png
+action.editorkit.Cut.png action.editorkit.Paste.png
+action.editorkit.ShowGrid.png
+
+* GUI
+**  rounded bracket: incorrect default values :@bug:
+**  PicGroup's action : toggle highlighting does not work when :@bug:
+selHandler mode = GLOBAL_MODE ; should gray action in this case.
+** TODO PEDrawingBoard : status bar : mouseCoord should have a fixed size
+** TODO improve ergonomics of DockableToolBar : too many buttons, should implement buttons that can raise
+         a popup menu allowing too choose aka "sub-button".
+**  add a "copy/paste attributeSet" tool. (currently BSH only) :@feature:
+**  change JViewPort's layout so that the drawing board is center justified instead of left justified. :@feature:
+**  add kbd shortcuts documentation in help file (e.g. Ctrl+F6 for switching between internal frames) :@feature:
+**  could someone localize the on-line help file ? (german = ok) :@feature:
+**  Create a lightweight version of PECanvas and EditorKit for :@feature:
+displaying drawings only (i.e. w/o editing capabilities but zoom) ; this could
+be adapted from jpicedt.test.*;
+
+
+* Guidelines : please use following keywords only : 
+** known-bug. Please add BUG ID from sourceforge bug-tracker if available.  :@bug:
+** TODO code needs improvement in order to obtain better functionning (e.g. UI performance, ...)
+** code needs refactoring in order to improve either human-readability or future extension capability.  :@refactor:
+** work is underway, works ok, but need improvement. 			  :@underway:
+** user or developper requested feature. 						   :@feature:
+Developper may add her/his own name as soon as she/he started undertaking corresponding task.
+
+# Local Variables:
+# mode:org
+# End:

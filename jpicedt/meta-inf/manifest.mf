@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Created-By: 1.4.1 (IBM)
+Main-Class: jpicedt.JPicEdt
+Class-Path: ..
+

@@ -1,0 +1,461 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" 
+		  "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../jpe-help.css" />
+
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="CONTENT-TYPE" content=
+  "text/html; charset=us-ascii">
+  <meta name="author" content="Sylvain Reynal">
+  <meta name="translation" content=
+  "Jobst Hoffmann, Benjamin Poniatowski, Stephan Schulte">
+
+  <title>jPicEdt 1.6 Hilfe &ndash; Das Zeichnen von Objekten</title>
+  <!-- $Revision: 1.12 $-->
+</head>
+
+<body>
+  <h2>Das Zeichnen von Objekten</h2>
+
+  <p>Um ein neues Objekt zu zeichnen, w&auml;hlen Sie zun&auml;chst die
+  gew&uuml;nschte Form durch Anklicken eines der Kn&ouml;pfe zur Auswahl der
+  Zeichenwerkzeuge aus der Werkzeugkiste. Wenn diese versteckt ist,
+  k&ouml;nnen Sie sie durch Anklicken
+  von <img src="../img/action.ui.ToggleToolkitPanel.png" alt="Icon:
+  ToggleToolkitPanel" > in der Haupt-Werkzeugleiste sichtbar
+  machen. Alternativ k&ouml;nnen Sie die Werkzeugkiste auch versteckt lassen
+  und das passende Werkzeug vom Men&uuml; <b>Werkzeug</b> ausw&auml;hlen; die
+  mit den einzelnen Men&uuml;punkten verbundenen Tastaturk&uuml;rzel
+  k&ouml;nnen bei Bedarf ge&auml;ndert werden
+  (Men&uuml;: <b>Bearbeiten</b>&rarr;<b>Einstellungen</b> oder durch
+  Anklicken von <img src="../img/action.ui.Preferences.png" alt="Icon:
+  Preferences" > in der Haupt-Werkzeugleiste, in dem sich dann &ouml;ffnenden
+  Fenster den Reiter &bdquo;Tastaturk&uuml;rzel&rdquo; ausw&auml;hlen)</p>
+
+  <p><img src="./img/ToolkitPaletteDraw.png" alt= "Icon:
+  ToolkitPaletteDraw"></p>
+
+  <p>Jeder Knopf zeigt ein kleine Hilfestellung, wenn der Mauszeiger
+  l&auml;nger als zwei Sekunden &uuml;ber ihm verweilt. Sobald Sie ein
+  Zeichenwerkzeug ausgew&auml;hlt haben, klicken Sie mit der
+  <a href="mouse.html#Mouse">Maustaste I</a> auf die Zeichenfl&auml;che, um
+  den ersten (Kontroll-)Punkt des Objektes zu zeichnen, dann bewegen Sie die
+  Maus zum zweiten und klicken erneut mit der Maustaste I.</p>
+
+  <p>Objekte, die durch mehr als zwei (Kontroll-)Punkte definiert sind, wie
+  zum Beispiel Polygone, Parallelogramme, abgeschr&auml;gte Ellipsen oder
+  Splines, k&ouml;nnen Sie in der gleichen Weise zeichnen: jeder einzelne
+  (Kontroll-)Punkt wird mit einem Klick mit der Maustaste I festgelegt.<br>
+  Eine Besonderheit sind Objekte mit einer variablen Anzahl von
+  (Kontroll-)Punkten: bei diesen wird der letzte Punkt durch einen Klick mit
+  der <a href="mouse.html#Mouse">Maustaste II</a> festgelegt.</p>
+
+  <p><b>Splines</b> stellen insofern eine weitere Besonderheit dar, als
+  dass:</p>
+
+  <ul>
+    <li>Tangenten durch ZIEHEN der Maus festgelegt werden, (Kontroll-)Punkte
+    hingegen durch BEWEGEN der Maus festgelegt werden;</li>
+
+    <li>ein Klick mit der Maustaste II nicht das Ende des Zeichenprozesses
+    bestimmt, sondern einen zus&auml;tzlichen Schritt einleitet, n&auml;mlich
+    das Zeichnen der abschlie&szlig;enden Tangente &ndash; der zugeh&ouml;rige
+    (Kontroll-)Punkt wird mit der Maustaste I festgelegt. Ein weiterer Klick
+    (Maustaste I oder II) schlie&szlig;t den Zeichenprozess ab.</li>
+  </ul>
+
+  <p>Es folgt eine Liste aller verf&uuml;gbaren Zeichenwerkzeuge sowie der
+  zugeh&ouml;rigen Icons. Einige Zeichenwerkzeuge bieten zus&auml;tzliche
+  Funktionen. Diese werden durch das Bet&auml;tigen zus&auml;tzlicher
+  Tastenkombinationen (<kbd class=
+  "kbd">Strg+Umschalter</kbd>, <kbd class="kbd">Strg+Alt</kbd> or
+  <kbd class="kbd">Strg+Alt+Umschalter</kbd>) erm&ouml;glicht. Mit diesen
+  Tastenkombinationen (es werden dieselben wie beim SELECT-Modus benutzt, die
+  Ausnahme ist die <kbd class= "kbd">Strg</kbd>-Taste, die in diesem
+  Zusammenhang keinen Sinn gibt) k&ouml;nnen Sie geometrische Bedingungen
+  aufheben oder versch&auml;rfen. Die Tasten k&ouml;nnen w&auml;hrend der
+  Zeichenoperation zu jedem Zeitpunkt gedr&uuml;ckt oder losgelassen
+  werden.</p>
+
+  <h3><a name="drawingtools" id= "drawingtools">Zeichenwerkzeuge</a></h3>
+
+  <table border="2" summary="Vorstellung der Zeichenwerkzeuge">
+    <tr>
+      <th>Icon</th>
+
+      <th>Werkzeug</th>
+
+      <th>Anzahl von Kontrollpunkten</th>
+
+      <th>Zeichenreihenfolge</th>
+
+      <th>Zus&auml;tzliche Funktionen</th>
+    </tr>
+
+    <tr>
+      <td valign="top"><img src="../img/action.draw.Line.png" alt="Icon:
+							draw.Line" ></td>
+
+      <td valign="top"><a name="Line" id="Line">Linie</a></td>
+
+      <td valign="top">2</td>
+
+      <td valign="top">Erster Endpunkt, zweiter Endpunkt.</td>
+
+      <td valign="top">Keine</td>
+    </tr>
+
+    <tr>
+      <td valign="top"><img src="../img/action.draw.Rectangle.png" alt="Icon:
+							draw.Rectangle" ></td>
+
+      <td valign="top">Rechteck</td>
+
+      <td valign="top">2</td>
+
+      <td valign="top">Erster Eckpunkt, gegen&uuml;berliegender Eckpunkt; die
+      Seiten sind parallel zu den x/y-Achsen.</td>
+
+      <td valign="top">
+        <dl>
+          <dt><kbd class="kbd">Strg+Alt</kbd>:</dt>
+
+          <dd>Der aktuelle Punkt wird als Mittelpunkt des Rechtecks
+          festgelegt.</dd>
+
+          <dt><kbd class="kbd">Strg+Alt+Umschalter</kbd>:</dt>
+
+          <dd>Eine Seite des Rechtecks hat eine beliebige Richtung.  Solange
+          die drei Tasten gedr&uuml;ckt sind, kann die Seite beliebig um den
+          Ausgangspunkt gedreht werden, nachdem Loslassen der drei Tasten wird
+          das Rechteck geeignet durch die Wahl des dem Ausgangspunkt
+          gegen&uuml;berliegenden Punkt skaliert.</dd>
+        </dl>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top"><img src="../img/action.draw.Parallelogram.png"
+      alt="Icon: draw.Parallelogram" ></td>
+
+      <td valign="top">Parallelogramm</td>
+
+      <td valign="top">3</td>
+
+      <td valign="top">Untere linke Ecke, obere linke Ecke,
+      gegen&uuml;berliegende Seite.</td>
+
+      <td valign="top">
+        <dl>
+          <dt><kbd class="kbd">Strg+Alt</kbd>:</dt>
+
+          <dd>Der aktuelle Punkt wird als Mittelpunkt des Parallelogramms
+          festgelegt. Durch weiteres Klicken werden die
+          <b>Mittelpunkte</b> der Seiten des Parallelogramms festgelegt.</dd>
+
+          <dt><kbd class="kbd">Strg+Alt+Umschalter</kbd>:</dt>
+
+          <dd>macht aus dem Rechteck ein Quadrat. Beachten sie, dass das
+          Festhalten der Zusatztasten w&auml;hrend des Bewegens des zweiten
+          Kontrollpunktes erlaubt ist, aber keinen Sinn macht, da der dritte
+          Kontrollpunkt noch gesetzt werden muss!</dd>
+        </dl>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top"><img src="../img/action.draw.Ellipse.png" alt="Icon:
+							draw.Ellipse" ></td>
+
+      <td valign="top">Kreis oder Ellipse, die durch ein umh&uuml;llendes
+      Rechteck bestimmt werden.</td>
+
+      <td valign="top">2</td>
+
+      <td valign="top">Erster Eckpunkt, gegen&uuml;berliegender Eckpunkt; die
+      Seiten des umh&uuml;llenden Rechtecks sind parallel zu den
+      x/y-Achsen.</td>
+
+      <td rowspan="2">
+        <dl>
+          <dt><kbd class="kbd">Strg+Alt</kbd>:</dt>
+
+          <dd>Der aktuelle Punkt wird als Mittelpunkt der Ellipse
+          festgelegt. Durch einen weiteren Klick wird ein Eckpunkt des
+          umh&uuml;llenden Rechtecks festgelegt.</dd>
+
+          <dt><kbd class="kbd">Strg+Alt+Umschalter</kbd>:</dt>
+
+          <dd>Es wird ausgehend vom aktuellen (Eck-)Punkt ein umh&uuml;llendes
+          Quadrat gezeichnet, der zweite diagonal gegen&uuml;berliegende Punkt
+          kann beliebig in der Ebene liegen, die Richtungsbeschr&auml;nkungen
+          sind somit aufgehoben (siehe oben: <i>Rechtecke</i>). Der
+          entstandene Kreis kann durch anschlie&szlig;endes Ziehen von
+          Kontrollpunkten zu einer Ellipse modifiziert werden.</dd>
+        </dl>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top"><img src="../img/action.draw.ArcOpen.png" alt="Icon:
+							draw.ArcOpen" ><br>
+      <img src="../img/action.draw.ArcPie.png" alt="Icon: draw.ArcPie" ><br>
+      <img src="../img/action.draw.ArcChord.png" alt="Icon: draw.ArcChord"
+      ></td>
+
+      <td valign="top">Kreisbogen, der durch ein umh&uuml;llendes Rechteck
+      bestimmt wird.<br>  Solange das Zeichnen des Objektes noch nicht
+      abgeschlossen ist, k&ouml;nnen Sie durch Dr&uuml;cken der Maustaste II
+      zyklisch die verschiedenen Kreisbogentypen ausw&auml;hlen; dies kann
+      auch noch sp&auml;ter &uuml;ber das Kontextmen&uuml; des Objektes
+      geschehen.</td>
+
+      <td valign="top">4</td>
+
+      <td valign="top">Erste Ecke des Rechteckes, gegen&uuml;berliegende Ecke,
+      Beginn des Kreisbogens, Ende des Kreisbogens.</td>
+    </tr>
+
+    <tr>
+      <td valign="top"><img src="../img/action.draw.EllipseFromParallelo.png"
+							alt="Icon: draw.EllipseFromParallelo" ></td>
+
+      <td valign="top">Abgeschr&auml;gte Ellipse.</td>
+
+      <td valign="top">3</td>
+
+      <td valign="top">Untere linke Ecke, obere rechte Ecke,
+      gegen&uuml;berliegende Seite des umh&uuml;llenden Parallelogramms.</td>
+
+      <td rowspan="2" valign="top">
+        <dl>
+          <dt><kbd class="kbd">Strg+Alt</kbd>:</dt>
+
+          <dd>Der aktuelle Punkt wird als Mittelpunkt des Parallelogramms
+          festgelegt. Durch weiteres Klicken werden die
+          <b>Mittelpunkte</b> der Seiten des Parallelogramms festgelegt.</dd>
+
+          <dt><kbd class="kbd">Strg+Alt+Umschalter</kbd>:</dt>
+
+          <dd>macht aus der Ellipse einen Kreis.</dd>
+        </dl>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top"><img src="../img/action.draw.ArcOpenFromParallelo.png"
+							alt="Icon: draw.ArcOpenFromParallelo" ><br>
+      <img src="../img/action.draw.ArcPieFromParallelo.png" alt="Icon:
+		   draw.ArcPieFromParallelo" ><br>
+      <img src="../img/action.draw.ArcChordFromParallelo.png" alt="Icon:
+		   draw.ArcChordFromParallelo" ></td>
+
+      <td valign="top">Abgeschr&auml;gter Kreisbogen, der durch ein
+      umh&uuml;llendes Parallelogramm bestimmt wird.<br>  Solange das Zeichnen
+      des Objektes noch nicht abgeschlossen ist, k&ouml;nnen Sie durch
+      Dr&uuml;cken der Maustaste II zyklisch die verschiedenen Kreisbogentypen
+      ausw&auml;hlen; dies kann auch noch sp&auml;ter &uuml;ber das
+      Kontextmen&uuml; des Objektes geschehen.</td>
+
+      <td valign="top">5</td>
+
+      <td valign="top">Untere linke Ecke, obere rechte Ecke,
+      gegen&uuml;berliegende Seite des umh&uuml;llenden Parallelogramms,
+      Beginn des Kreisbogens, Ende des Kreisbogens.</td>
+    </tr>
+
+    <tr>
+      <td valign="top"><img src="../img/action.draw.CircleFrom3Pts.png"
+							alt="Icon: draw.CircleFrom3Pts" ></td>
+
+      <td valign="top">Kreis, der durch die Angabe von drei Punkten bestimmt
+      wird.</td>
+
+      <td rowspan="2" valign="top">3</td>
+
+      <td rowspan="2" valign="top">Erster, zweiter und dritter Punkt.</td>
+
+      <td rowspan="2" valign="top">Keine.</td>
+    </tr>
+
+    <tr>
+      <td valign="top"><img src="../img/action.draw.ArcOpenFrom3Pts.png"
+							alt="Icon: draw.ArcOpenFrom3Pts" ><br>
+      <img src="../img/action.draw.ArcPieFrom3Pts.png" alt="Icon:
+		   draw.ArcPieFrom3Pts" ><br>
+      <img src="../img/action.draw.ArcChordFrom3Pts.png" alt="Icon:
+		   draw.ArcChordFrom3Pts" ></td>
+
+      <td valign="top">Kreisbogen, der durch die Angabe von drei Punkten
+      bestimmt wird.<br>  Solange das Zeichnen des Objektes noch nicht
+      abgeschlossen ist, k&ouml;nnen Sie durch Dr&uuml;cken der Maustaste II
+      zyklisch die verschiedenen Kreisbogentypen ausw&auml;hlen; dies kann
+      auch noch sp&auml;ter &uuml;ber das Kontextmen&uuml; des Objektes
+      geschehen.</td>
+    </tr>
+
+    <tr>
+      <td valign="top"><img src="../img/action.draw.MultiCurve.png" alt="Icon:
+							draw.MultiCurve" ></td>
+
+      <td valign="top"><a name="bezier" id="bezier">Offene Bezier Splines</a>,
+      Polygonz&uuml;ge, oder eine Kombination daraus. Sie legen die
+      (Kontroll-)Punkte (f&uuml;r Bezier Splines und Polygonz&uuml;ge) durch
+      Klicken mit der Maustaste I fest, die Tangenten (f&uuml;r Bezier
+      Splines) durch Ziehen (bei gedr&uuml;ckter Maustaste I). Das Kurvenende,
+      also den letzten Punkt, bestimmen Sie durch ein Klicken mit der
+      Maustaste II.  F&uuml;r den Fall, dass Sie einen offenen Bezier Splines
+      zeichnen, k&ouml;nnen Sie durch Bewegen der Maus die abschlie&szlig;ende
+      Tangente festlegen; ein weiterer Klick mit der Maustaste I beendet das
+      Zeichnen.<br>  Hinweis: Sie k&ouml;nnen mehrere Bezier Splines zu einem
+      Objekt verbinden, indem Sie die gew&uuml;nschten Splines durch Anklicken
+      ausw&auml;hlen, mit der Maustaste II das zugeh&ouml;rige
+      Kontextmen&uuml; &ouml;ffnen und den Men&uuml;punkt
+      &ldquo;Ausgew&auml;hlte Kurve zusammenf&uuml;gen&rdquo;
+      ausw&auml;hlen. <a href="multicurve.html">Klicken Sie hier, um weitere
+      Details zum Thema &bdquo;Splines&rdquo; zu lesen.</a>.</td>
+
+      <td rowspan="2" valign="top">variabel</td>
+
+      <td rowspan="2" valign="top" align="left">
+        <ul>
+          <li>erster Punkt (Maustaste I klicken/dr&uuml;cken*)</li>
+
+          <li>erste Tangente (ziehen mit gedr&uuml;ckter Maustaste I)*</li>
+
+          <li>zweiter Punkt (die Maus zum gew&uuml;nschten Punkt bewegen;
+          Maustaste I klicken/dr&uuml;cken*)</li>
+
+          <li>zweite Tangente (ziehen mit gedr&uuml;ckter Maustaste I)*</li>
+
+          <li>usw&hellip;</li>
+
+          <li>letzter Punkt (Maustaste II klicken)</li>
+
+          <li>letzte Tangente (die Maus zum gew&uuml;nschten Punkt bewegen;
+          Maustaste I klicken)*</li>
+        </ul>*: Diese Operationen treten nur bei Splines auf
+      </td>
+
+      <td rowspan="2" valign="top">
+        <br>
+
+        <dl>
+          <dt>keine Modifikator-Tasten zus&auml;tzlich gedr&uuml;ckt:</dt>
+
+          <dd>Erzwingen von Glattheit und Symmetrie.</dd>
+
+          <dt>Strg+Umschalter:</dt>
+
+          <dd>Es wird nur Glattheit erzwungen.<br></dd>
+
+          <dt><kbd class="kbd">Strg+Alt</kbd>:</dt>
+
+          <dd>Es wird nur Symmetrie erzwungen.<br></dd>
+
+          <dt><kbd class="kbd">Strg+Alt+Umschalter</kbd>:</dt>
+
+          <dd>Die Tangenten k&ouml;nnen frei ohne die einschr&auml;nkenden
+          Bedingungen Glattheit und Symmetrie gew&auml;hlt werden.</dd>
+        </dl>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top"><img src="../img/action.draw.ClosedMultiCurve.png"
+							alt="Icon: draw.ClosedMultiCurve" ></td>
+
+      <td valign="top">Geschlossene Bezier Splines, Polygonz&uuml;ge, oder
+      eine Kombination daraus: wie oben, nur ist hier die Kurve
+      geschlossen. <a href="multicurve.html">Klicken Sie hier, um weitere
+      Details zum Thema &bdquo;Splines&rdquo; zu lesen.</a>.</td>
+    </tr>
+
+    <tr>
+      <td valign="top"><img src="../img/action.draw.SmoothPoly.png" alt="Icon:
+							draw.SmoothPoly" ></td>
+
+      <td valign="top">Glatter Polygonzug: ein Bezier Spline, der durch einen
+      zugrundeliegenden Polygonzug festgelegt wird. <a href=
+      "multicurve.html">Klicken Sie hier, um weitere Details zum Thema
+      &bdquo;Splines&rdquo; zu lesen.</a></td>
+
+      <td rowspan="2" valign="top">variabel</td>
+
+      <td rowspan="2" valign="top">Erster, zweiter, dritter Punkt, &hellip;.
+      Ein Klick mit der Maustaste II schlie&szlig;t das Zeichnen ab.</td>
+
+      <td rowspan="2" valign="top">Keine</td>
+    </tr>
+
+    <tr>
+      <td valign="top"><img src="../img/action.draw.ClosedSmoothPoly.png"
+							alt="Icon: draw.ClosedSmoothPoly" ></td>
+
+      <td valign="top">Geschlossener, glatter Polygonzug: wie oben, nur ist
+      hier die Kurve geschlossen. <a href="multicurve.html">Klicken Sie hier,
+      um weitere Details zum Thema &bdquo;Splines&rdquo; zu lesen.</a></td>
+    </tr>
+
+    <tr>
+      <td><img src="../img/action.draw.PsCurve.png" alt="Icon: PsCurve" ></td>
+
+      <td>Interpolierende Kurve (<code>\psecurve</code> im PSTricks Paket):
+      Dies ist ein Spline, der eine offene Kurve interpoliert; die Kurve ist
+      durch vom Benutzer gegebene Punkte festgelegt. Die Kr&uuml;mmung der
+      Kurve wird durch 3 Parameter bestimmt, deren Bedeutung in der <a href=
+      "http://tug.org/PSTricks/doc/pst-usrfull.pdf">Dokumentation des PSTricks
+      Pakets</a> auf Seite 14 beschrieben wird. Diese Parameter k&ouml;nnen
+      Sie einfach im Eigenschaftsfenster der Kurve &auml;ndern. Klicken Sie
+      dazu die Kurve mit der Maustaste I an und dr&uuml;cken Sie
+      anschlie&szlig;end die Taste <kbd class="kbd">F2</kbd>.</td>
+
+      <td rowspan="2">variabel</td>
+
+      <td rowspan="2">Erster, zweiter, dritter Punkt, &hellip;. Ein Klick mit
+      der Maustaste II schlie&szlig;t das Zeichnen ab.</td>
+
+      <td rowspan="2">Keine</td>
+    </tr>
+
+    <tr>
+      <td><img src="../img/action.draw.ClosedPsCurve.png" alt="Icon:
+			   ClosedPsCurve" ></td>
+
+      <td>Geschlossene interpolierende Kurve: wie oben, nur hier ist die Kurve
+      geschlossen (<code>\psccurve</code> im PSTricks Paket).</td>
+    </tr>
+
+    <tr>
+      <td valign="top"><img src="../img/action.draw.Text.png" alt="Icon:
+							draw.Text" ></td>
+
+      <td valign="top">Text (bei Bedarf kann der Text umrahmt werden,
+      vgl. <a href="editing.html#Attribute">Das &Auml;ndern graphischer
+      Attribute</a>, der auszuw&auml;hlende Reiter ist
+      &bdquo;Text&rdquo;).</td>
+
+      <td valign="top">1</td>
+
+      <td valign="top">Anker Punkt</td>
+
+      <td valign="top">Keine</td>
+    </tr>
+  </table>
+
+  <p>F&uuml;r alle Objekte gilt, dass das Dr&uuml;cken der Taste F2 nach
+  Abschlie&szlig;en des Zeichnens (die Kontrollpunkte m&uuml;ssen gr&uuml;n
+  markiert sein) ein Kontextmen&uuml; mit den Eigenschaften des Objektes
+  &ouml;ffnet. Mit diesem k&ouml;nnen Sie beispielsweise die Position von Text
+  oder die Art eines Kreisbogens &auml;ndern.</p>
+
+  <p><b>Elliptische Kreisb&ouml;gen:</b> PSTricks unterst&uuml;tzt nun
+  elliptische Kreisb&ouml;gen durch neue Kommandos mit dem Namen
+  <code>\psellipticarc</code> bzw. <code>\psellipticarcn</code>. Leider
+  unterst&uuml;tzen weder LaTeX noch eepic diese Kommandos, sie werden daher
+  nur emuliert und die entstandenen Objekte k&ouml;nnen nicht gef&uuml;llt
+  werden.</p>
+</body>
+</html>

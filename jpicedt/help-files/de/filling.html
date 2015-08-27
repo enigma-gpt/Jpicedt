@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" 
+		  "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../jpe-help.css" />
+
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="CONTENT-TYPE" content=
+  "text/html; charset=us-ascii">
+  <meta name="author" content="Jobst Hoffmann">
+
+  <title>jPicEdt 1.6 Hilfe &ndash; Das F&uuml;llen von Fl&auml;chen</title>
+</head>
+
+<body>
+  <h2><a name="Fill" id="Fill">Das F&uuml;llen von Fl&auml;chen</a></h2>
+
+  <p>Sie k&ouml;nnen Kurven-/Polygonz&uuml;ge mit einer Farbe/einem
+  (gef&auml;rbten) Muster f&uuml;llen, indem Sie das jeweilige Objekt und
+  anschlie&szlig;end das gew&uuml;nschte F&uuml;llsysmbol im Fenster Attribute
+  unterhalb des Reiters <code>F&uuml;llung</code> ausw&auml;hlen.</p>
+
+  <p>Es gibt die folgenden F&uuml;llmuster:</p>
+
+  <ul>
+  <li><img src="../img/attributes.FillStyleNone.png" alt="Icon: keine
+  F&uuml;llung" > keine F&uuml;llung</li>
+
+  <li><img src="../img/attributes.FillStyleSolid.png" alt="Icon: F&uuml;llen
+  mit Farbe" > F&uuml;llung mit einer Farbe, die Sie aus den
+  unter <code>Muster</code>, <code>HSB</code>,
+  <code>RGB</code>, <code>Vordefiniert</code> angegebenen Farben
+  ausw&auml;hlen k&ouml;nnen.</li>
+
+  <li><img src="../img/attributes.FillStyleVlines.png" alt="Icon: F&uuml;llen
+  mit vertikaler Schraffur" > F&uuml;llung mit einer vertikalen Schraffur,
+  standardm&auml;&szlig;ig um 45 Grad gegen den Uhrzeigersinn gedreht.</li>
+
+  <li><img src="../img/attributes.FillStyleVlinesFilled.png" alt="Icon:
+  F&uuml;llen mit vertikaler Schraffur, gef&auml;rbt" > F&uuml;llung mit einer
+  vertikalen Schraffur die Hintergrundfarbe k&ouml;nnen Sie aus den
+  unter <code>Muster</code>,
+  <code>HSB</code>, <code>RGB</code>, <code>Vordefiniert</code> angegebenen
+  Farben ausw&auml;hlen.</li>
+
+  <li><img src="../img/attributes.FillStyleHlines.png" alt="Icon: F&uuml;llen
+  mit horizontaler Schraffur" > F&uuml;llung mit einer horizontalen Schraffur,
+  standardm&auml;&szlig;ig um 45 Grad gegen den Uhrzeigersinn gedreht.</li>
+
+  <li><img src="../img/attributes.FillStyleHlinesFilled.png" alt="Icon:
+  F&uuml;llen mit horizontaler Schraffur%20gef%C3%A4rbt" > F&uuml;llung mit
+  einer horizontalen Schraffur, die Hintergrundfarbe k&ouml;nnen Sie aus den
+  unter <code>Muster</code>,
+  <code>HSB</code>, <code>RGB</code>, <code>Vordefiniert</code> angegebenen
+  Farben ausw&auml;hlen.</li>
+
+  <li><img src="../img/attributes.FillStyleCrossHatches.png" alt="Icon:
+  F&uuml;llen mit gekreuzter Schraffur" > F&uuml;llung mit einer Schraffur
+  durch gekreuzte Linien, standardm&auml;&szlig;ig um 45 Grad gegen den
+  Uhrzeigersinn gedreht.</li>
+
+  <li><img src="../img/attributes.FillStyleCrossHatchesFilled.png" alt="Icon:
+  F&uuml;llen mit gekreuzter Schraffur, gef&auml;rbt" > F&uuml;llung mit einer
+  Schraffur durch gekreuzte Linien, die Hintergrundfarbe k&ouml;nnen Sie aus
+  den unter <code>Muster</code>,
+  <code>HSB</code>, <code>RGB</code>, <code>Vordefiniert</code> angegebenen
+  Farben ausw&auml;hlen.</li>
+  </ul>
+
+  <p>Die folgenden Hinweise k&ouml;nnen beim F&uuml;llen hilfreich sein:</p>
+
+  <ol>
+  <li>Sie k&ouml;nnen auch einen offenen Polygonzug wie<br>
+  <img src="../img/polygon_filled_01.png" alt="offener Polygonzug" ><br>
+  f&uuml;llen, das Ergebnis ist<br>
+  <img src="../img/polygon_filled_02.png" alt="offener Polygonzug,
+  gef&uuml;llt" ></li>
+
+  <li>Ein Dreieck, das aus drei <a href=
+  "drawingcap.html#Line"><code>Linie</code>n</a> gebildet wird, ist kein
+  geschlossener Polygonzug, Sie k&ouml;nnen es daher nicht f&uuml;llen. Sie
+  k&ouml;nnen es jedoch &uuml;ber den Eintrag
+  <code>Ausgew&auml;hlte Kurven zusammenf&uuml;gen</code> im zugeh&ouml;rigen
+  Kontextmen&uuml; in einen solchen geschlossenen Polygonzug
+  &uuml;berf&uuml;hren und danach f&uuml;llen.</li>
+
+  <li>Einen Kreisringabschnitt <img src= "../img/annulus_section_filled.png"
+  alt="Kreisringabschnitt" width="39" height="39"> f&uuml;llen Sie in
+  &auml;hnlicher Weise: Sie zeichen die zugeh&ouml;rigen Kreisb&ouml;gen,
+  w&auml;hlen beide aus und f&uuml;hren Sie &uuml;ber den
+  Eintrag <code>Ausgew&auml;hlte Kurven zusammenf&uuml;gen</code> im
+  zugeh&ouml;rigen Kontextmen&uuml; in einen Polygonzug &uuml;ber, diesen
+  f&uuml;llen Sie dann wie beschrieben</li>
+
+  <li>Einen Kreisring <img src="../img/annulus_filled.png" alt= "Kreisring"
+  width="39" height="39"> f&uuml;llen Sie, indem Sie zun&auml;chst den
+  &auml;u&szlig;eren Kreis mit der gew&uuml;nschten Farbe f&uuml;llen und
+  anschlie&szlig;end den inneren Kreis beispielsweise mit Wei&szlig;
+  f&uuml;llen. Wenn sie in der umgekehrten Reihenfolge vorgehen, k&ouml;nnen
+  &uuml;ber die Eintr&auml;ge <code>vorw&auml;rts</code> bzw.
+  <code>r&uuml;ckw&auml;rts</code> den gew&uuml;nschten Effekt erzielen.</li>
+  </ol>
+</body>
+</html>

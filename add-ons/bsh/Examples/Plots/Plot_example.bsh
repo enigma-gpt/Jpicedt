@@ -1,0 +1,141 @@
+// Plot_example.bsh --- -*- coding: iso-8859-1 -*-
+// jPicEdt 1.6, a picture editor for LaTeX.
+// Copyright (C) 2013 Vincent Belaïche
+//
+// Author: Vincent Belaïche <vincentb1@users.sourceforge.net>
+// Version: $Id: Plot_example.bsh,v 1.1 2013/10/07 19:16:22 vincentb1 Exp $
+// Keywords:
+// X-URL: http://www.jpicedt.org/
+//
+// Ce logiciel est régi par la licence CeCILL soumise au droit français et respectant les principes de
+// diffusion des logiciels libres. Vous pouvez utiliser, modifier et/ou redistribuer ce programme sous les
+// conditions de la licence CeCILL telle que diffusée par le CEA, le CNRS et l'INRIA sur le site
+// "http://www.cecill.info".
+//
+// En contrepartie de l'accessibilité au code source et des droits de copie, de modification et de
+// redistribution accordés par cette licence, il n'est offert aux utilisateurs qu'une garantie limitée.  Pour
+// les mêmes raisons, seule une responsabilité restreinte pèse sur l'auteur du programme, le titulaire des
+// droits patrimoniaux et les concédants successifs.
+//
+// A cet égard l'attention de l'utilisateur est attirée sur les risques associés au chargement, à
+// l'utilisation, à la modification et/ou au développement et à la reproduction du logiciel par l'utilisateur
+// étant donné sa spécificité de logiciel libre, qui peut le rendre complexe à manipuler et qui le réserve
+// donc à des développeurs et des professionnels avertis possédant des connaissances informatiques
+// approfondies.  Les utilisateurs sont donc invités à charger et tester l'adéquation du logiciel à leurs
+// besoins dans des conditions permettant d'assurer la sécurité de leurs systèmes et ou de leurs données et,
+// plus généralement, à l'utiliser et l'exploiter dans les mêmes conditions de sécurité.
+//
+// Le fait que vous puissiez accéder à cet en-tête signifie que vous avez pris connaissance de la licence
+// CeCILL, et que vous en avez accepté les termes.
+//
+/// Commentary:
+
+// This BeanShell script demonstrate the use of Plot.bshi
+//
+
+/// Code:
+
+object = object();
+savedNameSpace = this.namespace;
+setNameSpace( object.namespace );
+
+import jpicedt.ui.util.CommandLineBuilder;
+
+CommandLineBuilder clb = new CommandLineBuilder();
+source(clb.buildCommandLine("{j}/macros/lib/Plot.bshi"));
+
+setStrictJava(true);
+
+String scriptName = "Plot_example";
+
+if (canvas()==null)
+{
+	mdimgr.showMessageDialog("First open a board!",scriptName,JOptionPane.ERROR_MESSAGE);
+	return;
+}
+
+
+PicGroup target = new PicGroup();
+
+double scaleX = 30.0;
+double scaleY = 30.0;
+PicPoint org = new PicPoint(35,10);
+PicAttributeSet pasAxis = new PicAttributeSet();
+pasAxis.setAttribute(PicAttributeName.RIGHT_ARROW, StyleConstants.ArrowStyle.ARROW_HEAD);
+
+PicAttributeSet pasPlot = new PicAttributeSet();
+
+PicAttributeSet pasLabel = new PicAttributeSet();
+pasLabel.setAttribute(PicAttributeName.TEXT_VERT_ALIGN, PicText.VertAlign.TOP);
+
+double[] samples;
+
+void drawPlot(String type, int colCount,String label,ActiveEvent e){
+	PicMultiCurve axis = new PicMultiCurve(new PicPoint(org).translate(-1.1*scaleX,0),pasAxis);
+	axis.lineTo(new PicPoint(org).translate(1.1*scaleX,0));
+	target.add(axis);
+
+	axis = new PicMultiCurve(new PicPoint(org).translate(0,-0.1*scaleY),pasAxis);
+	axis.lineTo(new PicPoint(org).translate(0,1.1*scaleY));
+	target.add(axis);
+
+	samples = plotsSignalLoad(clb.buildCommandLine("{j}/macros/Examples/Plots/Plot_example_"
+												   + type + "_gaussian.txt"), colCount);
+
+	pasPlot.setAttribute(PicAttributeName.LINE_COLOR, Color.red);
+	e.dispatch();
+
+	pasPlot.setAttribute(PicAttributeName.LINE_COLOR, Color.blue);
+	samples = plotsSignalLoad(clb.buildCommandLine("{j}/macros/Examples/Plots/Plot_example_"
+												   + type + "_cos.txt"), colCount);
+	e.dispatch();
+
+	target.add(
+		   new PicText(new PicPoint(org).translate(0,-0.1*scaleY),
+					   "\\Large Plot with \\("
+					   + label + "\\) --- "
+					   + Integer.toString(samples.length/colCount)
+					   + " points",
+					   pasLabel));
+
+}
+
+drawPlot("XYdYd2Y",4,
+		 "\\left(x,y,\\frac{\\mathrm d y}{\\mathrm d x},\\frac{\\mathrm d^2y}{{\\mathrm d x}^2}\\right)",
+		 new ActiveEvent(){
+			 void dispatch(){
+				 target.add(plotXYdYd2Y(samples, org, scaleX, scaleY, pasPlot));
+			 }
+		 });
+
+org.translate(0,1.5*scaleY);
+
+drawPlot("XYdY",3,
+		 "\\left(x,y,\\frac{\\mathrm d y}{\\mathrm d x}\\right)",
+		 new ActiveEvent(){
+			 void dispatch(){
+				 target.add(plotXYdY(samples, org, scaleX, scaleY, pasPlot));
+			 }
+		 });
+
+org.translate(0,1.5*scaleY);
+
+drawPlot("XY",2,
+		 "\\left(x,y\\right)",
+		 new ActiveEvent(){
+			 void dispatch(){
+				 target.add(plotXY(samples, org, scaleX, scaleY, pasPlot));
+			 }
+		 });
+
+
+
+
+drawing().add(target);
+
+
+// step back
+setStrictJava(false);
+setNameSpace( savedNameSpace );
+
+

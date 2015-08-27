@@ -1,0 +1,320 @@
+[1_6_pre1]
+May 2011:       - Added code to make marked objects moveable by cursor keys
+                  (ok)
+                - Added code to display a textfield for entering angles (ok)
+                - Added code to create a textarea instead of a textfield
+                  for the text tool (ok)
+                - Changes were applied to the following files:
+                  ./jpicedt/jpicedt/graphic/PECanvas.java
+                  ./jpicedt/jpicedt/graphic/io/formatter/JPICTextFormatter.java
+                  ./jpicedt/jpicedt/graphic/io/parser/JPICXmlHandler.java
+                  ./jpicedt/jpicedt/graphic/model/AbstractElement.java
+                  ./jpicedt/jpicedt/graphic/model/DefaultAttributeSet.java
+                  ./jpicedt/jpicedt/graphic/model/PicAttributeName.java
+                  ./jpicedt/jpicedt/graphic/model/PicGroup.java
+                  ./jpicedt/jpicedt/graphic/model/PicText.java
+                  ./jpicedt/jpicedt/graphic/model/TextEditable.java
+                  ./jpicedt/jpicedt/graphic/toolkit/CustomizerDialog.java
+                  ./jpicedt/jpicedt/graphic/toolkit/DrawToolFactory.java
+                  ./jpicedt/jpicedt/graphic/toolkit/EditorKit.java
+                  ./jpicedt/jpicedt/graphic/toolkit/RotateTool.java
+                  ./jpicedt/jpicedt/graphic/view/TextViewHybrid.java
+                  ./jpicedt/jpicedt/graphic/view/TextView.java
+                  ./jpicedt/jpicedt/ui/PEDrawingBoard.java
+                - The following files are new:
+                  ./jpicedt/jpicedt/graphic/event/RotateEvent.java
+                  ./jpicedt/jpicedt/graphic/event/RotateListener.java
+[1_5_pre1]
+Oct 2006:	- bug fix: "Mac OS X Aqua" look'n feel was not properly reloaded in Preferences tabpane.
+August 2006:	- simplified view/model mechanism; refactored DefaultViewFactory.
+		- added support for internal dialogs (InternalFrameMDIManager)
+		- more enum's instead of interfaces
+		- made bounding-box displayable
+July 2006:	- improved popup menu (more contextual items)
+=======
+September 2006:
+		- refactored code in jpicedt.graphic.model and
+		  jpicet.graphic.view. Code now neater and fits better
+		  in global jpicedt's architecture.
+August 2006:	- added dialog box to select objects in a fine-grained way,
+		  esp. useful for those that partially overlap.
+		- added support for internal dialogs (InternalFrameMDIManager)
+		- more enum's instead of interfaces
+		- made bounding-box displayable
+July 2006:	- improved popup menu (more contextual items)
+		- improved support for local/global group editing (aka group
+		  content edit w/o opening group)
+		- model <-> view factory mapping is now dynamic through a
+	 	  HashMap in DefaultViewFactory (may be changed at run-time)
+		- converted code to Java 1.5: enums, generic, static
+		  imports.
+		- Safer type checking in PicAttributeName/PicAttributeSet
+		  through generic methods.
+[1_4_pre5]
+June 2006:	- bug fix for: [258141] infinite wait "Loading preferences..." with a few window-managers under Linux
+		- improved german translation by J. Hoffmann et al.
+		- new curve plotter script by M. Perez
+		- added new "join curves" method in PicMultiCurve. Aka
+		  pscustom, yet less powerful since every element is converted
+		  to a multicurve before joining.
+February 2006:  - bug fix in AbstractCurveFormatter (psline related)
+                - changed PsTricks to PSTricks
+                - added new translations in online help + localized entries
+December 2005:	- bug fix in PsCurve pstricks formatting
+		- bug fix for: [ 1348102 ] duplicate polydots-size-minimum causes parser to abend
+		- bug fix for: [ 1196453 ] Wrong syntax for pstricks
+April 2005 :	- added PsCurve (experimental)
+		- it's now possible to rescale the whole picture from the hosting TeX file
+		  through the \JPicScale macro.
+		- bug fix in Cut action (was: undoable-event not recorded)
+		- improved context dependent help-messages in DrawToolFactory.
+		- bug fix in Grid class (was: grid line style not properly set)
+		- file chooser: default file extension now depends on
+		  current content-type (e.g., PsTricks or Eepic)
+[1_4_pre4]
+X-mas 2004 : 	- fixed several bugs in installer (OS detection + bugs specific to MacOS-X).
+		- fixed bug in group geometry customizer (width/height not properly reported).
+		- bug fix in PageFormat/PECanvas's auto-formatting algorithm (bug when all objects had negative coordinates).
+		- improved efficiency of HTML reader for on-line help and API doc.
+		- added a handful of new BSH macros
+XX/11/2004 :	- added support for editing parallelograms and ellipses with centre kept fixed
+		- added support for editing parallelograms with a "square" constraint.
+		- bounding-box now saved in XML preamble
+		- added red mouse-markers in top and left rulers
+		- EditPointMouseTransformFactory : added support for PicSmoothPolygon's coefficients editing with the mouse
+		- added conversion from ellipses to Bezier curves
+		- when converting an Element into another (e.g. parallelogram -> multicurve), z-ordering is now 
+		  retained (work-around = Drawing.replaceElement)
+		- added support for multiple grid styles
+		- added a widget to change the grid step + added new menu item in preferences tabpane
+		- added center-viewport button
+		- improved setSymmetric() and setSmooth() for Bezier curves so that these methods also handles properly
+		  the case when both the control- and the subdivision-point are similar.
+		- improved popup-menu for Bezier curve: now permits editing properties of a single point or segment at a time
+		- improved drawing scheme for Bezier curve: ultimate right-click allows to set tangent on last end-point.
+		- added shear transform [pending: shear tool in toolbar]; so far, use a BSH script.
+		- Bug fix: several menu's remained "grayed" when opening a picture from file and no sheet had previously been open.
+		- Added a customizer for arrow parameters in dockable attribute-toolbar.
+		- Also improved attribute-editor layout.
+		- Brought on-line help up-to-date with new capabilities.
+
+------------------------------------------------------------------------------------------------
+[1_4_pre3]
+17/04/2004 :	- bug fix: "close file" in menu "file" didn't work + numerous other bugs related to frame activation.
+		- partial bug fix: shadowing behavior under jPicEdt shows some discrepancies with PsTricks one.
+		- bug fix (VG): PsCustom parameters not saved in XML part of output file.
+		- bug fix (VG): improved handling of borders/shadows in \\pscustom command (AbstractCurveFormatter).  
+03/04/2004 :    - bug fix: "fillstyle=black" was not set by default. Hence filling with black
+		  produced a whitened shape, because PsTricks doesn't seem to fill in black by default,
+		  whereas jPicEdt does. As a work-around, i simply added \psset{fillcolor=black} in the preambule.
+		- buf fix: "userLineColour,]" syntax error when formatting to PsTricks. Was due to improper
+		  "if/else" handling in pstricks.AbstractCurveFormatter.formatPsDots
+		- added automatic page-format fitting on loading
+		- bug fix: circles defined from 3 points were not properly copied to clipboard.
+
+
+------------------------------------------------------------------------------------------------
+[1_4_pre2]
+01/11/2003 : 	- cleaned-up icons in jpicedt/images and i18n files
+		- improved PsTricks's formatter for AbstractCurve's (i.e. use of \\pscustom not always necessary)
+		- bug fix: BSH macros.
+30/10/2003 :	- added customizer panel for user-editable kbd shortcuts (Edit->Preferences)
+28/10/2003 : 	- refactored PropertyChangeEvent dispatching from EditorKit and PECanvas
+26/10/2003 :	- improved painting scheme for polygon dots.
+25/10/2003 :	- fixed bug in DefaultSelectionHandler : scale (i.e. through setPoint()) did not work
+        	  properly when "mirroring" a selection. 
+23/10/2003 :	- bug fix: formatting of arcs in the PsTricks format
+		- bug fix: JPIC-XML fallback mechanism
+		- bug fix: Pstricks not parsed because was missing in default grammar
+------------------------------------------------------------------------------------------------
+[1_4_pre1]
+27/09/2003 :    - released 1.4-pre1
+25/09/2003 :    - added Element.rotate() method, and jpicedt.graphic.toolkit.RotateTool.
+                - added TEXT_ROTATION attribute to be used with PicText.
+24/09/2003 :    - For clarity, split EditorKit.SelectionHandler off from EditorKit, now DefaultSelectionHandler lives on its own.
+                - Added a delegate mechanism for highlighter painting through a separate HighlighterFactory.
+                  This should fairly reduce the burden of subclassing DefaultViewFactory.
+17/09/2003 :    - Added support for rotated ellipses to LaTeXFormatter.
+12/09/2003 :    - [VG] updated on-line help (PicMultiCurve + PicSmoothPolygon)
+                - [VG] PicCircleFrom3Pts now compiles fine again.
+                - Added public interface PointIndexIterator and a default implementation, since
+                  these iterators are now equally used to retrieve anchor-points indices as well
+                  as to fetch a list of "visible" control-points in DefaultViewFactory.
+                  This adds a good deal of flexibility to the latter where subclassing View's is concerned.
+                - PicParallelogram : added SQUARE constraint. Code is still underway. Only P_TR works so far.
+08/09/2003 :    - PicEllipse : corrected bug related to setPoint(P_ANGLE_XXX)
+07/09/2003 :    - EditorKit.SelectionHandler: synchronization
+                  between the handler content and the drawing is now 100% ok.
+                  Modifying the content of the Drawing through the Drawing API
+                  now doesn't raise NullPointerException anymore (e.g. BSH macros)
+                - PicAttributeSet: added getAllowedValueClass() to 
+                  PicAttributeName to allow type-checking of attribute value
+                  at run-time (the best we can do)
+                - EditorKit : edit-points mode is now working flawlessly.
+                - DefaultViewFactory : added factory method createStrokeForHighlighter()
+                  so that we may now straightforwardly change the appearance of
+                  highlighters from a single place (this may be e.g. user-editable in the future).
+                - improved jpicedt.test.TestCanvas test class by embedding it
+                  with a BSH console. This should make test more easy to carry out.
+26/08/2003 :    - added PicParallelogram and PicEllipseFromParallelo ; 
+                - hence removed PicRectangle, PicEllipse and PicPolygon which were made redundant.
+                - refactored code in jpicedt.graphic.model (modelling geometry)
+                - enhanced PicPoint class by adding numerous geometry related algorithms
+                - created new PicVector class working hand-in-hand with PicPoint
+                - added EditPointConstraint, aka geometric constraints which can be imposed to setPoint() methods.
+                - added edit-point mousetool dedicated to bezier curves.
+                - added JPIC-XML language as jPicEdt's "native" format ; syntax somewhat mimics that of SVG.
+                  Grammar not stabilized yet (no DtD yet).
+	
+21/01/2002 :    - added highLighter's painting during a mouse-transform
+		- added PicMultiCurve (multi Bezier) and PicSmoothPoly (smooth polygon)
+
+--------------------------------------------------------------------------------------------------
+[1_3_2]
+12/08/2002 :    - created installer
+                - fixed some GUI bugs related to threaded actions
+                - worked out CR-LF problems with formatters
+                - improved Ant's build.xml
+                - changed user's preference file to user's preference directory
+                - added Fragments menu
+05/08/2002 :    - PsTricks : added \newpsobject, \psdots, \qdisk, made syntax rule closer to PsTricks grammar
+		  where it was too tolerant. 
+		- added "dot" attribute to polygons.
+		- \makebox's (and related) arguments can now span more than one line.
+		- LaTeX picture environment : enlarged the set of arguments \put can handle (beside LR-argument)
+		  Useful mainly when loading files formatted by hand, or by another software.
+		- added macros through support for BeanShell ; added many static methods in class JPicEdt
+		  to ease macro development.
+		- Parser has been refactored for efficiency ; added support for RegExp ; branches
+		  can be now added to the parser tree from a BeanShell macro for user-made parsers...
+ 		- changed splash screen
+		- updated on-line help.
+		- took vacation.
+21/07/2002 :    - fixed arrow size mismatch in PsTricks mode ; fixed repaint bug when attributes were changed
+                  from the Attribute Editor ; improved Attribute Editor updating-scheme when a new 
+		  element gets selected, or a new board is opened ; improved handling of mouse-hits for text
+		  elements by cropping the hit-sensitive area to the text bound, whatever the frame box.
+29/05/2002 :    - fixed bug with pstricks parsing of text alignment.
+14/05/2002 :	- fixed bug with AttributeEditor (predefined colours panel disappeared now and often for obscure reasons)
+		- fixed bug with epic/eepic parsing of text alignment, which
+		  resulted in text objects being displayed at y=0
+		- fixed bug with incorrect parsing of \makebox commands
+		  (esp. when no box size was given)
+07/05/2002 :    - fixed some bugs with external commands ; added MikTeX scripts.
+15/04/2002 :	- added floating tool-bars as a replacement of "per-board" toolbars, 
+		  which made memory consumption very high.
+		- fixed bug with undo/redo for attributes editing. Now, compound
+		  attributes edits are ended by a deselection.
+		- added experimental support for ModalInternalFrame.
+14/04/2002 : 	- added RenderingHints (anti-aliasing,...) to PECanvas. New bug : turning anti-aliasing 
+		  on make texture rendering (i.e. cross-hatches) look somewhat weird now
+		  and often. Is it Java ? Any clue welcomed...
+		- fixed bug with MoveTool and ScaleTool not registering undoable events.
+		- fixed bug with i18n'ing of undoable PEAction's and of Parser messages
+		- added Arrows to PicEllipse formatters in format.latex.*, format.eepic.*, and LaTeXParser
+		- added manual editing of Bounding Box (usefull when text boxes lie on a picture edge)
+		- fixed bug with DOTTED line style for LaTeXViewFactory ; 
+		  now matches what the LaTeX format can really handle (i.e. DOTTED line-style is 
+		  NOT supported natively !). If you really want to use dotted line-style, you may want
+		  to consider using PsTricks instead.
+		
+13/04/2002 : 	- fixed bug with "Cut" action (didn't copy to clipboard)
+		- fixed bug with polygon formatting in LaTeX mode, and unitlength parsing ("mm" string)
+		- fixed bug with language not being initialized in Preferences
+		- fixed bug with Look'n Feel not being loaded properly on startup.
+		- fixed bug with MaxUndoableSteps not being stored in preferences.
+		- fixed bug with Font selection not being reflected on the drawing
+		
+05/03/2002 :	- added new MouseTool's : "move" and "resize" (these are
+		  add-ons to the MouseTransform's of the same name, i.e. can be used as 
+		  stand-alone MouseTool's w/o relying on SelectionTool)
+		- all properties dialog boxes are now subclasses or
+		  AbstractCustomizer ; a CustomizerDialog has been implemented, which know how to
+		  add AbstractCustomizer's. 
+
+		  
+26/02/2002 : 	- completed tree structure for Drawing, Element and View's ;
+		  optimized calls to repaint ;
+		- CursorFactory now caches custom cursors;
+		- PicEllipse now inherits from PicRectangle; added two
+		  end-points for editing angles.
+		- MouseTransform's for SelectionTool are now created by a MouseTransformFactory, 
+		  using a HitInfo returned by the hitTest method located in the View associated with the
+		  clicked Element ; can be easily subclassed by plug-ins
+		  designer to add their own editing-tools.
+		- added new MouseTransform's : add/remove point for polygons,
+		  move endpoints from center, InvalidTransform with custom cursor. Added
+		  "setPointFromCenter" to PicRectangle and subclasses.
+		- changed DrawPointIterableTool : EditorKit now uses a DrawToolFactory
+		  which produces MouseTool's specific for each class of Element to be drawn, 
+		  Each tool specifies what end-points we must set at each mouse-pressed, and in which
+		  order. Plug-in designers can easily subclass this factory to
+		  add their own graphic elements and related drawing tools.
+				
+10/02/2002 : 	- added ViewFactory + View + modified PicObject to implement a tree structure.
+                  Changed name "PicObject" to "Element".
+09/02/2002 : 	- fixed bug with Grid lines not being repainted correctly
+             	- TextEditable is now ok -> using g.scale(1,-1) when painting text avoids using tricky tricks to
+	     	  circumvent the pb of text being mirrored.
+08/02/2002 : 	- implemented model-coordinate system through an AffineTransform in
+	     	  PECanvas's paintComponent method ; now, PicObject's are stored in
+	     	  "natural" coordinates (aka LaTeX or PostScript coordinates).
+	     	  Besides, PEMouseListener's may now directly access mouse coordinates in
+	     	  the model-coordinates system through PEMouseEvent.getPicPoint().
+05/02/2002 : 	- Package reorganisation ; separate the main tree into
+		  jpicedt.ui (the application itself) and jpicedt.graphic (the
+		  library)
+		- Model/control/view architecture is now ok : created three packages :
+		  jpicedt.graphic.view, jpicedt.graphic.model and
+		  jpicedt.graphic.toolkit. PECanvas delegates most of the
+		  editing behaviour to a pluggable EditorKit. EditorKit's know
+		  how to register and unregister MouseTool's, and backs reference
+		  to them in a HashTable ; this makes it easy for plug-ins
+		  designer to add their own MouseTool's.
+		- Multi-document-interface is now managed by a concrete implementation of
+		  a MDIManager interface (either using JInternalFrame's or
+		  JFrame's).
+		- Created a PEAction implementation of Swing's AbstractAction,
+		  which knows, using an ActionDispatcher, upon which target (PECanvas) it must act.
+06/01/2002 : - package jpicedt.graphic finally compiles ok. Pb with jpicedt.ui
+07/12/2001 : - fixed bug with frame's size in DlgBoxPreferences on some JVM implementation (pack() not working)
+
+29/11/2001 : - fixed bug with ListenerThread not getting properly initialized in SystemOutUtilities
+	      - fixed bug @ PicRectangle.paint in LaTeX mode : forgot to call g.draw(etc..)
+	      - improved PicLine paint method by addind the "LINE_STYLE=DOTTED" case
+	      - added paint-related methods in PicObject that factors common behavior depending on current formater mode
+	      - improved PsTricks formater by adding "linestyle=dotted"
+01/12/2001 : - made some I/O methods thread-safe (those relying on background threads for time consuming tasks) 
+	    	      => can now be called from outside AWTEventDispatchThread :
+			 - jpicedt.gui.internal.PECanvas.read
+			 - jpicedt.io.parser.LaTeXParser.parse
+			 - jpicedt.io.SystemOutUtilities.SystemOutFoFrame.<init>
+	      - added a DebugRepaintManager in jpicedt.util.gui to help debugging Swing repaint mechanism
+		      
+02/12/2001 : - fixed (long-awaited !) bug with PEScrollPane size update during a zoom operation (I got muddled up over
+		those multiple calls to repaint() and revalidate(), whereas ONE was enough, but at the RIGHT place !!!)
+	     - fixed parser bug in io.parser.picedt.DashStatement (forgot setAttribute(LINE_STYLE,DASHED))
+03/12/2001 : - reorganized packages : deleted sub-packages under jpicedt.util, moved to jpicedt.gui ;
+	       moved jpicedt.gui.internal and jpicedt.gui.tool to jpicedt.graphic and sub-packages
+04/12/2001 : - added Arrows to PicPolygon.paint and to PicPolygonFormater
+05/12/2001 : - added arrows to io.parser.picedt.PicPolygonExpression
+	     - fixed bug with dash parameter not being formated correctly with rectangles
+	     - added isToBack and isToFront in Drawing ; now EditDispositionAction in PECanvasPopupMenu 
+	       can be enabled/disabled depending on the target PicObject disposition.
+	     - added convertToCubic and convertToQuad action's in jpicedt.graphic.action.
+06/11/2001 : - adapted PicBezier from quad to cubic spline
+09/11/2001 : - adapted PicBezierFormater, and related parser expressions
+11/11/2001 : - lumped all DrawXXXXTool's together in jpicedt.gui.tool package
+	     - added a PicPointIterable class under PicObject for objects that support iteration over their control points
+	        now there's one DrawTool that can handle a variety of PicObject's (instead of nearly one for each PicObject before)
+13/11/2001 : - corrected bug with PicBezier parser (was absent from LateXParser's grammar)
+	     - added parsing and formating of PsTricks's user defined colours
+15/11/2001 : - added color chooser in properties panel, to handle user's defined colours
+19/09/2001 : - fixed : spline selection bug, linethickness parsing, makebox alignment parsing, polygon's "closed" attribute parsing 
+16/10/2001 : - modified Parser structure and added some packages for PsTricks support
+23/10/2001 : - added 90% of PsTricks support (colours, arrows, dash...)
+
+
+--------------------------------------------------------------------------------------------------
+[previous relases]
+See 'History' topic on www.jpicedt.org website for features added prior to 1.3.2

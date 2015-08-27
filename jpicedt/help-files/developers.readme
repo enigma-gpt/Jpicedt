@@ -1,0 +1,37 @@
+As of 2005/12, every localized version has its own manual LANG.texi and an "img" subdirectory where
+translation maintainers can put language-specific pictures, e.g., those including localized legends.  Other
+language-independent icons/pixmaps reside into the "./img" directory right here.
+
+Guidelines for writing help files
+
+- use this style `@kbd{CTRL}' for keyboard actions.
+- use this style `@file{/home/user/.jpicedt/fragments}' for filenames.
+- use this style `@dfn{new term}' for terminlogy that is being introduced.
+- use this style `@var{nnn}' for some variable name nnn.
+- use `@dots{}' instead of `...'.
+
+Plus some additional macros from jpicedt macros.texi @include file:
+- use this style `@menuItem{File}' for menu items.
+- use this style `@dialogTab{some tab}' for dialog tabs.
+- use this style `@dialogName{some dialog}' for dialog names.
+- Do not duplicate information with i18n_LANG.properties files, but use the flag definition extracted from
+  them.
+
+Directory content:
+./img:  pictures and icons that aren't language specific
+./texi: common texinfo includes
+licence.texi: CeCILL licence
+
+We're seeking maintainers for the spanish and portugese versions! 
+
+S.R.
+
+
+Glossary
+
+| English    | Français          |
+|------------+-------------------|
+| tooltip    | conseil d'usage   |
+| to support | prendre en charge |
+
+

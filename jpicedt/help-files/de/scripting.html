@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" 
+		  "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../jpe-help.css" />
+
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="CONTENT-TYPE" content=
+  "text/html; charset=us-ascii">
+  <meta name="author" content="Sylvain Reynal">
+  <meta name="translation" content=
+  "Jobst Hoffmann, Benjamin Poniatowski, Stephan Schulte">
+
+  <title>jPicEdt 1.6 Hilfe &ndash; Das Schreiben und Benutzen von BeanShell
+  Skripten</title><!-- $Revision: 1.7 $-->
+</head>
+
+<body>
+  <h2>Das Schreiben und Benutzen von BeanShell Skripten</h2>
+
+  <p>jPicEdt unterst&uuml;tzt nun Skripte (aka &quot;Makros&quot;) durch einen
+  integrierten BeanShell Interpreter. BeanShell ist eine leichtgewichtige,
+  erweiterbare und integrierte Skripterweiterung f&uuml;r Java, geschrieben
+  von Pat Niemeyer (pat@pat.net). Es folgt der Java-Grammatik (jedoch mit
+  h&ouml;herer Toleranz gegen&uuml;ber Syntax-Fehlern; im besonderen ist die
+  Typisierung nicht so streng wie bei Java), daher kann jeder mit
+  oberfl&auml;chlichen Java-Kenntnissen BeanShell-Skripte schreiben.</p>
+
+  <p>Eine umfassende Dokumentation der Beanshell gibt es unter:
+  <a href="http://www.beanshell.org">www.beanshell.org</a>. Als guter
+  Anfangspunkt kann ein pr&uuml;fender Blick in die Skripte dienen, die mit
+  jPicEdt ausgeliefert werden. F&uuml;r weitere Arbeiten werde Sie aber
+  auch <a href="../../api-doc/index.html">jPicEdt's API Dokumentation</a>
+  brauchen (falls Sie die Dokumentation bisher nicht installiert haben,
+  k&ouml;nnen Sie sie mit jPicEdt's Installationsprogramm nachinstallieren),
+  das gilt im speziellen, wenn Sie Skripte mit komplexen Operationen schreiben
+  wollen. Die
+  <b>jpicedt.JPicEdt</b> Klasse bietet eine Vielzahl statischer Methoden
+  (z.B. <code>JPicEdt.newBoard()</code>), die grundlegenden Bed&uuml;rfnisse
+  gen&uuml;gen k&ouml;nnten. Andere wichtige Klassen sind:</p>
+
+  <ul>
+  <li><b>jpicedt.ui.MDIManager</b> um Zeichenbretter zu handhaben (erstellt
+  ein neues Zeichenbrett, verschiebt es, ordnet Zeichenbretter
+  Kaskadebf&ouml;rmig an,&hellip;)</li>
+
+  <li><b>jpicedt.ui.PEDrawingBoard</b> und
+  <b>jpicedt.graphic.PECanvas</b> (PEDrawingBoard enth&auml;lt ein PECanvas
+  und ein PEScrollPane) um mit ausgew&auml;hlten Objekten zu arbeiten, zoomen,
+  E/A-Operationen auszuf&uuml;hren, oder auch um mit dem UndoManager ein wenig
+  rum zu tricksen :-), &hellip;</li>
+
+  <li><b>jpicedt.graphic.model.Drawing</b> um Objekte zur Zeichenbrett
+  hinzuzuf&uuml;gen;</li>
+
+  <li><b>jpicedt.graphic.model.Element</b> und konkrete Implementierungen
+  (Ellipsen, Rechtecke,&hellip;) um Umrisse und Attribute von Objekten zu
+  ver&auml;ndern;</li>
+
+  <li><b>jpicedt.graphic.view.View</b> und konkrete Implementierungen
+  (Ellipsen, Rechtecke,&hellip;) um Das AUSSEHEN eines Objektes auf dem
+  Bildschirm zu &auml;ndern (aber nicht wie es zu einer LaTex Zeichenkette
+  formatiert wird);</li>
+
+  <li><b>jpicedt.graphic.toolkit.EditorKit</b> um die Art, wie Objekte durch
+  die Maus bearbeitet werden, zu &auml;ndern (das ist einerseits das
+  Ver&auml;ndern von vorhandenem Verhalten, oder das Hinzuf&uuml;gen von
+  neuem).</li>
+
+  <li>Klassen im <b>jpicedt.format.*</b> Paket, um mit Inhaltstypen zu
+  arbeiten, z.B. das &Auml;ndern der Art wie Objekte zu LaTeX formatiert
+  werden und/oder wie TeX-Dateien bei gegebenem Format
+  (LaTeX, <code>eepic</code>,&hellip;) analysiert werden.</li>
+  </ul>
+
+  <p>Alle diese Klassen sind leicht erweiterbar und k&ouml;nnen mit anderen
+  verbunden werden (Dank dem bekannten View-Model-Controller
+  Schema&hellip;). Au&szlig;erdem beinhalten <b>jpicedt.JPicEdt</b> und
+  <b>jpicedt.graphic.toolkit.EditorKit</b> eine Auswahl von
+  <i>Aktionen</i> (implementiert als statische Klassen), die Sie in
+  Teilklassen unterteilen k&ouml;nnen, und anschlie&szlig;end zu Ihrer eigenen
+  grafischen Schnittstelle hinzuf&uuml;gen k&ouml;nnen. Vgl.  dazu die
+  Dokumentation <b>jpicedt.graphic.toolkit.PEAction</b>, dort finden Sie, was
+  eine <i>Aktion</i> ist und wie Sie sie vielleicht in deinem eigenen Code
+  benutzen k&ouml;nnen.</p>
+
+  <p>Der Bequemlichkeit halber wurden einige n&uuml;tzliche Variablen und
+  Methoden vordefiniert; beides ist in der BSH-Konsole vom Start an aufrufbar,
+  das gilt auch f&uuml;r Skripte, die &uuml;ber das Skriptmen&uuml; gestartet
+  werden. Im einzelnen sind dies:</p>
+
+  <ul>
+  <li><b>board()</b>: gibt als return-Wert das derzeitig ausgew&auml;hlte
+  PEDrawingBoard zur&uuml;ck oder <code>null</code>, wenn keine offenes
+  Zeichenbrett vorhanden ist;</li>
+
+  <li><b>canvas()</b>: gibt als return-Wert das aktive PECanvas zur&uuml;ck,
+  das z.B. von dem derzeitig ausgew&auml;hlten PEDrawingBoard beinhaltet
+  wird;</li>
+
+  <li><b>drawing()</b>: gibt als return-Wert die Zeichnung (auch als MODELL
+  bezeichnet), die auf dem aktiven PECanvas dargestellt wird,
+  zur&uuml;ck;</li>
+
+  <li><b>editorkit()</b>: gibt als return-Wert das EditorKit (auch als
+  CONTROLLER bezeichnet), das zum aktiven PECanvas geh&ouml;rt,
+  zur&uuml;ck;</li>
+
+  <li><b>mdimgr</b>: vordefinierte Variable, referenziert den derzeitigen
+  MDIManager.</li>
+
+  <li><b>clipboard</b>: vordefinierte Variable, referenziert die lokale
+  Zwischenablage, die von allen Zeichenbrettern gemeinsam genutzt wird (im
+  Gegensatz zur Systemzwischenablage, auf Sie mit jPicEdt &uuml;ber den
+  Men&uuml;punkt &ldquo;Einf&uuml;gen spezial&rdquo; Zugriff erhalten; diese
+  akzeptiert aber bisher einzig und allein Textdaten); sie wird zum Kopieren
+  und Einf&uuml;gen von Dingen aus/in ein PECanvas ben&ouml;tigt.</li>
+
+  <li><b>preferences</b>: vordefinierte Variable, referenziert ein Objekt der
+  Eigenschaften mit den Voreinstellungen des Benutzers</li>
+  </ul>
+
+  <h2>OK, wo soll ich meine Skripte ablegen?</h2>
+
+  <p>Die Skripte des Benutzers m&uuml;ssen im
+  &ldquo;makros&rdquo;-Unterverzeichnis des Verzeichnisses f&uuml;r die
+  Benutzer-Einstellungen liegen (zum Beispiel,
+  <code class="file">/home/user/.jpicedt/macros</code> in Unix). Skripte
+  m&uuml;ssen eine &ldquo;<code class="file">.bsh</code>&rdquo;-Erweiterung
+  haben. In Namen mit Unterstrichen werden letztere durch Leerstellen im
+  Skriptmen&uuml; ersetzt (z.B.
+  &ldquo;<code class="file">Repeat_copy.bsh</code>&rdquo; wird gezeigt als
+  &ldquo;Repeat copy&rdquo;). Sie k&ouml;nne auch andere Skripte aus einem
+  Skript heraus aufrufen, indem sie den BSH
+  <code>source(path_to_other_script)</code> Befehl benutzen, und ebenso
+  k&ouml;nnen Sie Ihre eigenen Klassen mit dem
+  <code>addClassPath()</code> Befehlhinzuf&uuml;gen.</p>
+
+  <p>Benutzen Sie die BSH Konsole, um Ihre Skripte zu testen.
+  Anschlie&szlig;end legen Sie sie im Skriptverzeichnis ab und sie werden
+  automatisch im Skripte-Men&uuml; angezeigt &ndash; evtl. ist ein
+  &ldquo;Skipte neu suchen&rdquo; erforderlich!</p>
+</body>
+</html>

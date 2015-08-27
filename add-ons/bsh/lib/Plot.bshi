@@ -1,0 +1,292 @@
+// Plot.bshi --- -*- coding: iso-8859-1 -*-
+// December 2, 2012 - jPicEdt 1.6, a picture editor for LaTeX.
+// Copyright (C) 2012 Vincent Belaïche
+//
+// Author: Vincent Belaïche <vincentb1@users.sourceforge.net>
+// Version: $Id: Plot.bshi,v 1.3 2013/10/07 19:16:44 vincentb1 Exp $
+// Keywords:
+// X-URL: http://www.jpicedt.org/
+//
+// Ce logiciel est régi par la licence CeCILL soumise au droit français et respectant les principes de
+// diffusion des logiciels libres. Vous pouvez utiliser, modifier et/ou redistribuer ce programme sous les
+// conditions de la licence CeCILL telle que diffusée par le CEA, le CNRS et l'INRIA sur le site
+// "http://www.cecill.info".
+//
+// En contrepartie de l'accessibilité au code source et des droits de copie, de modification et de
+// redistribution accordés par cette licence, il n'est offert aux utilisateurs qu'une garantie limitée.  Pour
+// les mêmes raisons, seule une responsabilité restreinte pèse sur l'auteur du programme, le titulaire des
+// droits patrimoniaux et les concédants successifs.
+//
+// A cet égard l'attention de l'utilisateur est attirée sur les risques associés au chargement, à
+// l'utilisation, à la modification et/ou au développement et à la reproduction du logiciel par l'utilisateur
+// étant donné sa spécificité de logiciel libre, qui peut le rendre complexe à manipuler et qui le réserve
+// donc à des développeurs et des professionnels avertis possédant des connaissances informatiques
+// approfondies.  Les utilisateurs sont donc invités à charger et tester l'adéquation du logiciel à leurs
+// besoins dans des conditions permettant d'assurer la sécurité de leurs systèmes et ou de leurs données et,
+// plus généralement, à l'utiliser et l'exploiter dans les mêmes conditions de sécurité.
+//
+// Le fait que vous puissiez accéder à cet en-tête signifie que vous avez pris connaissance de la licence
+// CeCILL, et que vous en avez accepté les termes.
+//
+/// Commentary:
+
+// This Beanshell script can be used to plot curves.
+//
+
+/// Code:
+
+//
+
+import jpicedt.graphic.*;
+import jpicedt.graphic.model.*;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.util.Vector;
+import java.lang.String;
+import java.lang.StringBuffer;
+
+
+double[] plotsSignalLoad(String filename, int colCount)
+{
+	// Comments allowed in C++ style
+	Pattern emptyLine = Pattern.compile("^ *//.*$");
+	String  oneFloat = "([-+]?(?:\\d+\\.\\d+|\\.\\d+|\\d+\\.)(?:e[-+]\\d+)?)";
+	String prev = "^\\s*";
+	StringBuffer severalFloats = new StringBuffer();
+	for(int i=0; i < colCount; ++i)
+	{
+		severalFloats.append(prev);
+		severalFloats.append(oneFloat);
+		prev = "\\s+";
+	}
+	severalFloats.append("\\s*(?://.*)?$");
+	Pattern dataLine = Pattern.compile(severalFloats.toString());
+
+    BufferedReader input;
+	FileReader fr;
+	try{
+		fr = new FileReader(filename);
+		input = new BufferedReader(fr);
+	}
+	catch(IOException ioEx){
+		JOptionPane.showMessageDialog(
+									  null,"Can't open file: " + filename,
+									  "plot.bshi",JOptionPane.ERROR_MESSAGE);
+		return null;
+	}
+
+	Vector data = new Vector(colCount * 10);
+	String line;
+	int lineNumber = 0;
+
+	while ((line=input.readLine())!=null){
+		++lineNumber;
+		if(emptyLine.matcher(line).matches())
+		{
+		}
+		else
+		{
+			Matcher dlMatcher = dataLine.matcher(line);
+			if(dlMatcher.matches())
+			{
+				for(int i=1; i <= colCount; ++i){
+					double v = Double.parseDouble(dlMatcher.group(i));
+					data.add(v);
+				}
+			}
+			else
+			{
+				fr.close();
+				IOException ioEx = new IOException("plots.bshi: Invalid plot signal file format at line #"+Integer.toString(lineNumber));
+				throw ioEx;
+			}
+		}
+
+	}
+	fr.close();
+
+	double[] ret = new double[data.size()];
+	for(int i = 0;  i < ret.length; ++i)
+		ret[i] = data.elementAt(i);
+
+	return ret;
+}
+
+
+PicMultiCurve d2plot(double[] signal)
+{
+	PicMultiCurve ir = new PicMultiCurve();
+	ir.addPoint(p1 = new PicPoint(org.getX(),org.getY()));
+	for(int i =0;i+2 < signal.length;i+=2)//ref_ouput.length;i+=2)
+	{
+		p0 = new PicPoint(p1);
+		PicVector rel_p1 = new PicVector(d1p1);
+		d2p0 = new PicVector(d2p1);
+		p1 = new PicPoint(org.getX()+xScale *(i+2),
+						  org.getY()+signal[i+2]*yScale);
+
+		d1p1 = new PicVector(xScale ,(signal[i+1]-signal[i])*yScale);
+
+		d2p1 = new PicVector(0,
+							 ((signal[i+2]-signal[i+1])
+							  -(signal[i+1]-signal[i]))*yScale);
+
+		ir.diff2CurveTo(d2p0,d2p1,d1p0,d1p1,p1);
+	}
+	return ir;
+}
+
+/* plot as a continuous line
+
+   i*xScale             for x
+   signal[i]*yScale     for y
+ */
+PicMultiCurve d1plotXY(double[] signal,PicPoint org,double xScale, double yScale, PicAttributeSet pas)
+{
+	PicPoint p0,p1;
+	PicMultiCurve ir = new PicMultiCurve(p1 = new PicPoint(org.getX(),org.getY()+signal[0]*yScale),pas);
+	PicVector d1p1 = new PicVector(xScale ,(signal[1]-signal[0])*yScale);
+	PicVector d1p0;
+
+	for(int i =1;i+1 < signal.length;i+=1)
+	{
+		p0 = new PicPoint(p1);
+		d1p0 = new PicVector(d1p1);
+		p1 = new PicPoint(org.getX()+xScale *i,
+						  org.getY()+signal[i]*yScale);
+
+		d1p1 = new PicVector(xScale ,(signal[i+1]-signal[i])*yScale);
+
+		ir.diff1CurveTo(d1p0,d1p1,p1);
+	}
+	return ir;
+}
+
+/* plot as a continuous line
+
+   i*xScale             for x
+   signal[i]*yScale     for y
+ */
+PicMultiCurve plotY(double[] signal,PicPoint org,double xScale, double yScale, PicAttributeSet pas)
+{
+	PicMultiCurve ir = new PicMultiCurve(new PicPoint(org.getX(),org.getY()+signal[0]*yScale), pas);
+	for(int i =1;i < signal.length;i+=1)
+	{
+		PicPoint p0 = new PicPoint(org.getX()+xScale *i,
+								   org.getY()+signal[i]*yScale);
+
+		ir.lineTo(p0);
+	}
+	return ir;
+}
+
+/* plot as a continuous line
+
+   signal[2*i]  *xScale     for x
+   signal[2*i+1]*yScale     for y
+ */
+PicMultiCurve plotXY(double[] signal,PicPoint org,double xScale, double yScale, PicAttributeSet pas)
+{
+	PicMultiCurve ir = new PicMultiCurve(new PicPoint(org.getX()+signal[0]*xScale,org.getY()+signal[1]*yScale), pas);
+	for(int i =2;i+1 < signal.length;i+=2)
+	{
+		PicPoint p0 = new PicPoint(org.getX()+signal[i] * xScale,
+								   org.getY()+signal[i+1]*yScale);
+
+		ir.lineTo(p0);
+	}
+	return ir;
+}
+
+
+/* plot as a serie of vertical lines
+
+   i*xScale             for x
+   signal[i]*yScale     for y
+ */
+PicGroup vLplotXY(double[] signal,PicPoint org, double xScale, double yScale, PicAttributeSet pas)
+{
+	PicGroup gr = new PicGroup();
+	for(int i =0;i < signal.length;i+=2)
+		{
+			PicPoint pt = new PicPoint(org.getX()+xScale*signal[i],org.getY());
+			PicMultiCurve ir = new PicMultiCurve(pt, pas);
+			pt.translate(0.0,signal[i+1]*yScale);
+	        ir.lineTo(pt);
+			gr.add(ir);
+		}
+	return gr;
+}
+
+
+/* plot as a continuous line
+   signal[3*i]*xScale for x
+   signal[3*i+1]*yScale for y
+   signal[3*i+2] derivate of function at this point
+ */
+PicMultiCurve plotXYdY(double[] signal,PicPoint org, double xScale,double yScale,PicAttributeSet pas)
+{
+	PicMultiCurve ir;
+	PicPoint p1,p0;
+	PicVector d1p0,d1p1;
+	double deltaX;
+
+	ir = new PicMultiCurve(p1 = new PicPoint(org.getX()+signal[0]*xScale,org.getY()+signal[1]*yScale), pas);
+
+	for(int i =3;i+2 < signal.length;i+=3)
+	{
+		double deltaSig =  (signal[i] - signal[i-3]);
+		double deltaX   =  deltaSig*xScale;
+		double deltaY   =  deltaSig*yScale;
+
+		p0 = new PicPoint(p1);
+		d1p0 = new PicVector(deltaX,signal[i-1]*deltaY);
+
+		p1 = new PicPoint(org.getX()+signal[i]*xScale,org.getY()+signal[i+1]*yScale);
+
+		d1p1 = new PicVector(deltaX ,signal[i+2]*deltaY);
+
+		ir.diff1CurveTo(d1p0,d1p1,p1);
+	}
+	return ir;
+}
+
+/* plot as a continuous line
+   signal[4*i]*xScale for x
+   signal[4*i+1]*yScale for y
+   signal[4*i+2] derivate of function at this point
+   signal[4*i+2] derivate second of function at this point
+ */
+PicMultiCurve plotXYdYd2Y(double[] signal,PicPoint org, double xScale,double yScale,PicAttributeSet pas)
+{
+	PicMultiCurve ir;
+	PicPoint  p0, p1;
+	PicVector d1p0, d1p1;
+	PicVector d2p0, d2p1;
+	double deltaX;
+
+	ir = new PicMultiCurve(p1 = new PicPoint(org.getX()+signal[0]*xScale,org.getY()+signal[1]*yScale), pas);
+
+	for(int i =4;i+3 < signal.length;i+=4)
+	{
+		double deltaSig =  (signal[i] - signal[i-4]);
+		double deltaX   =  deltaSig*xScale;
+		double deltaY   =  deltaSig*yScale;
+		double deltaY2 =  deltaSig*deltaY;
+
+		p0 = new PicPoint(p1);
+		d1p0 = new PicVector(deltaX,signal[i-2]*deltaY);
+		d2p0 = new PicVector(0,signal[i-1]*deltaY2);
+
+		p1 = new PicPoint(org.getX()+signal[i]*xScale,org.getY()+signal[i+1]*yScale);
+
+		d1p1 = new PicVector(deltaX , signal[i+2]*deltaY);
+		d2p1 = new PicVector(0 ,     signal[i+3]*deltaY2);
+
+		ir.diff2CurveTo(d2p0,d2p1,d1p0,d1p1,p1);
+	}
+	return ir;
+}

@@ -1,0 +1,69 @@
+%%Created by jPicEdt 1.6-pre1: mixed JPIC-XML/LaTeX format
+%%Sun Jul 17 23:50:25 CEST 2011
+%%Begin JPIC-XML
+%<?xml version="1.0" standalone="yes"?>
+%<jpic x-min="0" x-max="27.81" y-min="12.51" y-max="40" auto-bounding="true">
+%<ellipse fill-style="solid"
+%	 p3="(20,20)"
+%	 p2="(20,40)"
+%	 p1="(0,40)"
+%	 closure="open"
+%	 angle-end="0"
+%	 angle-start="0"
+%	 stroke-width="0"
+%	 />
+%<multicurve fill-style="solid"
+%	 points="(15.62,21.88);(15.62,21.88);(22.5,13.12);(22.5,13.12);(22.5,13.12);(26.88,17.5);
+%	(26.88,17.5);(26.88,17.5);(18.12,25);(18.12,25)"
+%	 />
+%<multicurve fill-style="solid"
+%	 fill-color="#ffebcd"
+%	 points="(17.5,30);(17.5,25.86);(14.14,22.5);(10,22.5);(5.86,22.5);(2.5,25.86);
+%	(2.5,30);(2.5,34.14);(5.86,37.5);(10,37.5);(14.14,37.5);(17.5,34.14);
+%	(17.5,30)"
+%	 />
+%<multicurve fill-style="solid"
+%	 stroke-color="#6495ed"
+%	 fill-color="#0000ff"
+%	 points="(5,31.25);(5,31.25);(5,28.75);(5,28.75);(5,28.75);(15,28.75);
+%	(15,28.75);(15,28.75);(15,31.25);(15,31.25);(15,31.25);(5,31.25)"
+%	 />
+%<ellipse fill-style="solid"
+%	 p3="(27.81,16.88)"
+%	 p2="(25.94,18.12)"
+%	 fill-color="#6a5acd"
+%	 p1="(21.56,13.75)"
+%	 closure="open"
+%	 angle-end="0"
+%	 angle-start="0"
+%	 />
+%</jpic>
+%%End JPIC-XML
+%PSTricks content-type (pstricks.sty package needed)
+%Add \usepackage{pstricks} in the preamble of your LaTeX file
+%You can rescale the whole picture (to 80% for instance) by using the command \def\JPicScale{0.8}
+\ifx\JPicScale\undefined\def\JPicScale{1}\fi
+\psset{unit=\JPicScale mm}
+\newrgbcolor{userFillColour}{0 0 0}
+\psset{linewidth=0.3,dotsep=1,hatchwidth=0.3,hatchsep=1.5,shadowsize=1,dimen=middle}
+\psset{dotsize=0.7 2.5,dotscale=1 1,fillcolor=userFillColour}
+\psset{arrowsize=1 2,arrowlength=1,arrowinset=0.25,tbarsize=0.7 5,bracketlength=0.15,rbracketlength=0.15}
+\begin{pspicture}(0,0)(27.81,40)
+\rput{0}(10,30){\psellipse[linewidth=0,fillstyle=solid](0,0)(10,-10)}
+\psline[fillstyle=solid](15.62,21.88)
+(22.5,13.12)
+(26.88,17.5)(18.12,25)
+\newrgbcolor{userFillColour}{1 0.92 0.8}
+\pscustom[fillcolor=userFillColour,fillstyle=solid]{\psbezier(17.5,30)(17.5,25.86)(14.14,22.5)(10,22.5)
+\psbezier(5.86,22.5)(2.5,25.86)(2.5,30)
+\psbezier(2.5,34.14)(5.86,37.5)(10,37.5)
+\psbezier(14.14,37.5)(17.5,34.14)(17.5,30)
+}
+\newrgbcolor{userLineColour}{0.39 0.58 0.93}
+\pspolygon[linecolor=userLineColour,fillcolor=blue,fillstyle=solid](5,31.25)
+(5,28.75)
+(15,28.75)
+(15,31.25)(5,31.25)
+\newrgbcolor{userFillColour}{0.42 0.35 0.8}
+\rput{43.26}(24.68,15.32){\psellipse[fillcolor=userFillColour,fillstyle=solid](0,0)(3.1,-1.1)}
+\end{pspicture}

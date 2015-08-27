@@ -1,0 +1,173 @@
+%%Created by jPicEdt 1.6-pre1: mixed JPIC-XML/LaTeX format
+%%Sat Nov 17 04:55:29 CET 2012
+%%Begin JPIC-XML
+%<?xml version="1.0" standalone="yes"?>
+%<jpic x-min="0" x-max="40" y-min="-0" y-max="40" auto-bounding="true">
+%<g lift-pen="0"
+%	 compound-mode="separate"
+%	 closed="false"
+%	>
+%<parallelogram fill-style="solid"
+%	 p3="(40,36.67)"
+%	 stroke-color="#ffd700"
+%	 p2="(0,36.67)"
+%	 fill-color="#ffd700"
+%	 p1="(0,40)"
+%	 />
+%<parallelogram fill-style="solid"
+%	 p3="(40,33.33)"
+%	 stroke-color="#0000cd"
+%	 p2="(0,33.33)"
+%	 fill-color="#0000cd"
+%	 p1="(0,36.67)"
+%	 pstcustom="linestyle=none, fillstyle=gradient,gradend={rgb,256:red,0;green,0;blue,205}, gradbegin={rgb,256:red,97;green,97;blue,224},gradmidpoint=0"
+%	 />
+%<parallelogram fill-style="solid"
+%	 p3="(40,26.67)"
+%	 stroke-color="#6161e0"
+%	 p2="(0,26.67)"
+%	 fill-color="#6161e0"
+%	 p1="(0,33.33)"
+%	 pstcustom="linestyle=none, fillstyle=gradient,gradend={rgb,256:red,97;green,97;blue,224}, gradbegin={rgb,256:red,158;green,158;blue,236},gradmidpoint=0"
+%	 />
+%<parallelogram fill-style="solid"
+%	 p3="(40,16.67)"
+%	 stroke-color="#9e9eec"
+%	 p2="(0,16.67)"
+%	 fill-color="#9e9eec"
+%	 p1="(0,26.67)"
+%	 pstcustom="linestyle=none, fillstyle=gradient,gradend={rgb,256:red,158;green,158;blue,236}, gradbegin={rgb,256:red,195;green,195;blue,244},gradmidpoint=0"
+%	 />
+%<parallelogram fill-style="solid"
+%	 p3="(40,-0)"
+%	 stroke-color="#c3c3f3"
+%	 p2="(0,-0)"
+%	 fill-color="#c3c3f3"
+%	 p1="(0,16.67)"
+%	 pstcustom="linestyle=none, fillstyle=gradient,gradend={rgb,256:red,195;green,195;blue,244}, gradbegin={rgb,256:red,256;green,256;blue,256},gradmidpoint=0"
+%	 />
+%</g>
+%<g lift-pen="0"
+%	 compound-mode="separate"
+%	 closed="false"
+%	>
+%<multicurve fill-style="solid"
+%	 stroke-color="#b22222"
+%	 fill-color="#b22222"
+%	 points="(34.98,23.88);(34.98,23.89);(31.84,23.88);(31.84,23.88);(31.84,23.88);(16.28,4.31);
+%	(16.28,4.31);(16.28,4.31);(19.42,4.31);(19.42,4.31);(19.42,4.31);(34.98,23.88)"
+%	 />
+%<multicurve fill-style="solid"
+%	 stroke-color="#b22222"
+%	 fill-color="#b22222"
+%	 points="(25.07,13.35);(23.19,19.36);(20.71,24.29);(19.36,24.32);(18,24.36);(18.19,24.14);
+%	(16.16,21.24);(16.16,21.24);(16.16,21.35);(16.16,21.35);(17.33,24.55);(17.63,25.83);
+%	(19.58,25.83);(21.54,25.83);(24.32,20.86);(26.2,14.85);(26.2,14.85);(26.19,14.85);
+%	(26.19,14.85);(28.07,8.84);(30.55,3.91);(31.91,3.87);(33.26,3.84);(33.07,4.06);
+%	(35.1,6.96);(35.1,6.96);(35.1,6.84);(35.1,6.84);(33.94,3.65);(33.64,2.37);
+%	(31.68,2.37);(29.73,2.37);(26.94,7.33);(25.07,13.35)"
+%	 />
+%</g>
+%<g lift-pen="0"
+%	 compound-mode="separate"
+%	 closed="false"
+%	>
+%<multicurve fill-style="solid"
+%	 stroke-color="#ff0000"
+%	 fill-color="#ff0000"
+%	 points="(6.61,30.85);(6.09,31.7);(4.95,31.57);(4.21,31.08);(3.46,30.58);(3.05,30.32);
+%	(3.16,29.67);(3.27,29.01);(3.66,28.65);(5.01,28.78);(6.36,28.91);(7.14,29.99)"
+%	 />
+%<multicurve fill-style="solid"
+%	 stroke-color="#ff0000"
+%	 fill-color="#ff0000"
+%	 points="(7.05,26.48);(7.01,27.4);(7.62,27.24);(8.12,26.73);(8.61,26.22);(9.37,24.69);
+%	(9.74,23.53);(10.11,22.36);(10.69,20.88);(11.57,16.96);(12.45,13.05);(11.82,7.28);
+%	(10.54,6.47);(9.26,5.67);(6.36,6.49);(5.47,9.26);(4.57,12.04);(8.62,16.82);
+%	(10.38,18.48);(12.14,20.14);(12.12,20.58);(13.14,20.78);(14.17,20.99);(14.46,20.93);
+%	(13.75,19.88);(13.03,18.81);(8.7,15.15);(7.81,13.27);(6.91,11.39);(6.11,10.55);
+%	(6.61,9.29);(7.11,8.03);(8.86,6.97);(9.59,7.54);(10.32,8.12);(10.45,8.81);
+%	(10.67,9.59);(10.89,10.37);(10.81,12.83);(10.78,13.71);(10.73,14.6);(10.55,16.05);
+%	(10.17,17.92);(9.79,19.79);(9.16,21.93);(8.53,23.24);(7.91,24.55);(8.03,24.36);
+%	(7.67,25.04);(7.31,25.73);(7.08,25.56)"
+%	 />
+%</g>
+%</jpic>
+%%End JPIC-XML
+%PSTricks content-type (pstricks.sty package needed)
+%Add \usepackage{pstricks} in the preamble of your LaTeX file
+%You can rescale the whole picture (to 80% for instance) by using the command \def\JPicScale{0.8}
+\ifx\JPicScale\undefined\def\JPicScale{1}\fi
+\psset{unit=\JPicScale mm}
+\newrgbcolor{userFillColour}{0 0 0}
+\psset{linewidth=0.3,dotsep=1,hatchwidth=0.3,hatchsep=1.5,shadowsize=1,dimen=middle}
+\psset{dotsize=0.7 2.5,dotscale=1 1,fillcolor=userFillColour}
+\psset{arrowsize=1 2,arrowlength=1,arrowinset=0.25,tbarsize=0.7 5,bracketlength=0.15,rbracketlength=0.15}
+\makeatletter\@ifundefined{Pst@correctAnglefalse}{}{\psset{correctAngle=false}}\makeatother
+\begin{pspicture}(0,0)(40,40)
+{%
+\newrgbcolor{userLineColour}{1 0.84 0}
+\newrgbcolor{userFillColour}{1 0.84 0}
+\pspolygon[linecolor=userLineColour,fillcolor=userFillColour,fillstyle=solid](0,40)(0,36.67)(40,36.67)(40,40)
+\newrgbcolor{userLineColour}{0 0 0.8}
+\newrgbcolor{userFillColour}{0 0 0.8}
+\pspolygon[linecolor=userLineColour,fillcolor=userFillColour,fillstyle=solid,linestyle=none, fillstyle=gradient,gradend={rgb,256:red,0;green,0;blue,205}, gradbegin={rgb,256:red,97;green,97;blue,224},gradmidpoint=0](0,36.67)(0,33.33)(40,33.33)(40,36.67)
+\newrgbcolor{userLineColour}{0.38 0.38 0.88}
+\newrgbcolor{userFillColour}{0.38 0.38 0.88}
+\pspolygon[linecolor=userLineColour,fillcolor=userFillColour,fillstyle=solid,linestyle=none, fillstyle=gradient,gradend={rgb,256:red,97;green,97;blue,224}, gradbegin={rgb,256:red,158;green,158;blue,236},gradmidpoint=0](0,33.33)(0,26.67)(40,26.67)(40,33.33)
+\newrgbcolor{userLineColour}{0.62 0.62 0.93}
+\newrgbcolor{userFillColour}{0.62 0.62 0.93}
+\pspolygon[linecolor=userLineColour,fillcolor=userFillColour,fillstyle=solid,linestyle=none, fillstyle=gradient,gradend={rgb,256:red,158;green,158;blue,236}, gradbegin={rgb,256:red,195;green,195;blue,244},gradmidpoint=0](0,26.67)(0,16.67)(40,16.67)(40,26.67)
+\newrgbcolor{userLineColour}{0.76 0.76 0.95}
+\newrgbcolor{userFillColour}{0.76 0.76 0.95}
+\pspolygon[linecolor=userLineColour,fillcolor=userFillColour,fillstyle=solid,linestyle=none, fillstyle=gradient,gradend={rgb,256:red,195;green,195;blue,244}, gradbegin={rgb,256:red,256;green,256;blue,256},gradmidpoint=0](0,16.67)(0,-0)(40,-0)(40,16.67)
+}%
+{%
+\newrgbcolor{userLineColour}{0.7 0.13 0.13}
+\newrgbcolor{userFillColour}{0.7 0.13 0.13}
+\pscustom[linecolor=userLineColour,fillcolor=userFillColour,fillstyle=solid]{\psbezier(34.98,23.88)(34.98,23.89)(31.84,23.88)(31.84,23.88)
+\psline(31.84,23.88)(16.28,4.31)
+\psline(16.28,4.31)(19.42,4.31)
+\psline(19.42,4.31)(34.98,23.88)
+\closepath}
+\newrgbcolor{userLineColour}{0.7 0.13 0.13}
+\newrgbcolor{userFillColour}{0.7 0.13 0.13}
+\pscustom[linecolor=userLineColour,fillcolor=userFillColour,fillstyle=solid]{\psbezier(25.07,13.35)(23.19,19.36)(20.71,24.29)(19.36,24.32)
+\psbezier(18,24.36)(18.19,24.14)(16.16,21.24)
+\psline(16.16,21.24)(16.16,21.35)
+\psbezier(17.33,24.55)(17.63,25.83)(19.58,25.83)
+\psbezier(21.54,25.83)(24.32,20.86)(26.2,14.85)
+\psline(26.2,14.85)(26.19,14.85)
+\psbezier(28.07,8.84)(30.55,3.91)(31.91,3.87)
+\psbezier(33.26,3.84)(33.07,4.06)(35.1,6.96)
+\psline(35.1,6.96)(35.1,6.84)
+\psbezier(33.94,3.65)(33.64,2.37)(31.68,2.37)
+\psbezier(29.73,2.37)(26.94,7.33)(25.07,13.35)
+}
+}%
+{%
+\pscustom[linecolor=red,fillcolor=red,fillstyle=solid]{\psbezier(6.61,30.85)(6.09,31.7)(4.95,31.57)(4.21,31.08)
+\psbezier(3.46,30.58)(3.05,30.32)(3.16,29.67)
+\psbezier(3.27,29.01)(3.66,28.65)(5.01,28.78)
+\psbezier(6.36,28.91)(7.14,29.99)(6.61,30.85)
+\closepath}
+\pscustom[linecolor=red,fillcolor=red,fillstyle=solid]{\psbezier(7.05,26.48)(7.01,27.4)(7.62,27.24)(8.12,26.73)
+\psbezier(8.61,26.22)(9.37,24.69)(9.74,23.53)
+\psbezier(10.11,22.36)(10.69,20.88)(11.57,16.96)
+\psbezier(12.45,13.05)(11.82,7.28)(10.54,6.47)
+\psbezier(9.26,5.67)(6.36,6.49)(5.47,9.26)
+\psbezier(4.57,12.04)(8.62,16.82)(10.38,18.48)
+\psbezier(12.14,20.14)(12.12,20.58)(13.14,20.78)
+\psbezier(14.17,20.99)(14.46,20.93)(13.75,19.88)
+\psbezier(13.03,18.81)(8.7,15.15)(7.81,13.27)
+\psbezier(6.91,11.39)(6.11,10.55)(6.61,9.29)
+\psbezier(7.11,8.03)(8.86,6.97)(9.59,7.54)
+\psbezier(10.32,8.12)(10.45,8.81)(10.67,9.59)
+\psbezier(10.89,10.37)(10.81,12.83)(10.78,13.71)
+\psbezier(10.73,14.6)(10.55,16.05)(10.17,17.92)
+\psbezier(9.79,19.79)(9.16,21.93)(8.53,23.24)
+\psbezier(7.91,24.55)(8.03,24.36)(7.67,25.04)
+\psbezier(7.31,25.73)(7.08,25.56)(7.05,26.48)
+\closepath}
+}%
+\end{pspicture}

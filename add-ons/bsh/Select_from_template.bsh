@@ -1,0 +1,136 @@
+// Select_from_template.bsh --- -*- coding: iso-8859-1 -*-
+// August 29, 2002 - jPicEdt 1.3.2, a picture editor for LaTeX.
+// Copyright (C) 1999-2002 Sylvain Reynal
+//
+// Author: Sylvain Reynal
+//         Département de Physique
+//         École Nationale Supérieure de l'Électronique et de ses Applications (ÉNSÉA)
+//         6, avenue du Ponceau
+//         95014 CERGY CEDEX
+//         FRANCE
+//
+//         Tel : +33 130 736 245
+//         Fax : +33 130 736 667
+//         e-mail : reynal@ensea.fr
+//
+// Version: $Id: Select_from_template.bsh,v 1.5 2011/11/09 06:14:24 vincentb1 Exp $
+// Keywords:
+// X-URL: http://www.jpicedt.org/
+//
+// Ce logiciel est régi par la licence CeCILL soumise au droit français et
+// respectant les principes de diffusion des logiciels libres. Vous pouvez
+// utiliser, modifier et/ou redistribuer ce programme sous les conditions
+// de la licence CeCILL telle que diffusée par le CEA, le CNRS et l'INRIA
+// sur le site "http://www.cecill.info".
+//
+// En contrepartie de l'accessibilité au code source et des droits de copie,
+// de modification et de redistribution accordés par cette licence, il n'est
+// offert aux utilisateurs qu'une garantie limitée.  Pour les mêmes raisons,
+// seule une responsabilité restreinte pèse sur l'auteur du programme,  le
+// titulaire des droits patrimoniaux et les concédants successifs.
+//
+// A cet égard  l'attention de l'utilisateur est attirée sur les risques
+// associés au chargement,  à l'utilisation,  à la modification et/ou au
+// développement et à la reproduction du logiciel par l'utilisateur étant
+// donné sa spécificité de logiciel libre, qui peut le rendre complexe à
+// manipuler et qui le réserve donc à des développeurs et des professionnels
+// avertis possédant  des  connaissances  informatiques approfondies.  Les
+// utilisateurs sont donc invités à charger  et  tester  l'adéquation  du
+// logiciel à leurs besoins dans des conditions permettant d'assurer la
+// sécurité de leurs systèmes et ou de leurs données et, plus généralement,
+// à l'utiliser et l'exploiter dans les mêmes conditions de sécurité.
+//
+// Le fait que vous puissiez accéder à cet en-tête signifie que vous avez
+// pris connaissance de la licence CeCILL, et que vous en avez accepté les
+// termes.
+//
+/// Commentary:
+
+// This BeanShell selects (incrementaly) elements having the same shape as the currently selected element
+//
+
+/// Code:
+
+
+import jpicedt.graphic.model.*;
+
+// ------------ methods -----------------------------------------
+
+//
+boolean logic(boolean b1,boolean b2){
+	if (logicCOMBO.getSelectedItem().equals("AND")) return b1&&b2;
+	else return b1||b2;
+}
+
+// scan each element in the Drawing, and match its class against that of currently selected element :
+proceed(){
+	selected = canvas().selection().next();
+	selectedSet = selected.getAttributeSet();
+        for(it=drawing().elements(); it.hasNext();){
+                e=it.next();
+		set=e.getAttributeSet();
+		b=!logic(false,true); // initial value
+		if(matchShapeCB.isSelected())     b=logic(b, e.getClass().equals(selected.getClass()));
+		if(matchLineColorCB.isSelected()) b=logic(b,StyleConstants.getLineColor(set).equals(StyleConstants.getLineColor(selectedSet)));
+		if(matchLineStyleCB.isSelected()) b=logic(b,StyleConstants.getLineStyle(set).equals(StyleConstants.getLineStyle(selectedSet)));
+		if(matchFillColorCB.isSelected()) b=logic(b,StyleConstants.getFillColor(set).equals(StyleConstants.getFillColor(selectedSet)));
+		if(matchFillStyleCB.isSelected()) b=logic(b,StyleConstants.getFillStyle(set).equals(StyleConstants.getFillStyle(selectedSet)));
+		if(matchWholeSetCB.isSelected()){ // [pending] add "equals" method in PicAttributeSet
+			b1=true;
+			for(names=selectedSet.getAttributeNames();names.hasNext();){
+				n=names.next();
+				b1=b1 && set.getAttribute(n).equals(selectedSet.getAttribute(n));
+			}
+			b=logic(b,b1);
+		}
+		if (b) canvas().select(e,true);
+        }
+
+	jf.dispose();
+}
+
+
+// -------------------- main --------------------------------------
+
+scriptTitle="Select from template";
+
+if (canvas()==null) {
+	mdimgr.showMessageDialog("First open a board!",scriptTitle,JOptionPane.ERROR_MESSAGE);
+	return;
+}
+
+if (canvas().getSelectionSize()==0){
+	mdimgr.showMessageDialog("First select a template element !",scriptTitle,JOptionPane.ERROR_MESSAGE);
+        return;
+}
+
+if (canvas().getSelectionSize()>1){
+        mdimgr.showMessageDialog("Select only ONE template element !",scriptTitle,JOptionPane.ERROR_MESSAGE);
+        return;
+}
+
+// create user pane :
+box = new Box(BoxLayout.Y_AXIS);
+lbl=new JLabel("Match template...");
+box.add(lbl);
+matchShapeCB = new JCheckBox("shape");
+box.add(matchShapeCB);
+matchLineColorCB = new JCheckBox("stroke colour");
+box.add(matchLineColorCB);
+matchLineStyleCB = new JCheckBox("stroke style");
+box.add(matchLineStyleCB);
+matchFillColorCB = new JCheckBox("fill colour");
+box.add(matchFillColorCB);
+matchFillStyleCB = new JCheckBox("fill style");
+box.add(matchFillStyleCB);
+matchWholeSetCB = new JCheckBox("all attributes");
+box.add(matchWholeSetCB);
+String[] logicChoices={"AND","OR"};
+logicCOMBO=new JComboBox(logicChoices);
+box.add(logicCOMBO);
+but = new JButton("Proceed !");
+box.add(but);
+al = new ActionListener(){actionPerformed(ActionEvent e){proceed();}};
+but.addActionListener(al);
+jf=frame(box);
+

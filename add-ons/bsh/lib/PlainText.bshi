@@ -1,0 +1,190 @@
+// PlainText.bshi --- -*- coding: iso-8859-1 -*-
+// December 2, 2012 - jPicEdt 1.6, a picture editor for LaTeX.
+// Copyright (C) 2012/2013 Vincent Belaïche
+//
+// Author: Vincent Belaïche <vincentb1@users.sourceforge.net>
+// Version: $Id: PlainText.bshi,v 1.3 2013/02/28 21:46:54 vincentb1 Exp $
+// Keywords:
+// X-URL: http://www.jpicedt.org/
+//
+// Ce logiciel est régi par la licence CeCILL soumise au droit français et respectant les principes de
+// diffusion des logiciels libres. Vous pouvez utiliser, modifier et/ou redistribuer ce programme sous les
+// conditions de la licence CeCILL telle que diffusée par le CEA, le CNRS et l'INRIA sur le site
+// "http://www.cecill.info".
+//
+// En contrepartie de l'accessibilité au code source et des droits de copie, de modification et de
+// redistribution accordés par cette licence, il n'est offert aux utilisateurs qu'une garantie limitée.  Pour
+// les mêmes raisons, seule une responsabilité restreinte pèse sur l'auteur du programme, le titulaire des
+// droits patrimoniaux et les concédants successifs.
+//
+// A cet égard l'attention de l'utilisateur est attirée sur les risques associés au chargement, à
+// l'utilisation, à la modification et/ou au développement et à la reproduction du logiciel par l'utilisateur
+// étant donné sa spécificité de logiciel libre, qui peut le rendre complexe à manipuler et qui le réserve
+// donc à des développeurs et des professionnels avertis possédant des connaissances informatiques
+// approfondies.  Les utilisateurs sont donc invités à charger et tester l'adéquation du logiciel à leurs
+// besoins dans des conditions permettant d'assurer la sécurité de leurs systèmes et ou de leurs données et,
+// plus généralement, à l'utiliser et l'exploiter dans les mêmes conditions de sécurité.
+//
+// Le fait que vous puissiez accéder à cet en-tête signifie que vous avez pris connaissance de la licence
+// CeCILL, et que vous en avez accepté les termes.
+//
+/// Commentary:
+
+// This BeanShell script can be used to draw plain text nodes.
+//
+
+/// Code:
+
+
+
+public class PlainTextFactory{
+
+
+
+	public PicAttributeSet textPAS; // private
+
+	private double          marginH = 1.5;
+	private double          width  = 10.0;
+	private double          normalAngle  = Math.PI * 0.5;
+	private double          height = 0.0;
+	private String          formatStr = "%s";
+
+	private boolean         autoPos = true;
+	private boolean         autoFormat = true;
+
+	private void updateAuto(){
+		while(this.normalAngle <= -Math.PI)
+			this.normalAngle += 2*Math.PI;
+		while(this.normalAngle > Math.PI)
+			this.normalAngle -= 2*Math.PI;
+
+		if(autoPos){
+
+			// normal to East
+			if(normalAngle >= -Math.PI*0.25  && normalAngle <= Math.PI*0.25){
+				textPAS.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,  PicText.HorAlign.LEFT);
+				textPAS.setAttribute(PicAttributeName.TEXT_VERT_ALIGN, PicText.VertAlign.CENTER);
+				if(autoFormat){
+					Object[] args = { width - marginH };
+					formatStr = String.format("\\parbox{%f\\unitlength}{\\raggedright %%s}", args);
+				}
+			}
+			else if(normalAngle >= -Math.PI*0.75 && normalAngle <= -Math.PI*0.25){
+				// normal to South
+				textPAS.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,  PicText.HorAlign.CENTER);
+				textPAS.setAttribute(PicAttributeName.TEXT_VERT_ALIGN, PicText.VertAlign.TOP);
+				if(autoFormat){
+					Object[] args = { width - marginH };
+					formatStr = String.format("\\parbox{%f\\unitlength}{\\centering %%s}", args);
+				}
+			}
+			else if(normalAngle <= -Math.PI*0.75 || normalAngle >= +Math.PI*0.75){
+				// normal to West
+				textPAS.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,  PicText.HorAlign.RIGHT);
+				textPAS.setAttribute(PicAttributeName.TEXT_VERT_ALIGN, PicText.VertAlign.CENTER);
+				if(autoFormat){
+					Object[] args = { width - marginH };
+					formatStr = String.format("\\parbox{%f\\unitlength}{\\raggedleft %%s}", args);
+				}
+			}
+			else{
+				// normal to North
+				textPAS.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,  PicText.HorAlign.CENTER);
+				textPAS.setAttribute(PicAttributeName.TEXT_VERT_ALIGN, PicText.VertAlign.BOTTOM);
+				if(autoFormat){
+					Object[] args = { width - marginH };
+					formatStr = String.format("\\parbox{%f\\unitlength}{\\centering %%s}", args);
+				}
+			}
+		}
+	}
+
+
+	public void setTextRotation(double angle){
+		double oldTextRotation = 		textPAS.getAttribute(PicAttributeName.TEXT_ROTATION);
+
+		textPAS.setAttribute(PicAttributeName.TEXT_ROTATION, angle);
+
+		this.normalAngle += Math.toRadians(angle - oldTextRotation);
+
+		updateAuto();
+	}
+
+
+	public void setDimensions(double width, double marginH, double normalAngle){
+		this.marginH = marginH;
+		this.width  = width;
+		this.normalAngle  = Math.toRadians(normalAngle + textPAS.getAttribute(PicAttributeName.TEXT_ROTATION));
+
+		updateAuto();
+
+	}
+
+
+	public void setDimensions(double width, double normalAngle){
+		this.setDimensions(width, this.marginH, normalAngle);
+	}
+
+	public void setDimensions(double width){
+		Object[] args = { width - marginH };
+		formatStr = String.format("\\parbox{%f\\unitlength}{\\centering %%s}", args);
+		textPAS.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,  PicText.HorAlign.CENTER);
+		textPAS.setAttribute(PicAttributeName.TEXT_VERT_ALIGN, PicText.VertAlign.CENTER);
+	}
+
+	public void setHeight(double height){ this.height = height; }
+
+
+	public PicAttributeSet getTextPAS(){ return textPAS; }
+
+	public BranchElement target; // private
+
+	public void setTarget(BranchElement target){
+		this.target = target;
+	}
+
+
+	public PlainTextFactory(BranchElement target){
+		this.target = target;
+		this.textPAS = new PicAttributeSet();
+		this.lengthScale = 1.0;
+	}
+
+	public PlainTextFactory(PlainTextFactory other){
+		this.target = other.target;
+		this.textPAS = new PicAttributeSet(other.textPAS);
+		this.lengthScale = other.lengthScale;
+	}
+
+
+	public void setFormatStr(String s){
+		this.formatStr = s;
+	}
+
+
+	public String getFormatStr(){
+		return this.formatStr;
+	}
+
+	public void setColor(Color c){
+		textPAS.setAttribute(PicAttributeName.LINE_COLOR, c);
+	}
+
+
+	public void draw(PicPoint at, String str){
+
+		Object[] args = { str };
+
+		str = String.format(formatStr, args);
+
+		PicText txt = new PicText(at, str, textPAS);
+
+		target.add(txt);
+
+	}
+
+	public void draw(double x, double y, String str){
+		this.draw(new PicPoint(x, y), str);
+	}
+
+}

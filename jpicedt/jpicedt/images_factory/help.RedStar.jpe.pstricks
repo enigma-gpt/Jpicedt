@@ -1,0 +1,54 @@
+% Version: $Id: help.RedStar.jpe.pstricks,v 1.2 2013/02/28 21:37:47 vincentb1 Exp $
+\ifx\JPicIsIncluded\undefined
+\documentclass{article}
+\usepackage[tightpage,active,psfixbb]{preview}
+\usepackage{pstricks}
+\begin{document}
+\thispagestyle{empty}
+\begin{preview}
+\fi
+%%Created by jPicEdt 1.6-pre1: mixed JPIC-XML/LaTeX format
+%%Mon Feb 25 21:15:38 CET 2013
+%%Begin JPIC-XML
+%<?xml version="1.0" standalone="yes"?>
+%<jpic x-min="1.18" x-max="21.18" y-min="0" y-max="19.02" auto-bounding="true">
+%<multicurve stroke-color="#ff0000"
+%	 points="(17.36,0);(17.36,0);(11.18,19.02);(11.18,19.02);(11.18,19.02);(11.18,19.02);
+%	(11.18,19.02);(11.18,19.02);(5,0);(5,0);(5,0);(21.18,11.76);
+%	(21.18,11.76);(21.18,11.76);(1.18,11.76);(1.18,11.76);(1.18,11.76);(17.36,0)"
+%	 />
+%<text anchor-point="(11.18,9.51)"
+%	 >
+%\textcolor{blue}{\large 5}
+%</text>
+%</jpic>
+%%End JPIC-XML
+%PSTricks content-type (pstricks.sty package needed)
+%Add \usepackage{pstricks} in the preamble of your LaTeX file
+%You can rescale the whole picture (to 80% for instance) by using the command \def\JPicScale{0.8}
+\ifx\JPicScale\undefined\def\JPicScale{1}\fi
+\psset{unit=\JPicScale mm}
+\newrgbcolor{userFillColour}{0 0 0}
+\psset{linewidth=0.3,dotsep=1,hatchwidth=0.3,hatchsep=1.5,shadowsize=1,dimen=middle}
+\psset{dotsize=0.7 2.5,dotscale=1 1,fillcolor=userFillColour}
+\psset{arrowsize=1 2,arrowlength=1,arrowinset=0.25,tbarsize=0.7 5,bracketlength=0.15,rbracketlength=0.15}
+\makeatletter\@ifundefined{Pst@correctAnglefalse}{}{\psset{correctAngle=false}}\makeatother
+\begin{pspicture}(1.18,0)(21.18,19.02)
+\pscustom[linecolor=red]{\psline(17.36,0)(11.18,19.02)
+\psbezier(11.18,19.02)(11.18,19.02)(11.18,19.02)
+\psline(11.18,19.02)(5,0)
+\psline(5,0)(21.18,11.76)
+\psline(21.18,11.76)(1.18,11.76)
+\psline(1.18,11.76)(17.36,0)
+\closepath}
+\rput(11.18,9.51){\textcolor{blue}{\large 5}}
+\end{pspicture}
+%%User Data
+\ifx\JPicIsIncluded\undefined
+\end{preview}
+\end{document}
+\fi
+%%% Local Variables:
+%%% mode: latex
+%%% eval: (TeX-PDF-mode 0)
+%%% End:

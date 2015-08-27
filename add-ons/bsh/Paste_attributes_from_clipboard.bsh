@@ -1,0 +1,69 @@
+/*
+ Paste_attributes_from_clipboard.bsh - January 2, 2005 - jPicEdt 1.4, a picture editor for LaTeX.
+ Copyright (C) 1999-2005 Sylvain Reynal
+
+ Département de Physique
+ Ecole Nationale Supérieure de l'Electronique et de ses Applications (ENSEA)
+ 6, avenue du Ponceau
+ F-95014 CERGY CEDEX
+
+ Tel : +33 130 736 245
+ Fax : +33 130 736 667
+ e-mail : reynal@ensea.fr
+ jPicEdt web page : http://www.jpicedt.org/
+  
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or any later version.
+  
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+  
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+
+// This BeanShell script paste attributes (and only attributes) from the current clipboard content. 
+//
+import jpicedt.graphic.model.*;
+import jpicedt.graphic.toolkit.*;
+import java.awt.geom.*;
+import java.awt.datatransfer.*;
+
+String scriptTitle="Paste attributes from clipboard";
+if (canvas()==null) {
+	mdimgr.showMessageDialog("First open a board!",scriptTitle,JOptionPane.ERROR_MESSAGE);
+	return;
+}
+
+transferable = clipboard.getContents(canvas()); // according to doc. requestor is not used.
+if (transferable==null) {
+	mdimgr.showMessageDialog("First copy a template-element to the clipboard!",scriptTitle,JOptionPane.ERROR_MESSAGE);
+	return; // clipboard is empty !
+}
+
+selectionHandler = editorkit().getSelectionHandler();
+if (selectionHandler.isEmpty()) {
+	mdimgr.showMessageDialog("First select at least one target element!",scriptTitle,JOptionPane.ERROR_MESSAGE);
+	return;
+}
+
+// first check if it's a local clipboard supporting JPICEDT_DATA_FLAVOR :
+if (transferable.isDataFlavorSupported(TransferableGraphic.JPICEDT_DATA_FLAVOR)){
+	content = (Element[])transferable.getTransferData(TransferableGraphic.JPICEDT_DATA_FLAVOR);
+	set = content[0].getAttributeSet(); // only first element in clipboard taken into account
+       	selection = canvas().selection();
+	while(selection.hasNext()){ // iterate over selection content and paste attribute set
+		e=selection.next();
+		e.setAttributeSet(set); // this creates a clone of the source set (see contract for setAttributeSet)
+	}
+}
+
+
+
+
+

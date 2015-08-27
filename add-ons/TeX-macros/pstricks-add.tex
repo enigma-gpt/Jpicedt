@@ -1,0 +1,705 @@
+%%
+%% This is file `pstricks-add.tex',
+%%
+%% IMPORTANT NOTICE:
+%%
+%% Package `pstricks-add.tex'
+%%
+%% Herbert Voss <voss@perce.de>
+%%
+%% This program can be redistributed and/or modified under the terms
+%% of the LaTeX Project Public License Distributed from CTAN archives
+%% in directory macros/latex/base/lppl.txt.
+%%
+%% DESCRIPTION:
+%%   `pstricks-add' is a PSTricks package for additionals to the standard
+%%         pstricks package
+%%
+\def\fileversion{0.7a}
+\let\pstricksAddFV\fileversion
+\def\filedate{2003/10/15}
+\message{`pstricks-add' v\fileversion, \filedate\space (Herbert Voss)}
+\csname PSTricksAddLoaded\endcsname
+\let\PSTricksAddLoaded\endinput
+% Requires PSTricks, pst-node
+\usepackage{pstcol}
+\ifx\PSTricksLoaded\endinput\else\input pstricks \fi
+\ifx\PSTnodesLoaded\endinput\else\input pst-node \fi
+%
+\input pst-key
+%
+\edef\PstAtCode{\the\catcode`\@} \catcode`\@=11\relax
+\SpecialCoor
+%
+% a new fillstyle
+\def\psfs@asolid{\pst@fill{\pst@usecolor\psfillcolor eofill}}
+%
+\define@key{psset}{braceWidth}{%
+	\edef\psk@braceWidth{#1}%
+}
+\setkeys{psset}{braceWidth=0.35}
+%
+\def\psbrace{\@ifnextchar[{\@psbrace}{\@psbrace[]}}
+\def\@psbrace[#1](#2)(#3)#4{{
+	\setkeys{psset}{linearc=0.2,linewidth=1pt,%
+		nodesepA=3pt,nodesepB=-4pt}% the default
+	\setkeys{psset}{#1}%
+	\pst@getcoor{#2}\pst@tempa%
+	\pst@getcoor{#3}\pst@tempb%
+	\pnode(!%
+		/bW2 \psk@braceWidth\space 2.0 div def
+		\pst@tempa /YA exch \pst@number\psyunit div def
+		/XA exch \pst@number\psxunit div def
+		\pst@tempb /YB exch \pst@number\psyunit div def
+		/XB exch \pst@number\psxunit div def
+		/Alpha YB YA sub XB XA sub atan def
+		/xMid XB XA add 2.0 div def
+		/yMid YB YA add 2.0 div def
+		/@deltaX Alpha sin bW2 mul def
+		/@deltaY Alpha cos bW2 mul def
+		/@xTemp xMid @deltaX 2 mul add def
+		/@yTemp yMid @deltaY 2 mul sub def
+		@xTemp @yTemp){@tempNode}
+	\pst@getcoor{@tempNode}\pst@tempc%
+	\addto@pscode{%
+		gsave
+		/Times findfont 12 scalefont setfont
+		Alpha 90 sub \psk@braceWidth\space 0 lt {180 add} if
+			\ifx\psk@rot\@empty\else\psk@rot add \fi rotate
+		\pst@tempc\space \psk@nodesepB\space add exch \psk@nodesepA\space add exch
+			moveto (#4) show stroke
+		grestore
+	}%
+	\psline(#2)%
+		(! XA @deltaX add YA @deltaY sub)%
+		(! @xTemp @deltaX sub @yTemp @deltaY add)%
+		(@tempNode)
+	\psline(@tempNode)%
+		(! @xTemp @deltaX sub @yTemp @deltaY add)%
+		(! XB @deltaX add YB @deltaY sub)%
+		(#3)%
+}}
+%
+% from Dennis Giroux: http://www.tug.org/pipermail/pstricks/2001/000507.html
+%
+% I - Definition of \psellipticwedge, a generalization of \pswedge for wedges
+%     of ellipses (from the code of \pswedge and \psellipse)
+%
+\def\psellipticwedge{\def\pst@par{}\pst@object{psellipticwedge}}
+\def\psellipticwedge@i(#1){%
+	\@ifnextchar({\psellipticwedge@ii(#1)}{\pstellipticwedge@ii(0,0)(#1)}}
+\def\psellipticwedge@ii(#1)(#2)#3#4{%
+	\begin@ClosedObj
+		\pst@getangle{#3}\pst@tempa
+		\pst@getangle{#4}\pst@tempb
+		\pst@getcoor{#1}\pst@tempc
+		\pst@@getcoor{#2}%
+		\def\pst@linetype{1}%
+		\addto@pscode{%
+			\pst@tempa \pst@tempb
+			\pst@coor
+			\pst@tempc moveto
+			\ifdim\psk@dimen\p@=\z@\else
+				\psk@dimen CLW mul dup 3 1 roll
+				sub 3 1 roll sub exch
+			\fi
+			\pst@tempc
+			\tx@Ellipse
+			closepath%
+		}%
+		\showpointsfalse
+	\end@ClosedObj%
+}
+%
+% arcs
+%
+\def\psellipticarcN{\def\pst@par{}\pst@object{psellipticarcn}}
+\def\psellipticarcn@i{\let\if@psarcn\iftrue\psellipticarc@ii}
+%
+\def\psellipticarc{\def\pst@par{}\pst@object{psellipticarc}}
+\def\psellipticarc@i{\let\if@psarcn\iffalse\psellipticarc@ii}
+%
+\let\if@psarcn\iffalse
+\def\psellipticarc@ii{\pst@getarrows\psellipticarc@iii}
+\def\psellipticarc@iii(#1){%
+	\@ifnextchar({\psellipticarc@iv(#1)}{\psellipticarc@iv(0,0)(#1)}}
+\def\psellipticarc@iv(#1)(#2)#3#4{%
+	\begin@OpenObj
+		\pst@getcoor{#1}\pst@tempa
+		\pst@getcoor{#2}\pst@tempb
+		\pst@getangle{#3}\pst@tempc
+		\pst@getangle{#4}\pst@tempd
+		\addto@pscode{\psellipticarc@definearg \psellipticarc@draw}%
+		\showpointsfalse
+	\end@OpenObj%
+}
+\def\psellipticarc@definearg{%
+	\pst@tempa /y ED /x ED  % Origin
+	\pst@tempb              % radii. Now adjust:
+	\ifdim\psk@dimen\p@=\z@\else
+		\psk@dimen CLW mul dup 3 1 roll
+		sub 3 1 roll sub exch
+	\fi
+	/ry ED /rx ED
+	/angleA
+		/d  {  \if@psarcn sub \else add \fi } def
+		\pst@tempc \psk@arcsepA 2 div
+		\tx@ArcAdjust
+	def
+	/angleB
+		/d  {  \if@psarcn add \else sub \fi } def
+		\pst@tempd \psk@arcsepB 2 div
+		\tx@ArcAdjust
+	def
+	\ifshowpoints\psellipticarc@showpoints\fi
+	\ifx\psk@arrowA\@empty
+		\ifnum\psk@liftpen=2
+			angleA cos rx mul x add
+			angleA sin ry mul y add
+			moveto
+		\fi
+	\fi%
+}
+\def\psellipticarc@draw{%
+	0 0 1
+	angleA
+	\ifx\psk@arrowA\@empty\else
+		{ ArrowA CP }
+		{ \if@psarcn sub \else add \fi }
+		\tx@EllipticArcArrow
+	\fi
+	angleB
+	\ifx\psk@arrowB\@empty\else
+		{ ArrowB }
+		{ \if@psarcn add \else sub \fi }
+		\tx@EllipticArcArrow
+	\fi
+	/mtrx CM def
+	x y T
+	rx ry scale
+	\if@psarcn arcn \else arc \fi
+	mtrx setmatrix%
+}
+\def\psellipticarc@showpoints{%
+	gsave
+	/mtrx CM def
+	x y T
+	rx ry scale
+	0 0 moveto
+	0 0 1 \pst@tempc \pst@tempd
+	\ifcase\psarc@type arc \or arcn \fi
+	closepath
+	mtrx setmatrix
+	CLW 2 div SLW
+	[ \psk@dash\space ] 0 setdash stroke
+	grestore %
+}
+\pst@def{ArcAdjust}<%
+% given a target length (targetLength) and an initial angle (angle0) [in the stack],
+% let  M(angle0)=(rx*cos(angle0),ry*sin(angle0))=(x0,y0).
+% This computes an angle t such that (x0,y0) is at distance targetLength from the point M(t)=(rx*cos(t),ry*sin(t)).
+% NOTE: this an absolute angle, it does not have to be added or substracted to angle0
+% contrary to TvZ's code.
+% To achieve, this, one iterates the following process: start with some angle t,
+% compute the point M' at distance targetLength of (x0,y0) on the semi-line [(x0,y0) M(t)].
+% Now take t' (= new angle) so that (0,0) M(t') and M' are aligned.
+%
+% Another difference with TvZ's code is that we need d (=add/sub) to be defined.
+% the value of d = add/sub is used to know on which side we have to move.
+% It is only used in the initialisation of the angle before the iteration.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Input stack:  1: target length 2: initial angle
+% variables used : rx, ry, d (=add/sub)
+%
+	/targetLength ED /angle0 ED
+	/x0 rx angle0 cos mul def
+	/y0 ry angle0 sin mul def
+% we are looking for an angle t such that (x0,y0) is at distance targetLength from the point M(t)=(rx*cos(t),ry*sin(t)))
+%initialisation of angle (using 1st order approx = TvZ's code)
+	targetLength 57.2958 mul
+	angle0 sin rx mul dup mul
+	angle0 cos ry mul dup mul
+	add sqrt div
+% if initialisation angle is two large (more than 90 degrees) set it to 90 degrees
+% (if the ellipse is very curved at the point where we draw the arrow, the value can be much more than 360 degrees !)
+% this should avoid going on the wrong side (more than 180 degrees) or go near
+% a bad attractive point (at 180 degrees)
+	dup 90 ge { pop 90 } if
+	angle0 exch d
+% maximum number of times to iterate the iterative procedure:
+	30
+% iterative procedure: takes an angle t on top of stack, computes a better angle (an put it on top of stack)
+	{ dup
+% compute distance D between (x0,y0) and M(t)
+	dup cos rx mul x0 sub dup mul exch sin ry mul y0 sub dup mul add sqrt
+% if D almost equals targetLength, we stop
+	dup targetLength sub abs 1e-5 le { pop exit } if
+% stack now contains D t
+% compute the point M(t') at distance targetLength of (x0,y0) on the semi-line [(x0,y0) M(t)]:
+% M(t')= ( (x(t)-x0)*targetLength/d+x0 , (y(t)-y0)*targetLength/d+y0 )
+	exch dup cos rx mul x0 sub  exch sin ry mul y0 sub
+% stack contains:  y(t)-y0, x(t)-x0, d
+	2 index \tx@Div targetLength mul y0 add ry \tx@Div exch
+	2 index \tx@Div targetLength mul x0 add rx \tx@Div
+% stack contains x(t')/rx , y(t')/ry , d
+% now compute t', and remove D from stack
+	atan exch pop
+	} repeat
+% we don't look at what happened... in particular, if targetLength is greater than the diameter of the ellipse...
+% the final angle will be around /angle0 + 180. maybe we should treat this pathological case...
+%after iteration, stack contains an angle t such that M(t) is the tail of the arrow
+% to give back the result as a an angle relative to angle0 we could add the following line:
+% angle0 sub 0 exch d
+>
+\pst@def{EllipticArcArrow}<%
+	/d ED      % add/sub
+	/b ED      % arrow procedure
+	/a1 ED     % angle
+	gsave
+	newpath
+	0 -1000 moveto
+	clip                  % Set clippath far from arrow.
+	newpath
+	0 1 0 0 b             % Draw arrow to determine length.
+	grestore
+% Length of arrow is on top of stack. Next 3 numbers are junk.
+%
+	a1 exch \tx@ArcAdjust   % Angular position of base of arrow.
+	/a2 ED
+	pop pop pop
+	a2 cos rx mul x add
+	a2 sin ry mul y add
+	a1 cos rx mul x add
+	a1 sin ry mul y add
+	% Now arrow tip coor and base coor are on stack.
+	b pop pop pop pop       % Draw arrow, and discard coordinates.
+	a2 CLW 8 div
+% change value of d (test it by looking if  `` 1 1 d '' gives 2 or not )
+	1 1 d 2 eq { /d { sub } def } { /d { add } def } ifelse
+	\tx@ArcAdjust
+% resets original value of d
+	1 1 d 2 eq { /d { sub } def } { /d { add } def } ifelse>  % Adjust angle to give overlap.
+%
+
+%
+% -------------- the arrow part -------------
+% D.G. modification begin - Oct. 25, 1996 and May. 11, 1999
+\def\pst@arrowtable{,<->,<<->>,>-<,>>-<<,(-),)-(,|-|,[-],]-[}
+% ]-[ arrow
+\def\tx@BracketOut{BracketOut }
+\@namedef{psas@[}{%
+	/BracketOut {%
+	CLW mul add dup CLW sub 2 div
+%/x ED mul CLW add
+	/x ED mul neg
+	/y ED
+	/z CLW 2 div def
+	x neg y moveto
+	x neg CLW 2 div L x CLW 2 div L x y L stroke 0 CLW moveto } def
+	\psk@bracketlength \psk@tbarsize \tx@BracketOut
+}
+% )-( arrow
+\def\tx@RoundBracketOut{RoundBracketOut }
+\@namedef{psas@(}{%
+	/RoundBracketOut {%
+	CLW mul add dup 2 div
+%/x ED mul
+	/x ED mul neg
+	/y ED
+	/mtrx CM def
+	0 CLW
+	2 div T x y mul 0 ne { x y scale } if
+	1 1 moveto
+	.85 .5 .35 0 0 0 curveto
+	-.35 0 -.85 .5 -1 1 curveto
+	mtrx setmatrix stroke 0 CLW moveto } def
+	\psk@rbracketlength \psk@tbarsize \tx@RoundBracketOut
+}
+%
+% DG addition begin - Dec. 18/19, 1997 and Oct. 11, 2002
+% Adapted from \psset@arrows
+\def\psset@ArrowInside#1{%
+    \begingroup
+		\pst@activearrows
+		\xdef\pst@tempg{<#1}%
+    \endgroup
+    \expandafter\psset@@ArrowInside\pst@tempg\@empty-\@empty\@nil
+    \if@pst\else
+		\@pstrickserr{Bad intermediate arrow specification: #1}\@ehpa
+    \fi%
+}
+% Adapted from \psset@@arrows
+\def\psset@@ArrowInside#1-#2\@empty#3\@nil{%
+    \@psttrue
+    \def\next##1,#1-##2,##3\@nil{\def\pst@tempg{##2}}%
+    \expandafter\next\pst@arrowtable,#1-#1,\@nil
+    \@ifundefined{psas@#2}%
+		{\@pstfalse\def\psk@ArrowInside{}}%
+		{\def\psk@ArrowInside{#2}}%
+}
+% Default value empty
+\def\psk@ArrowInside{}
+% Modified version of \pst@addarrowdef
+\def\pst@addarrowdef{%
+    \addto@pscode{%
+		/ArrowA {
+			\ifx\psk@arrowA\@empty
+				\pst@oplineto
+			\else
+				\pst@arrowdef{A}
+				moveto
+			\fi
+		} def
+		/ArrowB {
+			\ifx\psk@arrowB\@empty \else \pst@arrowdef{B} \fi
+		} def
+% DG addition
+		/ArrowInside {
+			\ifx\psk@ArrowInside\@empty \else \pst@arrowdefA{Inside} \fi
+		} def
+	}%
+}
+% Adapted from \pst@arrowdef
+\def\pst@arrowdefA#1{%
+	\ifnum\pst@repeatarrowsflag>\z@
+		/Arrow#1c [ 6 2 roll ] cvx def Arrow#1c
+	\fi
+	\tx@BeginArrow
+	\psk@arrowscale
+	\@nameuse{psas@\@nameuse{psk@Arrow#1}}
+	\tx@EndArrow%
+}
+% ArrowInsidePos parameter (default value 0.5)
+\def\psset@ArrowInsidePos#1{\pst@checknum{#1}\psk@ArrowInsidePos}%
+\psset@ArrowInsidePos{0.5}
+%
+% Modified version of \begin@ClosedObj
+\def\begin@ClosedObj{%
+    \leavevmode
+    \pst@killglue
+    \begingroup
+	\use@par
+	\solid@star
+	\ifpsdoubleline \pst@setdoublesep \fi
+	\pst@addarrowdef% DG addition
+	\init@pscode
+}
+%
+% Redefinition of the PostScript /Line macro to print the intermediate
+% arrow on each segment of the line
+%
+\def\psset@ArrowInsideNo#1{\pst@checknum{#1}\psk@ArrowInsideNo}% hv 20031001
+\def\psset@ArrowInsideOffset#1{\pst@checknum{#1}\psk@ArrowInsideOffset}% hv 20031001
+\psset{ArrowInsideNo=1,ArrowInsideOffset=0}
+%
+\pst@def{Line}<{%
+	NArray n 0 eq not { n 1 eq { 0 0 /n 2 def } if
+    (\psk@ArrowInside) length 0 gt {
+		2 copy /y1 ED /x1 ED ArrowA x1 y1
+    	/n n 1 sub def
+    	n {
+			4 copy
+			/y1 ED /x1 ED /y2 ED /x2 ED
+			x1 y1
+			\psk@ArrowInsidePos\space 1 gt{
+				/Alpha y2 y1 sub x2 x1 sub atan def
+				/ArrowPos \psk@ArrowInsideOffset\space def
+				/Length x2 x1 sub y2 y1 sub Pyth def
+				/dArrowPos \psk@ArrowInsidePos\space abs def
+				{
+					/ArrowPos ArrowPos dArrowPos add def
+					ArrowPos Length gt { exit } if
+					x1 Alpha cos ArrowPos mul add
+					y1 Alpha sin ArrowPos mul add
+					ArrowInside
+					pop pop
+				} loop
+			}{
+				/ArrowPos \psk@ArrowInsideOffset\space def
+				/dArrowPos \psk@ArrowInsideNo 1 gt {%
+					1.0 \psk@ArrowInsideNo 1.0 add div
+				}{ \psk@ArrowInsidePos } ifelse def
+				\psk@ArrowInsideNo\space cvi {
+					/ArrowPos ArrowPos dArrowPos add def
+					x2 x1 sub ArrowPos mul x1 add
+					y2 y1 sub ArrowPos mul y1 add
+					ArrowInside
+					pop pop
+				} repeat
+			} ifelse
+			pop pop Lineto
+		} repeat
+	}{ ArrowA /n n 2 sub def n { Lineto } repeat } ifelse
+	CP 4 2 roll ArrowB L pop pop } if%
+}>
+%
+% Redefinition of the PostScript /Polygon macro to print the intermediate
+% arrow on each segment of the line
+\pst@def{Polygon}<{%
+	NArray n 2 eq { 0 0 /n 3 def } if
+	n 3 lt {
+		n { pop pop } repeat
+	}{
+		n 3 gt { CheckClosed } if
+		n 2 mul
+		-2 roll
+		/y0 ED
+    	/x0 ED
+    	/y1 ED
+    	/x1 ED
+    	/xx1 x1 def
+    	/yy1 y1 def
+    	x1 y1
+    	/x1 x0 x1 add 2 div def
+    	/y1 y0 y1 add 2 div def
+    	x1 y1 moveto
+    	/n n 2 sub def
+		/drawArrows {
+			x11 y11
+			\psk@ArrowInsidePos\space 1 gt {
+				/Alpha y12 y11 sub x12 x11 sub atan def
+				/ArrowPos \psk@ArrowInsideOffset\space def
+				/Length x12 x11 sub y12 y11 sub Pyth def
+				/dArrowPos \psk@ArrowInsidePos\space abs def
+				{
+					/ArrowPos ArrowPos dArrowPos add def
+					ArrowPos Length gt { exit } if
+					x11 Alpha cos ArrowPos mul add
+					y11 Alpha sin ArrowPos mul add
+					ArrowInside
+					pop pop
+				} loop
+			}{
+				/ArrowPos \psk@ArrowInsideOffset\space def
+				/dArrowPos \psk@ArrowInsideNo 1 gt {%
+					1.0 \psk@ArrowInsideNo 1.0 add div
+				}{ \psk@ArrowInsidePos } ifelse def
+					\psk@ArrowInsideNo cvi {
+					/ArrowPos ArrowPos dArrowPos add def
+					x12 x11 sub ArrowPos mul x11 add
+					y12 y11 sub ArrowPos mul y11 add
+        			ArrowInside
+					pop pop
+				} repeat
+			} ifelse
+			pop pop Lineto
+		} def
+		n {
+			4 copy
+			/y11 ED /x11 ED /y12 ED /x12 ED
+			drawArrows
+		} repeat
+		x1 y1 x0 y0
+		6 4 roll
+		2 copy
+		/y11 ED /x11 ED /y12 y0 def /x12 x0 def
+		drawArrows
+		/y11 y0 def /x11 x0 def /y12 yy1 def /x12 xx1 def
+		drawArrows
+		pop pop
+    	closepath
+	} ifelse %
+}>
+%
+%
+% Redefinition of the PostScript /OpenBezier macro to print the intermediate
+% arrow
+\pst@def{OpenBezier}<{%
+	/dArrowPos \psk@ArrowInsideNo 1 gt {%
+		1.0 \psk@ArrowInsideNo 1.0 add div
+	}{ \psk@ArrowInsidePos } ifelse def
+	BezierNArray
+	n 1 eq { pop pop
+	}{ 2 copy
+		/y0 ED /x0 ED
+		ArrowA
+		n 4 sub 3 idiv { 6 2 roll 4 2 roll curveto } repeat
+		6 2 roll
+		4 2 roll
+		ArrowB
+		/y3 ED /x3 ED /y2 ED /x2 ED /y1 ED /x1 ED
+    	/cx x1 x0 sub 3 mul def
+		/cy y1 y0 sub 3 mul def
+		/bx x2 x1 sub 3 mul cx sub def
+		/by y2 y1 sub 3 mul cy sub def
+		/ax x3 x0 sub cx sub bx sub def
+		/ay y3 y0 sub cy sub by sub def
+		/getValues {
+			ax t0 3 exp mul bx t0 t0 mul mul add cx t0 mul add x0 add
+			ay t0 3 exp mul by t0 t0 mul mul add cy t0 mul add y0 add
+			ax t 3 exp mul bx t t mul mul add cx t mul add x0 add
+			ay t 3 exp mul by t t mul mul add cy t mul add y0 add
+		} def
+		/getdL {
+			getValues
+			3 -1 roll sub 3 1 roll sub Pyth
+		} def
+		/CurveLength {
+			/u 0 def
+			/du 0.01 def
+			0 100 {
+				/t0 u def
+				/u u du add def
+				/t u def
+				getdL add
+			} repeat } def
+		/GetArrowPos {
+			/ende \psk@ArrowInsidePos\space 1 gt {ArrowPos}{ArrowPos CurveLength mul} ifelse def
+			/u 0 def
+			/du 0.01 def
+			/sum 0 def
+			{
+				/t0 u def
+				/u u du add def
+		    	/t u def
+				/sum getdL sum add def
+				sum ende gt {exit} if
+			} loop u
+		} def
+		/ArrowPos \psk@ArrowInsideOffset\space def
+		/loopNo \psk@ArrowInsidePos\space 1 gt {%
+			CurveLength \psk@ArrowInsidePos\space div cvi
+			}{ \psk@ArrowInsideNo } ifelse def
+		loopNo cvi {
+			/ArrowPos ArrowPos dArrowPos add def
+			/t GetArrowPos def
+			/t0 t 0.95 mul def
+			getValues
+			ArrowInside pop pop pop pop
+		} repeat
+		x1 y1 x2 y2 x3 y3 curveto
+	} ifelse
+}>
+%
+% Redefinition of the PostScript /NCLine macro to print the intermediate
+% arrow of the line
+\pst@def{NCLine}<{%
+	NCCoor
+	tx@Dict begin
+	ArrowA CP 4 2 roll ArrowB
+	4 copy
+	/y2 ED /x2 ED /y1 ED /x1 ED
+	x1 y1
+	\psk@ArrowInsidePos\space 1 gt{
+		/Alpha y2 y1 sub x2 x1 sub atan def
+		/ArrowPos \psk@ArrowInsideOffset\space def
+		/Length x2 x1 sub y2 y1 sub Pyth def
+		/dArrowPos \psk@ArrowInsidePos\space abs def
+		{
+			/ArrowPos ArrowPos dArrowPos add def
+			ArrowPos Length gt { exit } if
+			x1 Alpha cos ArrowPos mul add
+			y1 Alpha sin ArrowPos mul add
+			ArrowInside
+			pop pop
+		} loop
+	}{
+		/ArrowPos \psk@ArrowInsideOffset\space def
+		/dArrowPos \psk@ArrowInsideNo 1 gt {%
+			1.0 \psk@ArrowInsideNo 1.0 add div
+		}{ \psk@ArrowInsidePos } ifelse def
+		\psk@ArrowInsideNo\space cvi {
+			/ArrowPos ArrowPos dArrowPos add def
+			x2 x1 sub ArrowPos mul x1 add
+			y2 y1 sub ArrowPos mul y1 add
+			ArrowInside
+			pop pop
+		} repeat
+	} ifelse
+	pop pop lineto pop pop
+	end%
+}>
+%
+\pst@def{NCCurve}<{%
+	GetEdgeA GetEdgeB
+	xA1 xB1 sub yA1 yB1 sub
+	Pyth 2 div dup 3 -1 roll mul
+	/ArmA ED
+	mul
+	/ArmB ED
+	/ArmTypeA 0 def
+	/ArmTypeB 0 def
+	GetArmA GetArmB
+	xA2 yA2 xA1 yA1
+	2 copy
+	/y0 ED /x0 ED
+	tx@Dict begin
+		ArrowA
+	end
+	xB2 yB2 xB1 yB1
+	tx@Dict begin
+		ArrowB
+	end
+	/y3 ED /x3 ED /y2 ED /x2 ED /y1 ED /x1 ED
+	/cx x1 x0 sub 3 mul def
+	/cy y1 y0 sub 3 mul def
+	/bx x2 x1 sub 3 mul cx sub def
+	/by y2 y1 sub 3 mul cy sub def
+	/ax x3 x0 sub cx sub bx sub def
+	/ay y3 y0 sub cy sub by sub def
+	/getValues {
+		ax t0 3 exp mul bx t0 t0 mul mul add cx t0 mul add x0 add
+		ay t0 3 exp mul by t0 t0 mul mul add cy t0 mul add y0 add
+		ax t 3 exp mul bx t t mul mul add cx t mul add x0 add
+	ay t 3 exp mul by t t mul mul add cy t mul add y0 add
+	} def
+	/getdL {
+		getValues
+		3 -1 roll sub 3 1 roll sub Pyth
+	} def
+	/CurveLength {
+		/u 0 def
+		/du 0.01 def
+		0 100 {
+			/t0 u def
+			/u u du add def
+			/t u def
+			getdL add
+		} repeat } def
+	/GetArrowPos {
+		/ende \psk@ArrowInsidePos\space 1 gt {ArrowPos}{ArrowPos CurveLength mul} ifelse def
+		/u 0 def
+		/du 0.01 def
+		/sum 0 def
+		{
+			/t0 u def
+			/u u du add def
+			/t u def
+			/sum getdL sum add def
+			sum ende gt {exit} if
+		} loop u
+	} def
+	/dArrowPos \psk@ArrowInsideNo 1 gt {%
+		1.0 \psk@ArrowInsideNo 1.0 add div
+	}{ \psk@ArrowInsidePos } ifelse def
+	/ArrowPos \psk@ArrowInsideOffset\space def
+	/loopNo \psk@ArrowInsidePos\space 1 gt {%
+		CurveLength \psk@ArrowInsidePos\space div cvi
+		}{ \psk@ArrowInsideNo } ifelse def
+	loopNo cvi {
+		/ArrowPos ArrowPos dArrowPos add def
+		/t GetArrowPos def
+		/t0 t 0.95 mul def
+		getValues
+		ArrowInside pop pop pop pop
+	} repeat
+	x1 y1 x2 y2 x3 y3 curveto
+	/LPutVar [ xA1 yA1 xA2 yA2 xB2 yB2 xB1 yB1 ] cvx def
+	/LPutPos { t LPutVar BezierMidpoint } def
+	/HPutPos { { HPutLines } HPutCurve } def
+	/VPutPos { { VPutLines } HPutCurve } def
+}>
+%
+\catcode`\@=\PstAtCode\relax
+%
+%% END: pstricks-add.tex
+\endinput
+
+%% CHANGE-LOG
+% v 0.7a	adding option asolid as fillstyle
+% v 0.7		ArrowInsidePos>1 for all macros
+% v 0.6		ArrowInsidePos>1 sets nowthe arrows every n-th pt
+% v 0.5a	small improvements to the code (use of Pyth)
+% v 0.5		new psbezier and pcline to get the arrows in the right place!
+% v 0.4		fix bug in psbezier and nccurve, to get the right arrow position

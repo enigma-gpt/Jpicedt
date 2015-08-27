@@ -1,0 +1,50 @@
+%%Created by jPicEdt 1.6-pre1: mixed JPIC-XML/LaTeX format
+%%Mon Jun 06 07:25:31 CEST 2011
+%%Begin JPIC-XML
+%<?xml version="1.0" standalone="yes"?>
+%<jpic x-min="0" x-max="40" y-min="0" y-max="40" auto-bounding="true">
+%<g lift-pen="0"
+%	 compound-mode="separate"
+%	 closed="false"
+%	>
+%<parallelogram fill-style="solid"
+%	 p3="(40,0)"
+%	 stroke-color="#d3d3d3"
+%	 p2="(40,40)"
+%	 fill-color="#d3d3d3"
+%	 p1="(0,40)"
+%	 stroke-width="0"
+%	 />
+%<multicurve points="(20,10);(20,10);(20,30);(20,30)"
+%	 stroke-width="2"
+%	 />
+%<multicurve stroke-color="#ff0000"
+%	 points="(17.5,27.5);(17.5,27.5);(22.5,32.5);(22.5,32.5)"
+%	 stroke-width="2"
+%	 />
+%<multicurve stroke-color="#ff0000"
+%	 points="(17.5,32.2);(17.5,32.2);(22.5,27.5);(22.5,27.5)"
+%	 stroke-width="2"
+%	 />
+%</g>
+%</jpic>
+%%End JPIC-XML
+%PSTricks content-type (pstricks.sty package needed)
+%Add \usepackage{pstricks} in the preamble of your LaTeX file
+%You can rescale the whole picture (to 80% for instance) by using the command \def\JPicScale{0.8}
+\ifx\JPicScale\undefined\def\JPicScale{1}\fi
+\psset{unit=\JPicScale mm}
+\newrgbcolor{userFillColour}{0 0 0}
+\psset{linewidth=0.3,dotsep=1,hatchwidth=0.3,hatchsep=1.5,shadowsize=1,dimen=middle}
+\psset{dotsize=0.7 2.5,dotscale=1 1,fillcolor=userFillColour}
+\psset{arrowsize=1 2,arrowlength=1,arrowinset=0.25,tbarsize=0.7 5,bracketlength=0.15,rbracketlength=0.15}
+\begin{pspicture}(0,0)(40,40)
+{%
+\newrgbcolor{userLineColour}{0.83 0.83 0.83}
+\newrgbcolor{userFillColour}{0.83 0.83 0.83}
+\pspolygon[linewidth=0,linecolor=userLineColour,fillcolor=userFillColour,fillstyle=solid](0,40)(40,40)(40,0)(0,0)
+\psline[linewidth=2](20,10)(20,30)
+\psline[linewidth=2,linecolor=red](17.5,27.5)(22.5,32.5)
+\psline[linewidth=2,linecolor=red](17.5,32.2)(22.5,27.5)
+}%
+\end{pspicture}

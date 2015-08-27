@@ -1,0 +1,224 @@
+// Plot_function.bsh --- -*- coding: iso-8859-1 -*-
+// August 29, 2002 - jPicEdt 1.3.2, a picture editor for LaTeX.
+// Copyright (C) 1999/2002 Sylvain Reynal
+// Copyright (C) 2003/2013 Sylvain Reynal, Vincent Belaïche
+//
+// Author: Sylvain Reynal
+//         Département de Physique
+//         École Nationale Supérieure de l'Électronique et de ses Applications (ÉNSÉA)
+//         6, avenue du Ponceau
+//         95014 CERGY CEDEX
+//         FRANCE
+//
+//         Tel : +33 130 736 245
+//         Fax : +33 130 736 667
+//         e-mail : reynal@ensea.fr
+//
+// Version: $Id: Plot_function.bsh,v 1.4 2013/02/06 04:28:58 vincentb1 Exp $
+// Keywords: main
+// X-URL: http://www.jpicedt.org/
+//
+// Ce logiciel est régi par la licence CeCILL soumise au droit français et
+// respectant les principes de diffusion des logiciels libres. Vous pouvez
+// utiliser, modifier et/ou redistribuer ce programme sous les conditions
+// de la licence CeCILL telle que diffusée par le CEA, le CNRS et l'INRIA
+// sur le site "http://www.cecill.info".
+//
+// En contrepartie de l'accessibilité au code source et des droits de copie,
+// de modification et de redistribution accordés par cette licence, il n'est
+// offert aux utilisateurs qu'une garantie limitée.  Pour les mêmes raisons,
+// seule une responsabilité restreinte pèse sur l'auteur du programme,  le
+// titulaire des droits patrimoniaux et les concédants successifs.
+//
+// A cet égard  l'attention de l'utilisateur est attirée sur les risques
+// associés au chargement,  à l'utilisation,  à la modification et/ou au
+// développement et à la reproduction du logiciel par l'utilisateur étant
+// donné sa spécificité de logiciel libre, qui peut le rendre complexe à
+// manipuler et qui le réserve donc à des développeurs et des professionnels
+// avertis possédant  des  connaissances  informatiques approfondies.  Les
+// utilisateurs sont donc invités à charger  et  tester  l'adéquation  du
+// logiciel à leurs besoins dans des conditions permettant d'assurer la
+// sécurité de leurs systèmes et ou de leurs données et, plus généralement,
+// à l'utiliser et l'exploiter dans les mêmes conditions de sécurité.
+//
+// Le fait que vous puissiez accéder à cet en-tête signifie que vous avez
+// pris connaissance de la licence CeCILL, et que vous en avez accepté les
+// termes.
+//
+/// Commentary:
+
+// This BeanShell plots a y=f(x) function
+
+/// Code:
+import jpicedt.graphic.model.*;
+import jpicedt.graphic.*;
+import jpicedt.widgets.*;
+
+boolean strictJava = true;
+setStrictJava(strictJava);
+
+// ------------ methods -----------------------------------------
+
+//
+// Round axis increments to the nearest "standard" tick, e.g. 0.12 -> 0.1 and 540 -> 500.
+double roundIncrement(double x) {
+	x = Math.abs(x);
+	// compute mag. of integer part :
+	double mag = Math.floor(Math.log(x)/Math.log(10)); // e.g. 12.45 -> 1 ; 900.1 -> 2
+	// compute rounded integer part : (a number b/w 1 and 10)
+	int n = (int)Math.round(x/Math.pow(10,mag));
+	switch (n){
+		case 1: break;
+		case 2: break;
+		case 3: n=2; break;
+		case 4: n=5; break;
+		case 6: n=5; break;
+		case 7: n=5; break;
+		case 8: n=10; break;
+		case 9: n=10; break;
+		default: n=10;
+	}
+	return (n*Math.pow(10,mag));
+}
+
+// scan each element in the Drawing, and match its class against that of currently selected element :
+void proceed(){
+	PicGroup g = new PicGroup();
+	// draw graph :
+	PicAttributeSet polyPAS = new PicAttributeSet();
+	polyPAS.setAttribute(PicAttributeName.LINE_COLOR,Color.red);
+	PicMultiCurve poly = new PicMultiCurve();
+	poly.setAttributeSet(polyPAS);
+	PageFormat pf = canvas().getPageFormat();
+	double x0 = 10.0-pf.getLeftMarginMm(); // impose a minimum left margin for the graph (y-axis pad)
+	double width=Math.min(pf.getWidthMm()-10.0, widthTF.getValue());
+	double height=Math.min(pf.getHeightMm()-pf.getBottomMarginMm(), heightTF.getValue());
+	double xMin = xMinTF.getValue();
+	double xMax = xMaxTF.getValue();
+	if (xMax<xMin) xMax = xMin + 10.0;
+	int N = nbPtsTF.getValue();
+	double xFactor = (xMax-xMin)/(N-1);
+	double xScale = width/(xMax-xMin); 
+	double yMin=0.0;
+	double yMax=0.0;
+	double[] xx = new double[N];
+	double[] yy = new double[N];
+	for(int i=0; i<N; i++){
+		xx[i] = xFactor * i + xMin; // x ranges from xMin to xMax 
+		setStrictJava(false);
+		{
+			x = xx[i]; // argument to expression to be evaluated
+			yy[i] = ((Double)eval(functionTF.getText())).doubleValue(); // eval return a Double here !
+		}
+		setStrictJava(strictJava);
+		if (Double.isNaN(yy[i])) yy[i]=yMax;
+		yMin = Math.min(yMin,yy[i]);
+		yMax = Math.max(yMax,yy[i]);
+	}
+	if (yMin==yMax) {
+		yMin -= 1.0; yMax += 1.0;
+	}
+	double yScale = height/(yMax-yMin); 
+	for(int i=0; i<N; i++){
+		PicPoint pt = new PicPoint((xx[i]-xMin)*xScale+x0,(yy[i]-yMin)*yScale);
+		poly.addPoint(pt);
+	}
+	g.add(poly);
+	// draw X-axis :
+	double xAxisOrd = Math.max(0,-yMin * yScale);
+	PicAttributeSet axisPAS = new PicAttributeSet();
+	axisPAS.setAttribute(PicAttributeName.RIGHT_ARROW,StyleConstants.ArrowStyle.ARROW_HEAD);
+	PicMultiCurve xAxis = new PicMultiCurve(new PicPoint(x0,xAxisOrd),
+											new PicPoint(x0+width,xAxisOrd),axisPAS);
+	g.add(xAxis);
+	// draw Y-axis :
+	double yAxisAbs = Math.max(x0,-xMin * xScale+x0);
+	PicMultiCurve yAxis = new PicMultiCurve(new PicPoint(yAxisAbs,0),new PicPoint(yAxisAbs,height),axisPAS);
+	g.add(yAxis);
+	// draw X-axis tick marks :
+	double xInc = roundIncrement(10.0/xScale);
+	for (double x=xInc; x < xMax; x+=xInc){
+		double xTick= (x-xMin)*xScale+x0;
+		if (xTick<x0) continue;
+		g.add(new PicMultiCurve(new PicPoint(xTick,xAxisOrd-0.02*width),new PicPoint(xTick,xAxisOrd)));
+		PicText text = new PicText(
+			new PicPoint(xTick,xAxisOrd-0.04*width),
+			Double.toString(x),
+			PicAttributeSet.DEFAULT_SET);
+		g.add(text);
+	}
+	for (double x=-xInc; x>xMin; x-=xInc){
+		double xTick= (x-xMin)*xScale+x0;
+		if (xTick<x0) continue;
+		g.add(new PicMultiCurve(new PicPoint(xTick,xAxisOrd-0.02*width),new PicPoint(xTick,xAxisOrd)));
+		PicText text = new PicText(
+			new PicPoint(xTick,xAxisOrd-0.04*width),
+			Double.toString(x),
+			PicAttributeSet.DEFAULT_SET);
+		g.add(text);
+	}
+	// draw Y-axis tick marks :
+	PicAttributeSet yAxisTxtPAS = new PicAttributeSet();
+	yAxisTxtPAS.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,PicText.HorAlign.RIGHT);
+	double yInc = roundIncrement(10.0/yScale);
+	for (double y=yInc; y < yMax; y+=yInc){
+		double yTick= (y-yMin)*yScale;
+		g.add(new PicMultiCurve(new PicPoint(yAxisAbs-0.02*height,yTick),new PicPoint(yAxisAbs,yTick)));
+		PicText text = new PicText(new PicPoint(yAxisAbs-0.04*width,yTick),
+						   Double.toString(y),
+						   yAxisTxtPAS);
+		g.add(text);
+	}
+	for (double y=-yInc; y > yMin; y-=yInc){
+		double yTick= (y-yMin)*yScale;
+		g.add(new PicMultiCurve(new PicPoint(yAxisAbs-0.02*height,yTick),new PicPoint(yAxisAbs,yTick)));
+		PicText text = new PicText(
+			new PicPoint(yAxisAbs-0.04*width,yTick),
+			Double.toString(y),
+			yAxisTxtPAS);
+		g.add(text);
+	}
+	drawing().add(g);
+	jf.dispose();
+}
+
+
+// -------------------- main --------------------------------------
+
+String scriptTitle="Plot y=f(x)";
+
+if (canvas()==null) {
+	mdimgr.showMessageDialog("First open a board!",scriptTitle,JOptionPane.ERROR_MESSAGE);
+	return;
+}
+
+// create user pane :
+JPanel box = new JPanel(new GridLayout(4,4,5,5));
+box.add(new JLabel("y=f(x)"));
+JTextField functionTF=new JTextField("x*Math.exp(-0.1*x*x)"); box.add(functionTF);
+box.add(new JLabel("Nb points"));
+WholeNumberField nbPtsTF=new WholeNumberField(50,10); box.add(nbPtsTF);
+box.add(new JLabel("xMin"));
+DecimalNumberField xMinTF=new DecimalNumberField(-10.0,10); box.add(xMinTF);
+box.add(new JLabel("xMax"));
+DecimalNumberField xMaxTF=new DecimalNumberField(10.0,10); box.add(xMaxTF);
+box.add(new JLabel("Graph witdh (mm)"));
+DecimalNumberField widthTF=new DecimalNumberField(50,10,true); box.add(widthTF);
+box.add(new JLabel("Graph height (mm)"));
+DecimalNumberField heightTF=new DecimalNumberField(50,10,true); box.add(heightTF);
+JButton but = new JButton("Graph it !");
+box.add(but);
+ActionListener al = new ActionListener(){ 
+		void actionPerformed(ActionEvent e){proceed();}
+};
+but.addActionListener(al);
+but = new JButton("Exit");
+box.add(but);
+al = new ActionListener(){ 
+		void actionPerformed(ActionEvent e){ jf.dispose();}
+};
+but.addActionListener(al);
+
+boolean modal = true;
+MDIComponent jf = mdimgr.createDialog(scriptTitle, modal, box);
+jf.setVisible(true);

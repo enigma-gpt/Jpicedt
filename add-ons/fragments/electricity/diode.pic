@@ -1,0 +1,52 @@
+%%Created by jPicEdt 1.6-pre1: mixed JPIC-XML/LaTeX format
+%%Mon Oct 31 18:54:55 CET 2011
+%%Begin JPIC-XML
+%<?xml version="1.0" standalone="yes"?>
+%<jpic x-min="0" x-max="10" y-min="0" y-max="6.25" auto-bounding="true">
+%<g lift-pen="0"
+%	 compound-mode="separate"
+%	 closed="false"
+%	>
+%<multicurve points="(3.75,0);(3.75,0);(3.75,5);(3.75,5)"
+%	 />
+%<multicurve points="(3.75,5);(3.75,5);(6.25,2.5);(6.25,2.5)"
+%	 />
+%<multicurve points="(6.25,2.5);(6.25,2.5);(3.75,0);(3.75,0)"
+%	 />
+%<multicurve points="(6.25,0);(6.25,0);(6.25,5);(6.25,5)"
+%	 />
+%<multicurve points="(3.75,2.5);(3.75,2.5);(0,2.5);(0,2.5)"
+%	 />
+%<multicurve points="(6.25,2.5);(6.25,2.5);(10,2.5);(10,2.5)"
+%	 />
+%<text text-vert-align="bottom"
+%	 anchor-point="(3.75,6.25)"
+%	 text-hor-align="left"
+%	 stroke-width="0.15"
+%	 >
+%$D$
+%</text>
+%</g>
+%</jpic>
+%%End JPIC-XML
+%PSTricks content-type (pstricks.sty package needed)
+%Add \usepackage{pstricks} in the preamble of your LaTeX file
+%You can rescale the whole picture (to 80% for instance) by using the command \def\JPicScale{0.8}
+\ifx\JPicScale\undefined\def\JPicScale{1}\fi
+\psset{unit=\JPicScale mm}
+\newrgbcolor{userFillColour}{0 0 0}
+\psset{linewidth=0.3,dotsep=1,hatchwidth=0.3,hatchsep=1.5,shadowsize=1,dimen=middle}
+\psset{dotsize=0.7 2.5,dotscale=1 1,fillcolor=userFillColour}
+\psset{arrowsize=1 2,arrowlength=1,arrowinset=0.25,tbarsize=0.7 5,bracketlength=0.15,rbracketlength=0.15}
+\makeatletter\@ifundefined{Pst@correctAnglefalse}{}{\psset{correctAngle=false}}\makeatother
+\begin{pspicture}(0,0)(10,6.25)
+{%
+\psline(3.75,0)(3.75,5)
+\psline(3.75,5)(6.25,2.5)
+\psline(6.25,2.5)(3.75,0)
+\psline(6.25,0)(6.25,5)
+\psline(3.75,2.5)(0,2.5)
+\psline(6.25,2.5)(10,2.5)
+\rput[bl](3.75,6.25){$D$}
+}%
+\end{pspicture}

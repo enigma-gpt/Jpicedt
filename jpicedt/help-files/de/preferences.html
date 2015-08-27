@@ -1,0 +1,256 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" 
+		  "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../jpe-help.css" />
+
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="CONTENT-TYPE" content=
+  "text/html; charset=us-ascii">
+  <meta name="author" content="Sylvain Reynal">
+  <meta name="translation" content=
+  "Jobst Hoffmann, Benjamin Poniatowski, Stephan Schulte">
+
+  <title>jPicEdt 1.6 Hilfe &ndash; Das Festlegen von Voreinstellungen</title>
+</head>
+
+<body>
+  <h2>Das Festlegen von Voreinstellungen</h2>
+  <hr>
+
+  <h3>Allgemeines</h3>
+
+  <ul>
+  <li>Multiple Document Interface: hier l&auml;sst sich ausw&auml;hlen, wie
+  die Fenster (z.B. Zeichenbl&auml;tter, Werkzeugkasten, &hellip;) von jPicEdt
+  verwaltet werden. Im
+  <i>child-frames</i>-Modus sind alle Fenster im Grunde genommen die von Java
+  bekannten <code>Frame</code>-Komponenten, die alle in dem Fenster liegen,
+  das von der Anwendung aufgebaut wird. Im Gegensatz dazu steht der
+  neue <i>Gimp-like</i> Modus, bei dem alle Fenster nativ sind und sich
+  unabh&auml;ngig auf dem Desktop befinden.</li>
+
+  <li>Look'n feel (LAF): L&auml;sst sie ihren favorisierten Look'n Feel Modus
+  ausw&auml;hlen; standardm&auml;&szlig;ig startet jPicEdt mit <i>metal</i>
+  (ein look'n feel Modus von SUN). Weitere M&ouml;glichkeiten sind CDE/Motif
+  und GTK+</li>
+
+  <li>Sprache : Englisch, Franz&ouml;sisch,&hellip; Sie m&uuml;ssen jPicEdt
+  neu starten, nachdem sie die Sprache auf eine neue umgestellt haben.</li>
+
+  <li>
+    <p>Maximale Undo-Schritte: L&auml;sst Sie die Anzahl von
+    r&uuml;ckg&auml;ngig zu machenden Schritten einstellen; 0 bedeutet, dass
+    dies deaktiviert ist.</p>
+  </li>
+
+  <li>Standardformat: Dies ist der Standard-Formatierer, der bei neuen
+  Zeichnungen genutzt wird. Bevorzugt sollte man hier PSTricks nutzen, weil
+  man dadurch eine wirklich hohe Renderqualit&auml;t erreicht (Farben,
+  Texturen, Schatten,&hellip;). Falls Sie sich aber nicht auf Zusatzpakete
+  angewiesen sein wollen, k&ouml;nnen Sie auch einfach auf den &ldquo;Emulated
+  LaTeX&rdquo;-Modus ausw&auml;hlen (dann steht Ihnen nur eine sehr kleine
+  Auswahl an graphischen Eigenschaften zur Verf&uuml;gung; z.B. keine
+  F&uuml;llungen, keine Farben). Das &ldquo;epic/eepic&rdquo; Paket
+  k&ouml;nnen Sie ausw&auml;hlen, wenn Sie keine Farben oder Texturen
+  ben&ouml;tigen, wohl aber Ellipsen, Winkel, Polygonz&uuml;ge, etc mit einer
+  hervorragenden Renderqualit&auml;t zeichnen wollen. Beachten Sie
+  au&szlig;erdem, dass PSTricks im Hintergrund PostScript verwendet.  Falls
+  ihr DVI-Betrachter also nicht mit PostScript umgehen kann, wandeln Sie ihre
+  DVI-Datei erst mit <code>dvips</code> in eine PostScript-Datei um, und
+  benutzen Sie anschliessend
+  <code>ghostscript</code> zum Betrachten des Ergebnisses.</li>
+  </ul>
+  <hr>
+
+  <h3>LaTeX, <code>eepic</code> and PSTricks Einstellungsdialoge</h3>
+
+  <p>Hier lassen sich eine Vielzahl an paketspezifischen Einstellungen
+  vornehmen. Etwas, was bei allen Formaten gleich ist, ist der
+  Prolog/Epilog-String, welcher benutzt wird, wenn LaTeX auf ein aktives Bild
+  aus jPicEdt heraus angewendet wird (das Bild entspricht dem markierten
+  innerem Rahmen).<br>  Diese Strings werden dem Text vorangestellt bzw. an
+  den Text angeh&auml;ngt, der vom Formatierer generiert wird (dieser Text
+  startet z.B. mit <code>/begin{picture}</code>), sodass der resultierende
+  Text eine &ldquo;eigentst&auml;ndige&rdquo; LaTeX-Datei ist und direkt von
+  LaTeX compiliert werden kann. Der standardm&auml;&szlig;ige Prolog/Epilog
+  bindet einfach nur notwendige Pakete ein, aber Sie k&ouml;nnen auch ihre
+  eigenen Makros hinzuf&uuml;gen, sodass zum Beispiel Argumente von Textboxen,
+  die Makros von Ihnen benutzen, richtig kompiliert werden.</p>
+
+  <p>Standardm&auml;&szlig;ig wird die <code>unitlength</code> am Anfang der
+  gespeicherten Datei auf 1 mm gesetzt. Es ist aber oftmals sehr bequem, mit
+  dieser Variablen die Gr&ouml;&szlig;e des zugeh&ouml;rigen Bildes zu
+  ver&auml;ndern. Der einfachste Weg, dies zu tun, ist in der Haupt-TeX-Datei
+  das Kommando <code>\JPicScale</code> zu definieren.  Hier ist ein Beispiel
+  um ein Bild auf 80% zu skalieren:</p>
+  <pre>
+\def\JPicScale{0.8} \input{figure.tex}
+</pre>
+
+  <p>Alternativ k&ouml;nnen Sie auch die Kommandos
+  <code>\newcommand{\JPicScale}{0.8}</code> oder
+  <code>\renewcommand{\JPicScale}{0.8}</code> benutzen, jenachdem ob
+  <code>\JPicScale</code> schon definiert ist oder nicht (bei Benutzung
+  des <code>\def</code>-Primitivs brauchen die sich dar&uuml;ber keine
+  Gedanken zu machen).</p>
+
+  <h4>1. Spezifische Parameter der LaTeX Bildumgebung</h4>
+
+  <ul>
+  <li><b>Maximaler LaTeX Kreis/Scheibendurchmesser</b>: Dies ist abh&auml;ngig
+  von ihrer LaTeX Installation. Sie m&uuml;ssen es auf den gr&ouml;&szlig;ten
+  Kreis-/Scheibendurchmesser einstellen, den Ihre LaTeX-Fonts bereitstellen
+  (derzeit 14mm f&uuml;r Kreise und 5.4mm f&uuml;r Scheiben, dies sind
+  gleichzeitig die Standard Werte f&uuml;r fast jede TeX Distribution).</li>
+  </ul>
+
+  <p>Die LaTeX Bildumgebung erlaubt nur eine kleine Anzahl von Steigungen bei
+  Linien; im <b>emulated mode</b>, welches in jPicEdt benutzt wird, um mit
+  dem <code>\multiput</code> Kommando Linien mit beliebigem Anstieg zu
+  emulieren, wird eine gro&szlig;e Anzahl eng aneinanderliegender kleiner
+  horizontaler oder vertikaler Segmente verwendet. Als Resultat kann man
+  Linien mit beliebiger Dicke zeichnen (Vorsicht, das <code>\thickness</code>
+  Kommando funktioniert nicht mit normalen geneigten Linien).</p>
+
+  <ul>
+  <li><b>Emulierte Linie L&auml;nge</b>: dies ist die L&auml;nge der kleinen
+  Segmente, aus denen bei der Emulation die Linien zusammengesetz werden.</li>
+
+  <li><b>Emulierte Linie max. Steigung</b>: die Steigung, bei der von einer
+  fast senkrechten Linie (da emuliert) zu einer ECHTEN senkrechten Linie
+  gewechselt wird.</li>
+
+  <li><b>Emulierter Kreis Segmentl&auml;nge</b>: Dies ist die L&auml;nge der
+  kleinen Segmente, aus denen ein Kreis durch Emulation erzeugt wird (das ist
+  der Fall, wenn ein Kreis einen gr&ouml;&szlig;eren Radius hat als
+  in <b>Maximaler LaTeX Kreis/Scheibendurchmesser</b> definiert
+  ist). Bemerkung: Gro&szlig;e Scheiben k&ouml;nnen nicht mit den in der LaTeX
+  Bildumgebung gegebenen Kommandos erzeugt werden, dazu m&uuml;ssen Sie das
+  <i>eepic</i> Paket verwenden.</li>
+  </ul>
+
+  <h4>2. Das <code>eepic</code> Paket</h4>
+
+  <ul>
+  <li>Maximale Breite f&uuml;r dicke und d&uuml;nne Linien:
+  <code>eepic</code> unterst&uuml;tzt drei verschiedene Liniendicken, welche
+  mit den Kommandos <code>\thinlines</code>,
+  <code>\thicklines</code> und <code>\Thicklines</code> eingestellt werden
+  k&ouml;nnen. Die Standardwerte sollten funktionieren (z.B.  jede Linie
+  d&uuml;nner als 0.15mm wird als <b>thin</b>, und jede Linie dicker als 0.3mm
+  wird als <b>Thick</b> bewertet); falls Sie aber Unterschiede zwischen dem
+  dargestellten Bild und dem fertig formatierten Bild bemerken, k&ouml;nnen
+  Sie diese Werte eigenh&auml;ndig ver&auml;ndern, um das WYSIWYG-Verhalten zu
+  verbessern.</li>
+  </ul>
+
+  <h4>3. PSTricks package</h4>
+
+  <p>Keine &auml;nderbaren Parameter.</p>
+
+  <hr>
+
+  <h3>Externe Kommandos</h3>
+
+  <h4>Wie funktioniert es?</h4>
+
+  <p>Wenn sie aus jPicEdt heraus LaTeX/DVI/&hellip; benutzen, wird on-the-fly
+  eine LaTeX-Datei im standard Temp-Verzeichnis (z.B.
+  <code>c:/windows/temp</code>) oder einem anderem Verzeichnis ihrer Wahl
+  (siehe Verzeichnis Panel) angelegt. Die Vielzahl von Betriebssystemen und
+  LaTeX Distributionen macht es unm&ouml;glich, ein Schema f&uuml;r
+  ausf&uuml;hrbare externe Kommandos zu kreieren, welches nicht auf Skripte
+  angewiesen ist. (z.B. Batchdateien unter DOS, AppleScript unter MacOS).</p>
+
+  <p>Das beste, was Sie tun k&ouml;nnen ist %ndash; und so mace ich es auch
+  &ndash;, externe Skripte zu benutzen, welche die passenden Programme (latex,
+  dviwin32.exe/xdvi,&hellip;) aufrufen. Sie k&ouml;nnen diesen Skripten
+  Argumente &uuml;bergeben, indem Sie die vordefinierten Symbole
+  &ldquo;{p}&rdquo; und &ldquo;{f}&rdquo; benutzen.</p>
+
+  <ul>
+  <li>&ldquo;{p}&rdquo; wird durch ihr Temp-Verzeichnis ersetzt (wo die LaTeX
+  Datei erstellt wurde), z.B. <code>/tmp/</code> unter
+  Linux, <code>c:\windows\temp</code> unter Win9x, etc&hellip;</li>
+
+  <li>&ldquo;{f}&rdquo; wird durch den Namen der tempor&auml;ren Datei ersetzt
+  (in der Regel &ldquo;jpicedt&rdquo; mit einer angeh&auml;ngten
+  zuf&auml;lligen Nummer, z.B.  &ldquo;jpicedt542163&rdquo;) ohne eine
+  &ldquo;.tex&rdquo; Erweiterung.</li>
+
+  <li>&ldquo;{i}&rdquo; wird duch den Pfad des
+  &ldquo;add-ons&rdquo;-Verzeichnisses ersetzt; in diesem befinden sich schon
+  einige Skripte f&uuml;r manche LaTeX Distributionen.</li>
+  </ul>
+
+  <p>Hier ist ein Beispiel f&uuml;r eine externe Batchdatei, welche unter der
+  Linux bash-Shell lauff&auml;hig ist :</p>
+  <pre>
+#!/bin/sh cd $1 $2 $3
+</pre>
+
+  <p>Angenommen, dieses Skript wurde im &ldquo;add-ons&rdquo;-Verzeichnis
+  unter dem Namen <code>ext_proc</code> abgelegt, dann wird die Kommandozeile,
+  die im &ldquo;external-commands&rdquo;'s Tab auf der Einstellungsseite
+  erscheint, wie folgt dargestellt:</p>
+
+  <p><b><code>{i}/ext_proc {p} latex {f}</code></b></p>
+
+  <p>(wobei &ldquo;latex&rdquo; auch durch ein anderes passendes Programm
+  ersetzt werden kann, z.B. xdvi, kghostview, kdvi,&hellip;).</p>
+
+  <p>Wenn nun &ldquo;{p}&rdquo; und &ldquo;{f}&rdquo; ersetzt werden, sieht
+  das ganze dann so aus :</p>
+
+  <p><b><code>ext_proc /tmp latex jpicedt46858</code></b></p>
+
+  <p>Auf Datei diese k&ouml;nnen sie dann schliesslich wie folgt zugreifen
+  :</p>
+
+  <p><b><code>cd /tmp</code><br>
+  <code>latex jpicedt46858</code></b></p>
+
+  <p>(LaTeX akzeptiert Dateien ohne Erweiterung in der Kommandozeile,
+  andererseits k&ouml;nnen sie einfach ein &ldquo;.tex&rdquo; manuell
+  hinzuf&uuml;gen).</p>
+
+<h4>Laden von vordefinierten Konfigurationen</h4>
+
+  <p>Zur Zeit gibt es Skripte und vordefinierte Konfigurationen f&uuml;r
+  folgende LaTeX Distributionen :</p>
+
+  <ul>
+  <li>Unix : TeTeX</li>
+
+  <li>Windows : MikTeX, WinGUT, und ScientificWorkplace.</li>
+  </ul>
+
+  <p>Diese Skripte befinden sich im <b>add-ons</b> Unterverzeichnis von
+  jPicEdt (daf&uuml;r m&uuml;ssen sie w&auml;hrend der jPicEdt Installation
+  das <b>add-ons</b> Paket mit installiert haben).<br>  Um eine vordefinierte
+  Konfigurationsdatei zu laden, w&auml;hlen Sie im Bearbeiten-Men&uuml; den
+  Punkt Einstellungen aus, klicken dann den Reiter Befehle, dr&uuml;cken dann
+  die <b>LOAD PREDEFINED CONFIGURATION</b>-Schaltfl&auml;che, und durchsuchen
+  den Verzeichnisbaum nach ihrer LaTeX Distribution.</p>
+  <hr>
+
+  <h3>Tastaturk&uuml;rzel</h3>
+
+  <p>Erlaubt es Ihnen die Tastaturk&uuml;rzel-Belegung f&uuml;r jeden
+  Men&uuml;eintrag zu ver&auml;ndern. Um ein Tastaturk&uuml;rzel
+  hinzuzuf&uuml;gen, zu ver&auml;ndern oder zu l&ouml;schen doppelklicken Sie
+  auf den entsprechenden Eintrag in der rechten Spalte, tippen das
+  Tastaturk&uuml;rzel ein, und klicken anschlie&szlig;end auf OK (um ein
+  Tastaturk&uuml;rzel zu l&ouml;schen, klicken Sie einfach auf den
+  Radiergummi).</p>
+  <hr>
+
+  <h3>Seitenformatierung</h3>
+
+  <p>Erlaubt Ihnen das Standard-Seitenformat einzustellen, wenn Sie eine
+  Zeichnung von Grund auf neu machen (dies hat keinen Effekt auf Zeichnungen,
+  die Sie von einem externen Datentr&auml;ger laden).</p>
+</body>
+</html>

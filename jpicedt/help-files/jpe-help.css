@@ -1,0 +1,28 @@
+ body 
+ { 
+	 background-color:white; 
+ }
+ /* style for Menu items */
+ kbd.menu 
+ {  
+	 font-weight:bold;
+	 color:blue;
+ }
+ /* style for keyboard keys (e.g. ALT, CTRL, SHIFT) */
+ kbd
+ {  
+	 font-weight:bold;
+	 color:green;
+ }
+
+ /* style for file names*/
+ code.file
+ {
+	 font-weight:bold;
+	 color:purple;
+ }
+
+table, th, td
+{
+	border: 1px solid;
+}

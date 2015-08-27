@@ -1,0 +1,212 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" 
+		  "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../jpe-help.css" />
+
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="CONTENT-TYPE" content=
+  "text/html; charset=us-ascii">
+  <meta name="author" content="Sylvain Reynal">
+  <meta name="translation" content=
+  "Jobst Hoffmann, Benjamin Poniatowski, Stephan Schulte">
+
+  <title>jPicEdt 1.6 Hilfe &ndash; Erweiterbare Bezier Kurven</title>
+</head>
+
+<body>
+  <h2>Erweiterbare Bezier Kurven</h2>
+
+  <p style="text-align:center"><img src="../img/MultiCurveHelp.png"
+  alt="Darstellung von Kurven"></p>
+
+  <p>Eine erweiterbare Bezier Kurve ist eine Verkettung entweder gerade
+  Segmente oder kubischer Bezier Kurven. F&uuml;r jeden
+  <i>Unterteilungspunkt</i> (d.h. ein Punkt, der zwei Bezier Kurven, wie A, B,
+  C, D, E in der Abbildung oben verbindet) kann man zwei Eigenschaften den
+  verbindenden Tangenten, n&auml;mlich
+  <i>Glattheit</i> und/oder <i>Symmetrie</i> festlegen.
+  <i>Glattheit</i> bedeutet, dass die Tangenten um den Unterteilungspunkt die
+  Eigenschaft erf&uuml;llen m&uuml;ssen, parallel zu sein (zum Beispiel ist
+  BB' zum BB'' in der obigen Abbildung parallel). Genauer, wenn Glattheit im
+  Punkt B erforderlich ist und wenn Sie B' mit der Maus verschieben, dann
+  bewegt sich B'' automatisch entsprechend, um die Glattheit
+  aufrechtzuerhalten. Um einen Winkel zu bilden (wie in Punkt C), darf
+  Glattheit NICHT erzwungen werden. <i>Symmetrie</i> in B bedeutet, dass die
+  L&auml;nge von BB' und BB'' gleich ist.  Symmetrie wird in der obigen
+  Abbildung in allen Punkten erzwungen.  Wenn beides, also <i>Symmetrie</i>
+  und <i>Glattheit</i>, in B erforderlich sind, dann sind B' und B''
+  symmetrisch in Beziehung zu B. <i>Symmetrie</i> und <i>Glattheit</i> haben
+  keinen Effekt auf die Endpunkte A und E.</p>
+
+  <p><a name="straight" id="straight">Wenn man eine Kurve</a>
+	<a href="drawingcap.html#bezier"><b>zeichnet</b>
+  oder <b>bearbeitet</b></a>, werden Symmetrie und Glattheit
+  standardm&auml;&szlig;ig erzwungen, jedoch erm&ouml;glicht Ihnen das
+  Benutzen von Modifikatoren, das Verhalten zu &auml;ndern:</p>
+
+  <ul>
+    <li><kbd class="kbd">STRG</kbd>: bewegt Tangenten mit erzwungener
+    Glattheit und Symmetrie;</li>
+
+  <li><kbd class="kbd">STRG+SHIFT</kbd>: erzwingt nur Glattheit.</li>
+
+  <li><kbd class="kbd">STRG+ALT</kbd>: erzwingt nur Symmetrie.</li>
+
+  <li><kbd class="kbd">STRG+ALT+SHIFT</kbd>: freies Bewegen von Tangenten
+  (keine Beschr&auml;nkungen)</li>
+  </ul>
+
+  <p><i>Zur Beachtung: diese Kombinationen und ihre dazugeh&ouml;rige
+  Bedeutung werden in der Statuszeile vermerkt.</i></p>
+
+  <p>Sie k&ouml;nnen diese Eigenschaften auch f&uuml;r alle Punkte
+  gleichzeitig &auml;ndern, oder nur f&uuml;r einen speziellen Punkt, indem
+  man eine Kurve ausw&auml;hlt, die <a href= "mouse.html#Mouse">Maustaste
+  II</a> klickt, und die entsprechende Aktion aus dem Kontextmen&uuml;
+  ausw&auml;hlt. Alternativ bietet Ihnen das Eigenschaftenpanel (dr&uuml;cken
+  Sie dazu die Taste <kbd class="kbd">F2</kbd>) die M&ouml;glichkeit, die
+  gleichen Operationen durchzuf&uuml;hren; hier k&ouml;nnen Sie jedoch
+  pr&auml;ziser arbeiten, denn Sie k&ouml;nnen die neuen Koordinaten numerisch
+  eingeben. Es ist wichtig zu wissen, dass einige &Auml;nderungen irreversibel
+  sind (au&szlig;er, Sie rufen explizit
+  <b>Macht letzte Aktion r&uuml;ckg&auml;ngig auf</b>), denn das Erzwingen
+  einer dieser Eigenschaften KANN die Position einiger Kontrollpunkte
+  ver&auml;ndern; derzeit wird so die vorherige Position NICHT gespeichert;
+  deshalb sind die Glattheit- und Symmetrie-Checkboxen im Eigenschaftpanel und
+  die entsprechenden Men&uuml;punkte im Kontextmen&uuml; zur Zeit
+  &quot;Einbahnstra&szlig;en&quot;.</p>
+
+  <h3>Gerade Segmente und wie man sie kr&uuml;mmt</h3>
+
+  <p>Um eine Bezier Kurve zu <i>begradigen</i>, also einen Polygonzug daraus
+  zu machen, muss man nur die zugeh&ouml;rigen Tangentenendpunkte bewegen, bis
+  sie auf einen Punkt reduziert sind.  Um ein Segment zu <i>kr&uuml;mmen</i>,
+  dr&uuml;cken die <kbd class=
+  "kbd">STRG</kbd>, <kbd class="kbd">STRG+SHIFT</kbd>, <kbd class=
+  "kbd">STRG+ALT</kbd> oder <kbd class="kbd">STRG+ALT+SHIFT</kbd>
+  Modifikatoren, klicken auf jeden Endpunkt des Segments und ziehen die
+  Tangenten entsprechend ihren Vorstellungen. Falls Sie nicht daran denken,
+  die Modifikatoren vor dem Klicken zu dr&uuml;cken, werden die Endpunkte des
+  Segments verschoben, und die zugeh&ouml;rigen Tangenten werden nicht
+  modifiziert. Es sei noch einmal der Hinweis gegeben, das das
+  Eigenschaftsfenster es Ihnen erm&ouml;glicht, die ausgew&auml;hlte Kurve an
+  allen Punkte gleichzeitg oder nur an einem speziellen Punkt zu
+  begradigen. Um die &Auml;nderung r&uuml;ckg&auml;ngig zu machen, rufen Sie
+  einfach aus dem Bearbeiten-Men&uuml; den Punkt <b>R&uuml;ckg&auml;ngig</b>
+  auf oder klicken in der Werkzeugleiste einfach das entsprechende Icon
+  an.</p>
+
+  <h2><a name="smoothpoly" id="smoothpoly">Glatte Polygone</a></h2>
+
+  <p style="text-align:center"><img src="../img/SmoothPolyHelp.png"
+  alt="DArstellung eines glatten Polynoms"></p>
+
+  <p>Ein <i>glattes Polygon</i> ist eine glatte Kurve, die durch einen
+  Polygonzug definiert wird. Zum Beispiel wird das glatte Polygon in der
+  obigen Abbildung durch den Polygonzug ABCDE definiert (in der Abbildung
+  gr&uuml;n). Die Kurve ist immer glatt, und verl&auml;uft normalerweise nicht
+  durch die Kontrollpunkte. Die Kurve verl&auml;uft aber durch die
+  Mittelpunkte aller Segmente des Polygons (au&szlig;er der beiden
+  &auml;u&szlig;eren). Im obigen Beispiel geht die Kurve durch P und Q,
+  welches die Mittelpunkte von [BC] und [CD] sind.</p>
+
+  <p>Zu jedem Punkt des glatten Polygons gibt es einen Koeffizienten, der
+  festlegt, wie nah die Kurve an das Polygon herangeht. Der Standardwert
+  betr&auml;gt 70, sinnvolle Werte liegen generell im Intervall von
+  50-100. Dieser Koeffizient kannn wie folgt ge&auml;ndert werden: W&auml;hlen
+  Sie das glatte Polygon und dr&uuml;cken Sie die
+  Taste <kbd class="kbd">F2</kbd>, um das Eigenschaftenfenster zu &ouml;ffnen;
+  wenn Sie nicht den Koeffizienten f&uuml;r alle Punkte anpassen m&ouml;chten,
+  entfernen Sie einfach einige H&auml;ckchen in der <i>Korrigieren</i> Spalte;
+  anschlie&szlig;end benutzen Sie den Schieberegler, um den Koeffizienten
+  anzugleichen. Die nachstehende Abbildung zeigt den Effekt, wenn man den Wert
+  aller Koeffizienten der Punkte auf 50 &auml;ndert.<br>  Eine andere Art, den
+  Gl&auml;ttekoeffizienten zu bearbeiten, wird im nachstehenden
+  Abschnitt <a href="#editpoints">Das Benutzen des
+  Bezierpunktebearbeitungswerkzeugs &hellip; [<img src=
+  "../img/action.editorkit.EditBezierPoint.png" alt= "Icon:
+  EditBezierPoint">]</a> beschrieben.</p>
+
+  <p style="text-align:center"><img src="../img/SmoothPolyHelp2.png"
+  alt="Beispiel"></p>
+
+  <p>Genauer gesagt ist ein glattes Polygon eine Verkettung von kubischen
+  Bezier Kurven, dessen Kontrollpunkte auf dem Kontrollpolygon liegen (in der
+  obigen Abbildung werden die Kontrollpunkte der Bezier Kurven durch die
+  Endpunkte der fett punktierten Linien repr&auml;sentiert). Es sei
+  Koeffizient im Punkt B als <i>c</i> bezeichnet. P' ist dann so gegeben, dass
+  der Vektor PP' <i>c</i> mal der Vektor PB ist. Gleicherma&szlig;en ist der
+  Punkt A' so gegeben das der Vektor AA' <i>c</i> mal der Vektor AB ist.</p>
+
+  <h2><a name="editpoints" id="editpoints">Das Benutzen des
+  Bezierpunktebearbeitungswerkzeugs zum Hinzuf&uuml;gen, Entfernen und
+  Bearbeiten von Punkten</a></h2>
+
+  <p>Dies ist eine spezielle Funktion, um Punkte zu einer Bezier Kurve und
+  glatten Polygonen hinzuzuf&uuml;gen oder zu entfernen, und genauso auch zu
+  Parallelogrammen und Ellipsen, wenn sie in eine Bezier Kurve transformiert
+  wurden. Die Funktion kann aufgerufen werden durch
+  das <img src="../img/action.editorkit.EditBezierPoint.png" alt="Icon:
+  EditBezierPoint" > Symbol im Werkzeugkasten oder im Werkzeuge-Men&uuml;
+  (siehe auch <a href= "actions.html#toolkit">Werkzeugkasten</a>). Zu jeder
+  Zeit bringt Sie ein Klick mit der Maustaste II zur&uuml;ck zum AUSWAHL Modus
+  [<img src="../img/action.editorkit.Select.png" alt="Icon: Selct" >].</p>
+
+  <dl>
+  <dt>Ausw&auml;hlen des Zielobjektes:</dt>
+
+  <dd>Wurde das Werkzeug in der Werkzeugleiste aktiviert, sollte der erste
+  Schritt sein, ein <b>einzelnes</b> Zielobjekt auszuw&auml;hlen, z.B. ein
+  glatten Polygon oder eine Bezier Kurve.  Wenn ein Parallelogramm oder eine
+  Ellipse ausgew&auml;hlt wurde, wird es zu einer Bezier Kurve umgewandelt
+  (dies kann man per
+  <i>R&uuml;ckg&auml;ngig</i> aufheben).</dd>
+
+  <dt>Ausw&auml;hlen von Punkten</dt>
+
+  <dd>Bevor man Punkte entfernt, muss man sie ausw&auml;hlen. Klicken Sie
+  einfach auf jeden Punkt um ihn zum Entfernen auszuw&auml;hlen, mit
+  gedr&uuml;ckter SHIFT-Taste aktivieren Sie die inkrementelle
+  Auswahl/Abwahl. Alternativ k&ouml;nnen Sie ein <i>Lasso</i> um jeden Punkt,
+  der ausgew&auml;hlt werden soll, schlingen, indem Sie ein rechteckiges
+  Auswahlfeld ziehen. Ausgew&auml;hlte Punkte werden
+  <b>blau</b> umrandet.</dd>
+
+  <dt>Entfernen von Punkten</dt>
+
+  <dd>klicken Sie einfach auf einen der oben ausgew&auml;hlten Punkten (der
+  Cursor verwandelt sich in ein Minuszeichen). Was Bezier Kurven betrifft, so
+  bewirkt das Entfernen eines Punktes, der eine Tangente enth&auml;lt, das
+  Begradigen des zugeh&ouml;rigen Segmentes; dabei bewirkt das Entfernen eines
+  Punkts, der an zwei Bezier Kurven angrenzt, dass sowohl der Punkt als auch
+  die Kontrollm&ouml;glichkeit durch die zugeh&ouml;rigen Tangenten
+  verschwinden.</dd>
+
+  <dt>Hinzuf&uuml;gen von Punkten</dt>
+
+  <dd>Halten Sie die <b>STRG</b>-Taste gedr&uuml;ckt, w&auml;hrend Sie die
+  Maus &uuml;ber ein <b>Segment</b> bewegen (egal wie gekr&uuml;mmt oder
+  begradigt es ist), dann dr&uuml;cken Sie die Maustaste I, um einen neuen
+  Punkt zu ziehen und hinzuzuf&uuml;gen.  Ein anschlie&szlig;endes Loslassen
+  der Maus l&auml;sst Sie die zugeh&ouml;rige Tangente bearbeiten. F&uuml;r
+  glatte Polygone m&uuml;ssen Sie klicken, wenn sich die Maus &uuml;ber einem
+  <i>Segment</i> des steuernden Polygons befindet und nicht &uuml;ber der
+  Kurve selbst. In beiden F&auml;llen gilt, dass der Mauszeiger sich
+  &auml;ndert: er zeigt zus&auml;tzlich ein &ldquo;+&rdquo; an.</dd>
+
+  <dt>Anpassen der Koeffizienten eines glatten Polygons</dt>
+
+  <dd>F&uuml;r jeden Punkt des Polygons, der die Kurve bestimmt, gibt es einen
+  Koeffizienten, der festlegt, wie nah zu den Ecken des Polygons die Kurve
+  gehen soll (<a href="#smoothpoly">mehr Details hier</a>). Um diese
+  Koeffizienten zu bearbeiten, w&auml;hlen Sie die Punkte aus, die Sie
+  ab&auml;ndern wollen, anschlie&szlig;end dr&uuml;cken
+  Sie <kbd class="kbd">STRG+ALT</kbd>, bewegen Sie die Maus &uuml;ber die
+  ausgew&auml;hlten Punkte (der Cursor verwandelt sich in einen Nord-S&uuml;d
+  Pfeil) und ziehen Sie die Maus hoch oder runter. Dies wird die Koeffizienten
+  proportional zum Mausabstand verg&ouml;&szlig;ern (bzw. verkleinern).</dd>
+  </dl>
+</body>
+</html>

@@ -1,0 +1,521 @@
+import jpicedt.graphic.model.*;
+import jpicedt.graphic.*;
+import jpicedt.graphic.util.*;
+import jpicedt.format.output.util.*;
+import java.lang.Math;
+import java.util.BitSet;
+import java.awt.Color;
+import java.awt.geom.Rectangle2D;
+
+drawing().clear();
+
+BitSet svg = new BitSet();
+svg.set(ColorFormatter.ColorEncoding.SVG.value());
+
+// rotation angle
+String rangleColorName = "Blue";
+Color rangleColor = ColorFormatter.parse(rangleColorName,svg);
+if(rangleColor == null) {
+	print("no " + rangleColorName);
+	return;
+}
+String sangleColorName = "Red";
+Color sangleColor = ColorFormatter.parse(sangleColorName,svg);
+if(sangleColor == null) {
+	print("no " + sangleColorName);
+	return;
+}
+
+// rotated angle
+String dangleColorName = "DarkGreen";
+Color dangleColor = ColorFormatter.parse(dangleColorName,svg);
+if(rangleColor == null) {
+	print("no " + dangleColorName);
+	return;
+}
+
+
+double angleLabelPos = 0.8;
+PicGroup g = new PicGroup();
+PicAttributeSet pasTxt = new PicAttributeSet();
+PicAttributeSet pasPtMark = new PicAttributeSet();
+PicAttributeSet pasVec = new PicAttributeSet();
+pasVec.setAttribute(PicAttributeName.LINE_WIDTH,0.6);
+pasVec.setAttribute(PicAttributeName.RIGHT_ARROW,StyleConstants.ArrowStyle.ARROW_HEAD);
+PicAttributeSet pasAxis = new PicAttributeSet();
+pasAxis.setAttribute(PicAttributeName.LINE_WIDTH,0.15);
+pasAxis.setAttribute(PicAttributeName.LINE_STYLE,StyleConstants.LineStyle.DASHED);
+pasAxis.setAttribute(PicAttributeName.PST_CUSTOM,"dash=5pt 2pt 1pt 2pt");
+
+PicAttributeSet pasPRL = new PicAttributeSet();
+pasPRL.setAttribute(PicAttributeName.LINE_WIDTH,0.15);
+pasPRL.setAttribute(PicAttributeName.LINE_STYLE,StyleConstants.LineStyle.DASHED);
+
+PicAttributeSet pasRAngle = new PicAttributeSet();
+pasRAngle.setAttribute(PicAttributeName.LINE_COLOR,rangleColor);
+pasRAngle.setAttribute(PicAttributeName.RIGHT_ARROW,StyleConstants.ArrowStyle.ARROW_HEAD);
+
+PicAttributeSet pasSAngle = new PicAttributeSet();
+pasSAngle.setAttribute(PicAttributeName.LINE_COLOR,sangleColor);
+pasSAngle.setAttribute(PicAttributeName.RIGHT_ARROW,StyleConstants.ArrowStyle.ARROW_HEAD);
+
+PicAttributeSet pasSAngleRevert = new PicAttributeSet();
+pasSAngleRevert.setAttribute(PicAttributeName.LINE_COLOR,sangleColor);
+pasSAngleRevert.setAttribute(PicAttributeName.LEFT_ARROW,StyleConstants.ArrowStyle.ARROW_HEAD);
+
+PicAttributeSet pasDAngle = new PicAttributeSet();
+pasDAngle.setAttribute(PicAttributeName.LINE_COLOR,dangleColor);
+pasDAngle.setAttribute(PicAttributeName.RIGHT_ARROW,StyleConstants.ArrowStyle.ARROW_HEAD);
+
+
+PicPoint ptBL, ptBR, ptTR;
+
+ptBL=new PicPoint(31.2,41.5);
+ptBR=new PicPoint(20.51,105.62);
+ptTR=new PicPoint(46.81,99.87);
+
+double sAngleStart = 123.0;
+double sAngleEnd = -48.0;
+
+
+// L'arc d'ellipse qu'on décrit
+//-----------------------------------------------------------------------------------------------------------
+PicEllipse el= new PicEllipse(ptBL, ptBR, ptTR, PicEllipse.OPEN);
+el.setAngleStart(sAngleStart);
+el.setAngleEnd(sAngleEnd);
+g.add(el);
+
+
+
+gaLen = el.getGreatAxisLength();
+saLen = el.getSmallAxisLength();
+PicPoint ptTL= el.getCtrlPt(PicEllipse.P_TL, null);
+PicPoint center = new PicPoint(ptBL).middle(ptTR);
+
+
+// complémentaire de l'arc
+PicEllipse angEl = new PicEllipse(ptBL, ptBR, ptTR, PicEllipse.OPEN,pasPRL);
+angEl.setAngleStart(sAngleEnd);
+angEl.setAngleEnd(sAngleStart);
+g.add(angEl);
+
+PicVector l2rVec = new PicVector(ptBL,ptBR);
+PicVector b2tVec = new PicVector(ptBL,ptTL);
+
+// le parallelogramme de base
+g.add(new PicParallelogram(ptBL, ptBR, ptTR, pasPRL) );
+
+// P_BL
+pasTxt.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,PicText.HorAlign.RIGHT);
+pasTxt.setAttribute(PicAttributeName.TEXT_VERT_ALIGN,PicText.VertAlign.TOP);
+g.add(new PicText(ptBL,"$P_{\\mathrm{BL}}$",pasTxt));
+g.add(new PicText(ptBL,"$\\times$",pasPtMark));
+
+// P_BR
+pasTxt.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,PicText.HorAlign.RIGHT);
+pasTxt.setAttribute(PicAttributeName.TEXT_VERT_ALIGN,PicText.VertAlign.BOTTOM);
+g.add(new PicText(ptBR,"$P_{\\mathrm{BR}}$ ",pasTxt));
+g.add(new PicText(ptBR,"$\\times$",pasPtMark));
+
+
+// P_TR
+pasTxt.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,PicText.HorAlign.LEFT);
+pasTxt.setAttribute(PicAttributeName.TEXT_VERT_ALIGN,PicText.VertAlign.BOTTOM);
+g.add(new PicText(ptTR,"$P_{\\mathrm{TR}}$",pasTxt));
+g.add(new PicText(ptTR,"$\\times$",pasPtMark));
+
+// Center
+pasTxt.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,PicText.HorAlign.RIGHT);
+pasTxt.setAttribute(PicAttributeName.TEXT_VERT_ALIGN,PicText.VertAlign.CENTER);
+g.add(new PicText(center,"Centre ",pasTxt));
+g.add(new PicText(center,"$\\times$",pasPtMark));
+
+// Sens de rotation des angles normaux
+//-----------------------------------------------------------------------------------------------------------
+double radius = 5;
+PicGroup g1 = new PicGroup();
+angEl = new PicEllipse(new PicPoint(-radius,-radius),
+					   new PicPoint(radius,-radius),
+					   new PicPoint(radius,radius),
+					   PicEllipse.OPEN,
+					   pasRAngle);
+angEl.setAngleStart(-30);
+angEl.setAngleExtent(300);
+g1.add(angEl);
+pasTxt.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,PicText.HorAlign.CENTER);
+pasTxt.setAttribute(PicAttributeName.TEXT_VERT_ALIGN,PicText.VertAlign.BOTTOM);
+g1.add(new PicText(new PicPoint(0,radius),
+				   "\\parbox{30\\unitlength}{\\centering\\textcolor{"
+				   + rangleColorName
+				   +"}{sens base canonique}}",
+				   pasTxt));
+g1.translate(center.getX(), center.getY());
+g1.translate(-7*radius,gaLen*1.5);
+g.add(g1);
+
+// Sens de rotation des angles skew
+//-----------------------------------------------------------------------------------------------------------
+g1 = new PicGroup();
+angEl = new PicEllipse(ptBL,
+					   ptBR,
+					   ptTR,
+					   PicEllipse.OPEN,
+					   pasSAngle);
+double scaleRatio = 2*radius/Math.sqrt(gaLen*Math.abs(saLen));
+angEl.scale(center,scaleRatio,scaleRatio);
+angEl.setAngleStart(-30);
+angEl.setAngleExtent(300);
+g1.add(angEl);
+pasTxt.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,PicText.HorAlign.CENTER);
+pasTxt.setAttribute(PicAttributeName.TEXT_VERT_ALIGN,PicText.VertAlign.BOTTOM);
+g1.add(new PicText(new PicPoint(center).translate(0,scaleRatio*0.5*gaLen),
+				   "\\parbox{30\\unitlength}{\\centering\\textcolor{"
+				   + sangleColorName
+				   +"}{sens base parallelogramme}}",
+				   pasTxt));
+g1.translate(0,gaLen*1.5);
+g.add(g1);
+
+// Sens de rotation des angles rotated
+//-----------------------------------------------------------------------------------------------------------
+double rotAngle = el.getRotationAngle();
+PicPoint aVec = new PicVector(1,0).rotate(rotAngle);
+PicPoint bVec = aVec.cIMul();
+aVec.scale(gaLen*0.5,gaLen*0.5);
+bVec.scale(saLen*0.5,saLen*0.5);
+
+PicPoint rotPtBL = new PicPoint(center)
+	.translate(aVec,-1)
+	.translate(bVec,-1);
+PicPoint rotPtBR = new PicPoint(center)
+	.translate(aVec,1)
+	.translate(bVec,-1);
+PicPoint rotPtTR = new PicPoint(center)
+	.translate(aVec,1)
+	.translate(bVec,1);
+
+g1 = new PicGroup();
+angEl = new PicEllipse(rotPtBL,
+					   rotPtBR,
+					   rotPtTR,
+					   PicEllipse.OPEN,
+					   pasDAngle);
+double scaleRatio = 2*radius/Math.sqrt(gaLen*Math.abs(saLen));
+angEl.scale(center,scaleRatio,scaleRatio);
+angEl.setAngleStart(-30);
+angEl.setAngleExtent(300);
+g1.add(angEl);
+pasTxt.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,PicText.HorAlign.CENTER);
+pasTxt.setAttribute(PicAttributeName.TEXT_VERT_ALIGN,PicText.VertAlign.BOTTOM);
+g1.add(new PicText(new PicPoint(center).translate(0,scaleRatio*0.5*gaLen),
+				   "\\parbox{30\\unitlength}{\\centering\\textcolor{"
+				   + dangleColorName
+				   +"}{sens base ellipse}}",
+				   pasTxt));
+g1.translate(7*radius,gaLen*1.5);
+g.add(g1);
+
+
+// l2r axis
+//-----------------------------------------------------------------------------------------------------------
+PicMultiCurve vec = new PicMultiCurve(center, pasAxis);
+PicPoint tip = new PicPoint(center)
+	.translate(l2rVec, 1.31);
+vec.lineTo(tip);
+g.add(vec);
+pasTxt.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,PicText.HorAlign.LEFT);
+pasTxt.setAttribute(PicAttributeName.TEXT_VERT_ALIGN,PicText.VertAlign.BOTTOM);
+g.add(new PicText(tip," base parallelogramme axe $\\vec{U}$",pasTxt));
+
+
+
+// arc start axis
+//-----------------------------------------------------------------------------------------------------------
+PicMultiCurve vec = new PicMultiCurve(center, pasAxis);
+PicPoint tip = new PicPoint(center)
+	.translate(l2rVec, 1.30*Math.cos(Math.toRadians(sAngleStart)))
+	.translate(b2tVec, 1.30*Math.sin(Math.toRadians(sAngleStart)));
+vec.lineTo(tip);
+g.add(vec);
+pasTxt.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,PicText.HorAlign.LEFT);
+pasTxt.setAttribute(PicAttributeName.TEXT_VERT_ALIGN,PicText.VertAlign.TOP);
+g.add(new PicText(tip,"d\\'ebut d'arc",pasTxt));
+
+// arc end axis
+//-----------------------------------------------------------------------------------------------------------
+vec = new PicMultiCurve(center, pasAxis);
+tip = new PicPoint(center)
+	.translate(l2rVec, 1.50*Math.cos(Math.toRadians(sAngleEnd)))
+	.translate(b2tVec, 1.50*Math.sin(Math.toRadians(sAngleEnd)));
+vec.lineTo(tip);
+g.add(vec);
+pasTxt.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,PicText.HorAlign.RIGHT);
+pasTxt.setAttribute(PicAttributeName.TEXT_VERT_ALIGN,PicText.VertAlign.BOTTOM);
+g.add(new PicText(tip,"fin d'arc",pasTxt));
+
+// horizontal axis
+//-----------------------------------------------------------------------------------------------------------
+vec = new PicMultiCurve(center, pasAxis);
+tip = new PicPoint(center)
+	.translate(0.5*gaLen,0)
+	.scale(center, 1.3);
+vec.lineTo(tip);
+g.add(vec);
+pasTxt.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,PicText.HorAlign.LEFT);
+pasTxt.setAttribute(PicAttributeName.TEXT_VERT_ALIGN,PicText.VertAlign.CENTER);
+g.add(new PicText(tip,"axe horizontal",pasTxt));
+
+// Ellipse great axis
+//-----------------------------------------------------------------------------------------------------------
+PicVector gaVec = new PicVector(PicVector.X_AXIS).rotate(rotAngle);
+tip = new PicPoint(center).translate(gaVec,1.0*gaLen);
+vec = new PicMultiCurve(center, pasAxis);
+vec.lineTo(tip);
+g.add(vec);
+pasTxt.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,PicText.HorAlign.LEFT);
+pasTxt.setAttribute(PicAttributeName.TEXT_VERT_ALIGN,PicText.VertAlign.CENTER);
+g.add(new PicText(tip,"grand axe",pasTxt));
+
+// la base U V
+//-----------------------------------------------------------------------------------------------------------
+vec = new PicMultiCurve(ptBL, pasVec);
+tip = new PicPoint(ptBR).middle(ptBL);
+vec.lineTo(tip);
+g.add(vec);
+pasTxt.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,PicText.HorAlign.LEFT);
+pasTxt.setAttribute(PicAttributeName.TEXT_VERT_ALIGN,PicText.VertAlign.BOTTOM);
+g.add(new PicText(tip,"  $\\vec{U}$",pasTxt));
+
+vec = new PicMultiCurve(ptBL, pasVec);
+tip = new PicPoint(ptTL).middle(ptBL);
+vec.lineTo(tip);
+g.add(vec);
+pasTxt.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,PicText.HorAlign.LEFT);
+pasTxt.setAttribute(PicAttributeName.TEXT_VERT_ALIGN,PicText.VertAlign.TOP);
+g.add(new PicText(tip,"\\raisebox{-3ex}{$\\vec{V}$}",pasTxt));
+
+
+// la base I J
+//-----------------------------------------------------------------------------------------------------------
+PicMultiCurve vec = new PicMultiCurve(center, pasVec);
+tip = new PicPoint(center).translate(10,0);
+vec.lineTo(tip);
+g.add(vec);
+pasTxt.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,PicText.HorAlign.LEFT);
+pasTxt.setAttribute(PicAttributeName.TEXT_VERT_ALIGN,PicText.VertAlign.CENTER);
+g.add(new PicText(tip,"$\\vec{I}$",pasTxt));
+
+vec = new PicMultiCurve(center, pasVec);
+tip = new PicPoint(center).translate(0,10);
+vec.lineTo(tip);
+g.add(vec);
+pasTxt.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,PicText.HorAlign.CENTER);
+pasTxt.setAttribute(PicAttributeName.TEXT_VERT_ALIGN,PicText.VertAlign.BOTTOM);
+g.add(new PicText(tip,"$\\vec{J}$",pasTxt));
+
+// la base A B
+//-----------------------------------------------------------------------------------------------------------
+PicMultiCurve vec = new PicMultiCurve(center, pasVec);
+tip = new PicPoint(center)
+	.translate(0.5*gaLen,0.0)
+	.rotate(center,rotAngle);
+vec.lineTo(tip);
+g.add(vec);
+pasTxt.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,PicText.HorAlign.RIGHT);
+pasTxt.setAttribute(PicAttributeName.TEXT_VERT_ALIGN,PicText.VertAlign.CENTER);
+g.add(new PicText(tip,"$\\vec{A}$",pasTxt));
+
+vec = new PicMultiCurve(center, pasVec);
+tip = new PicPoint(center)
+	.translate(0.5*saLen,0.0)
+	.rotate(center,rotAngle + 0.5*Math.PI);
+vec.lineTo(tip);
+g.add(vec);
+pasTxt.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,PicText.HorAlign.CENTER);
+pasTxt.setAttribute(PicAttributeName.TEXT_VERT_ALIGN,PicText.VertAlign.BOTTOM);
+g.add(new PicText(tip,"$\\vec{B}$",pasTxt));
+
+
+
+// .getRotationAngle()
+//-----------------------------------------------------------------------------------------------------------
+radius = 0.5*gaLen+3;
+angEl =
+	new PicEllipse(
+				   new PicPoint(center).translate(-radius,-radius),
+				   new PicPoint(center).translate(radius,-radius),
+				   new PicPoint(center).translate(radius,radius),
+				   PicEllipse.OPEN,pasRAngle);
+angEl.setAngleExtent(Math.toDegrees(rotAngle));
+g.add(angEl);
+pasTxt.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,PicText.HorAlign.LEFT);
+pasTxt.setAttribute(PicAttributeName.TEXT_VERT_ALIGN,PicText.VertAlign.BOTTOM);
+g.add(new PicText(new PicPoint(center)
+				  .translate(radius*Math.cos(angleLabelPos*rotAngle),radius*Math.sin(angleLabelPos*rotAngle)),
+				  "\\textcolor{"
+				  + rangleColorName
+				  +"}{\\texttt{.getRotationAngle()}$\\rightarrow\\SI[round-mode=places,round-precision=2]{"
+				  + Double.toString(rotAngle)
+				  +"}{\\radian}$}",
+				  pasTxt));
+
+// .getCorrectedAngleStart()
+//-----------------------------------------------------------------------------------------------------------
+radius += 6;
+double correctedStart = el.getCorrectedAngleStart();
+angEl =
+	new PicEllipse(
+				   new PicPoint(center).translate(-radius,-radius),
+				   new PicPoint(center).translate(radius,-radius),
+				   new PicPoint(center).translate(radius,radius),
+				   PicEllipse.OPEN,pasRAngle);
+angEl.setAngleStart(Math.toDegrees(rotAngle));
+angEl.setAngleExtent(Math.toDegrees(correctedStart));
+g.add(angEl);
+pasTxt.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,PicText.HorAlign.LEFT);
+pasTxt.setAttribute(PicAttributeName.TEXT_VERT_ALIGN,PicText.VertAlign.BOTTOM);
+g.add(new PicText(new PicPoint(center)
+				  .translate(radius*Math.cos(angleLabelPos*(rotAngle+correctedStart)),
+							 radius*Math.sin(angleLabelPos*(rotAngle+correctedStart))),
+				  "\\textcolor{"
+				  + rangleColorName
+				  +"}{\\texttt{.getCorrectedAngleStart()}$\\rightarrow\\SI[round-mode=places,round-precision=2]{"
+				  + Double.toString(correctedStart)
+				  +"}{\\radian}$}",
+				  pasTxt));
+
+// .getCorrectedAngleEnd()
+//-----------------------------------------------------------------------------------------------------------
+radius += 6;
+double correctedEnd = el.getCorrectedAngleEnd();
+angEl =
+	new PicEllipse(
+				   new PicPoint(center).translate(-radius,-radius),
+				   new PicPoint(center).translate(radius,-radius),
+				   new PicPoint(center).translate(radius,radius),
+				   PicEllipse.OPEN,pasRAngle);
+angEl.setAngleStart(Math.toDegrees(rotAngle));
+angEl.setAngleExtent(Math.toDegrees(correctedEnd));
+g.add(angEl);
+pasTxt.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,PicText.HorAlign.LEFT);
+pasTxt.setAttribute(PicAttributeName.TEXT_VERT_ALIGN,PicText.VertAlign.BOTTOM);
+g.add(new PicText(new PicPoint(center)
+				  .translate(radius*Math.cos(angleLabelPos*(rotAngle+correctedEnd)),
+							 radius*Math.sin(angleLabelPos*(rotAngle+correctedEnd))),
+				  "\\textcolor{"
+				  + rangleColorName
+				  +"}{\\texttt{.getCorrectedAngleEnd()}$\\rightarrow\\SI[round-mode=places,round-precision=2]{"
+				  + Double.toString(correctedEnd)
+				  +"}{\\radian}$}",
+				  pasTxt));
+
+// rotatedAngleStart
+//-----------------------------------------------------------------------------------------------------------
+
+double rotAngleStart = el.getRotatedAngleStart();
+radius += 12;
+scaleRatio = radius/(0.5*gaLen);
+angEl =	new PicEllipse(rotPtBL, rotPtBR, rotPtTR, PicEllipse.OPEN, pasDAngle);
+angEl.scale(center, scaleRatio, scaleRatio);
+angEl.setAngleStart(0);
+angEl.setAngleExtent(rotAngleStart);
+g.add(angEl);
+pasTxt.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,PicText.HorAlign.LEFT);
+pasTxt.setAttribute(PicAttributeName.TEXT_VERT_ALIGN,PicText.VertAlign.CENTER);
+g.add(new PicText(new PicPoint(center)
+				  .translate(aVec,
+							 scaleRatio
+							 *Math.cos(angleLabelPos*Math.toRadians(rotAngleStart)))
+				  .translate(bVec,
+							 scaleRatio
+							 *Math.sin(angleLabelPos*Math.toRadians(rotAngleStart))),
+				  "\\textcolor{"
+				  + dangleColorName
+				  +"}{$\\texttt{.getRotatedAngleStart()}\\rightarrow\\SI[round-mode=places,round-precision=2]{"
+				  + Double.toString(rotAngleStart)
+				  +"}{\\degree}$}",
+				  pasTxt));
+
+// rotatedAngleEnd
+double rotAngleEnd = el.getRotatedAngleEnd();
+radius = radius + 12;
+scaleRatio = radius/(0.5*gaLen);
+angEl =	new PicEllipse(rotPtBL, rotPtBR, rotPtTR, PicEllipse.OPEN, pasDAngle);
+angEl.scale(center, scaleRatio, scaleRatio);
+angEl.setAngleStart(0);
+angEl.setAngleExtent(rotAngleEnd);
+g.add(angEl);
+pasTxt.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,PicText.HorAlign.RIGHT);
+pasTxt.setAttribute(PicAttributeName.TEXT_VERT_ALIGN,PicText.VertAlign.CENTER);
+g.add(new PicText(new PicPoint(center)
+				  .translate(aVec,
+							 scaleRatio
+							 *Math.cos(angleLabelPos*Math.toRadians(rotAngleEnd)))
+				  .translate(bVec,
+							 scaleRatio
+							 *Math.sin(angleLabelPos*Math.toRadians(rotAngleEnd))),
+				  "\\textcolor{"
+				  + dangleColorName
+				  +"}{$\\texttt{.getRotatedAngleEnd()}\\rightarrow\\SI[round-mode=places,round-precision=2]{"
+				  + Double.toString(rotAngleEnd)
+				  +"}{\\degree}$}",
+				  pasTxt));
+
+
+
+
+
+// skew Angle Start
+//-----------------------------------------------------------------------------------------------------------
+radius += 12;
+scaleRatio = radius/(0.5*gaLen);
+angEl = new PicEllipse(ptBL, ptBR, ptTR, PicEllipse.OPEN,pasSAngle);
+angEl.scale(center,scaleRatio, scaleRatio);
+angEl.setAngleStart(0);
+angEl.setAngleEnd(sAngleStart);
+g.add(angEl);
+pasTxt.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,PicText.HorAlign.LEFT);
+pasTxt.setAttribute(PicAttributeName.TEXT_VERT_ALIGN,PicText.VertAlign.CENTER);
+g.add(new PicText(new PicPoint(center)
+				  .translate(l2rVec,scaleRatio*0.5*Math.cos(angleLabelPos*Math.toRadians(sAngleStart)))
+				  .translate(b2tVec,scaleRatio*0.5*Math.sin(angleLabelPos*Math.toRadians(sAngleStart))),
+				  "\\textcolor{" + sangleColorName
+				  + "}{$\\texttt{.getAngleStart()}\\rightarrow\\SI{"
+				  + Double.toString(sAngleStart)
+				  +"}{\\degree}$}", pasTxt));
+
+// skew Angle End
+//-----------------------------------------------------------------------------------------------------------
+radius += 12;
+scaleRatio = radius/(0.5*gaLen);
+angEl = new PicEllipse(ptBL, ptBR, ptTR, PicEllipse.OPEN,pasSAngleRevert);
+angEl.scale(center,scaleRatio, scaleRatio);
+angEl.setAngleStart(sAngleEnd);
+angEl.setAngleEnd(0);
+g.add(angEl);
+pasTxt.setAttribute(PicAttributeName.TEXT_HOR_ALIGN,PicText.HorAlign.RIGHT);
+pasTxt.setAttribute(PicAttributeName.TEXT_VERT_ALIGN,PicText.VertAlign.BOTTOM);
+g.add(new PicText(new PicPoint(center)
+				  .translate(l2rVec,scaleRatio*0.5*Math.cos(angleLabelPos*Math.toRadians(sAngleEnd)))
+				  .translate(b2tVec,scaleRatio*0.5*Math.sin(angleLabelPos*Math.toRadians(sAngleEnd))),
+				  "\\textcolor{" + sangleColorName
+				  + "}{$\\texttt{.getAngleEnd()}\\rightarrow \\SI{"
+				  + Double.toString(sAngleEnd)
+				  +"}{\\degree}$}", pasTxt));
+
+if(g.size() != 0)
+	drawing().add(g);
+
+drawing().setAutoComputeBoundingBox(false);
+drawing().setDisplayBoundingBox(true);
+Rectangle2D.Double bb = new Rectangle2D.Double();
+PicPoint ptBbBL = new PicPoint(center);
+PicPoint ptBbTR = new PicPoint(center);
+ptBbBL.translate(-79, -70.685);
+ptBbTR.translate(97.5, 115);
+bb.setFrame(ptBbBL.getX(), ptBbBL.getY(),
+			ptBbTR.getX()-ptBbBL.getX(),
+			ptBbTR.getY()-ptBbBL.getY() );
+drawing().setBoundingBox(bb);
+canvas().refreshPageFormatToBoundingBox();
+JPicEdt.saveBoard(false);

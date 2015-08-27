@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+		  "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../jpe-help.css" />
+
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="CONTENT-TYPE" content=
+  "text/html; charset=us-ascii">
+  <meta name="author" content="Sylvain Reynal">
+  <meta name="translation" content="Jobst Hoffmann">
+
+  <title>jPicEdt 1.6 Hilfe &#8211; Arbeiten auf der Kommandozeile</title>
+</head>
+
+<body>
+  <h2>Arbeiten auf der Kommandozeile</h2>
+
+  <p>Wenn Sie jPicEdt von der Kommandozeile aus aufrufen, k&#246;nnen Sie die
+  folgenden Argumente angeben:</p>
+
+  <ul>
+    <li><code>-h</code>: jPicEdt zeigt die Liste der m&#246;glichen Optionen
+    an.</li>
+
+    <li><code>-debug</code>: leitet den Standard-Fehler-(Daten)Strom
+    (<code>System.err</code>) um auf die Konsole.</li>
+
+    <li><code>-nodebug</code> (Standardwert): leitet den Standard Fehler
+    (Daten)Strom um in eine Datei namens <code class="file">error.log</code>;
+    diese Datei liegt in dem Verzeichnis, das die Benutzereinstellungen von
+    jPicEdt festlegen, beispielsweise
+    <code class="file">/home/user/.jpicedt/error.log</code> auf einem
+    Unix-System.  Sie k&#246;nnen diese Datei ganz einfach ansehen, indem Sie
+    im Hilfe-Men&#252; &#8222;Zeige Fehlerprotokoll&#8221; anklicken.</li>
+
+    <li>Eine Liste von Dateinamen, durch Leerzeichen getrennt; jPicEdt
+    l&#228;dt diese Dateien beim Programmstart.</li>
+  </ul>
+
+  <p>Beispiel f&#252;r die Benutzung:</p>
+  <pre>
+jpicedt -debug picture1.tex picture2.tex
+</pre>
+
+  <p>(dabei ist <code>jpicedt</code> der Name des Start-Skripts).</p>
+</body>
+</html>

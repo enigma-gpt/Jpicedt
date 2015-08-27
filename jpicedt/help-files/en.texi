@@ -1,0 +1,2045 @@
+\input texinfo   @c -*-mode:texinfo; coding:utf-8-*-
+@setfilename en.info
+@include texi/version.texi
+@settitle jPicEdt @value{JPICEDT_VER}
+@documentlanguage en
+@documentencoding UTF-8
+@set VERSION $Id: en.texi,v 1.19 2013/09/10 05:09:07 vincentb1 Exp $
+@include texi/macros.texi
+@include lang/i18n_en.texi
+
+@copying
+This manual is for @acronym{jPicEdt} @value{JPICEDT_VER}, manual version is @value{VERSION}.
+
+Copyright @copyright{} 2006/2012 Sylvain Reynal, Vincent Belaïche.
+
+@quotation
+Permission is granted to copy this manual et use this software @acronym{jPicEdt}
+under the conditions defined by @acronym{CeCiLL} v2 license
+(see @ref{license,License for use}).
+@end quotation
+@end copying
+
+@titlepage
+@title  jPicEdt v@value{JPICEDT_VER}, user manual
+@subtitle jPicEdt, a vector drawing graphic editor for @LaTeX{}
+@c @subtitle SECOND-SUBTITLE
+@author Sylvain Reynal
+
+@c  The following two commands
+@c  start the copyright page.
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+
+Published by ...
+@end titlepage
+
+@c So the toc is printed at the start.
+@contents
+
+@ifnottex
+@node Top,commandLine
+@top @acronym{jPicEdt} @value{JPICEDT_VER} Manual
+
+This manual is for @acronym{jPicEdt}, version @value{JPICEDT_VER}.
+
+@menu
+* commandLine:: Command line
+* contentType:: Parsing TeX files
+* drawingCap:: Drawing objects
+* editing:: Editing objects
+* multicurve:: Bezier curves and smooth polygons
+* convexZones:: Convex zones
+* actions:: Menus and toolbars
+* preferences:: Setting preferences
+* scripting:: Scripting
+* links:: Useful links
+* license:: Licence of use
+@end menu
+
+@multitable @columnfractions 1.0
+@item @uref{@value{APIDOC-LOCATION}api-doc/index.html,API documentation (if installed)}
+@item @uref{http://www.jpicedt.org,http://www.jpicedt.org}
+@end multitable
+
+@end ifnottex
+
+@node commandLine,,Top,Top
+@chapter Command line
+
+The command line accepts the following arguments:
+
+@itemize
+@item
+@code{-h} or @code{--help}: list options.
+
+@item
+@code{-d} or @code{--debug}: redirect standard error stream
+(@file{System.err}) to the console for debugging purpose.
+
+@item
+By default, the standard error stream is redirected to a file called
+@file{error.log} and located in @acronym{jPicEdt}'s user-settings
+directory, for instance @file{/home/user/.jpicedt/error.log} on
+Unix. You can view this file by clicking on @menuItem{@value{i18n-action-ui-ShowErrorLog}} in
+the @kbd{@value{i18n-menu-Help}} menu.
+
+@item
+A list of space-separated file names to be loaded on start-up. In
+the absence of such a list, a "No name" board is open.
+
+@end itemize
+
+Example of use:
+@smallexample
+jpicedt -debug picture1.tex picture2.tex
+@end smallexample
+(where @code{jpicedt} denotes the name of the start-up script).
+
+@node contentType,,,Top
+@chapter Importing, exporting and saving drawing files
+@section Parsing input files
+
+When you save a drawing to disk, @acronym{jPicEdt} writes the drawing
+content twice,
+
+@itemize
+@item
+first in a special format called JPIC-XML (JPIC-XML is a an XML format
+specially tailored for @acronym{jPicEdt}; it strongly mimicks the
+well-known @uref{http://www.w3.org/TR/SVG/,SVG} format, yet has extra
+tags dedicated to @acronym{jPicEdt}'s own graphic primitives, which SVG
+obviously doesn't know of),
+@item
+then again in the @LaTeX{} format of your choice (i.e. @code{picture}
+env, @code{eepic} or @code{pstricks}).
+@end itemize
+
+Since both the XML code and the @LaTeX{} code reside in the same file,
+the whole block of XML code is commented out by a percent symbol so that
+the file can be properly compiled by @LaTeX{}. The XML code allows
+@acronym{jPicEdt} to reload the drawing without losing even the tiniest
+piece of information, a feature which the PSTricks format alone (not to
+speak about the eepic format) would not guarantee.
+
+Therefore, when parsing input files, @acronym{jPicEdt} first tries to
+look for a JPIC-XML preamble.  If it's there, then the drawing is
+rebuilt solely by parsing the @acronym{XML} code (this means that any
+changes made to other parts of the file have no effect). Otherwise
+(which is the case if you're loading a picture written by hand or by
+another @LaTeX{}-capable software like GnuPlot, or if you deleted the
+XML code), @acronym{jPicEdt} delegates to an embedded @LaTeX{} parser
+which currently supports three @LaTeX{} formats, namely the standard
+picture environment, the eepic package, and the PSTricks package (all
+three can be combined into a single file, for that matter, except that
+only the first @i{begin@{(ps)picture@}@dots{}end@{(ps)picture@}}
+declaration is considered).  The @LaTeX{} parser can handle a variety
+of, say, syntax @i{deviations}, and you needn't worry too much about
+whether your syntax is perfectly @i{@LaTeX{}-, @acronym{eepic}- or
+@acronym{PSTricks}- compliant} or not, since the parser will issue a
+pretty informative message as soon as it finds a syntax error, an
+incorrect format number, etc@dots{} However, we strongly encourage you
+to follow these rules:
+
+@itemize
+@item
+@acronym{jPicEdt} expects to find a
+@code{\unitlength} or a @code{\psset@{unit=xxx@}} (or xunit, yunit, runit)  
+command at the very beginning of your file, or at least before the
+first command you want to be processed ; it not, default unitlength will be
+assumed, e.g. 1cm for PSTricks until one of these commands are found.
+
+@item
+@acronym{jPicEdt} accepts almost every command of the @LaTeX{} picture
+environment, the @acronym{epic}/@acronym{eepic} packages, and the
+@acronym{PSTricks} base-package, though for the later add-ons packages
+are not supported yet, e.g. @file{pst-nodes.sty} or
+@file{pst-coils.sty}.  @code{\multiput} (and its @acronym{PSTricks}
+equivalent) are not handled yet. I know there's been steady pressure
+toward supporting add-ons, but it's tricky, i tell you@dots{}
+
+@item
+It is perfectly possible to mix @LaTeX{}, @acronym{eepic} and
+@acronym{Pstricks} commands in the same file.  PSTricks default
+parameters (those set by @code{\psset} commands) won't interfere with
+@LaTeX{} or eepic ones (e.g. @code{linethickness}).
+
+@item
+As of @LaTeX{} boxes (e.g. framebox,@dots{}), don't expect true WYSIWYG
+behaviour! JPicEdt doesn't embed any TeX compiler, hence only a limited
+set of LR-commands is handled (specifically: only those very commands
+related to the picture environment, see @i{@LaTeX{}, a documentation
+preparation system, Leslie Lamport, p.97 and p.108}).
+
+@item
+The parsing process ends if, either an End-of-file is encountered, or an
+@code{\end@{picture@}} (or its equivalent for PSTricks) is found.
+@item
+Sure, the old-style format from @acronym{jPicEdt} 1.3.2 (that is, with tons of special comments)
+is still understood! 
+@end itemize
+
+@section User preamble and postamble in the save format
+
+@warningMessage{Using user preamble and postamble means that you will moidfy ``manually'' the content of the
+save file without damaging it. This is for users with enough expertize. Moreover, this manipulation needs all
+the more care that the current version of @acronym{jPicEdt} does not detect file modification outside of
+@acronym{jPicEdt}, and will not invite you to reload a file that is more recent than your latest modification
+through @acronym{jPicEdt}, neither will it warn against overwrite a drawing save file that you modified
+outside @acronym{jPicEdt}.}
+
+Although basically a drawing save file can be directly included into a @LaTeX{} file with a
+@code{\input@{@var{nom_du_fichier_jpicedt}@}} command, it is also possible to insert into it a user preamble and postamble, so that to make a master @LaTeX{} file out of it.
+
+The use preamble and postamble are not interpreted by @acronym{jPicEdt}, so they can be any text. In
+particular the user preamble can be a classical @LaTeX{} document preamble, that is to say the code section
+that goes from @code{\documentclass} up-to @code{\begin@{document@}}, and a classical @LaTeX{} postamble, that
+is to say the code section that comprises @code{\end@{document@}}. This way, the save file can be compiled
+directly with @LaTeX{} like any master file.
+
+The figure below will be used to examplify what a @acronym{jPicEdt} save file consists in:
+
+@center @image{img/RedStar}
+
+The content of the @acronym{jPicEdt} file  corresponding to this figure can be downloaded from here :
+@uref{@value{vc-repo}jpicedt/jpicedt/images_factory/help.RedStar.jpe.pstricks,help.RedStar.jpe.pstricks}.
+
+It is depicted hereinafter:
+
+@center @image{img/en/SaveFileLayout,13cm,,Layout of a file in save format}
+
+This file comprises seven consecutive parts:
+@enumerate
+@item
+First of all a user preamble. This pramble is empty by default, and the only way to fill it is to edit the
+save file with a text editer software, like EMACS for instance. You can place whatever valid @LaTeX{} code
+into this preamble, @acronym{jPicEdt} anyway does not interprete it. However, the two typical usage are these
+ones hereinafter :
+@itemize
+@item
+Add a comment with a key that a file version control system can interprete and update to tag the file by its archive version. In the example this comment is as follows:
+@smallexample
+% Version: @value{dollar}Id: help.RedStar.jpe.pstricks,v 1.1 2013/02/26 22:16:59 vincentb1 Exp $
+@end smallexample
+@item
+Add a classical @LaTeX{} preamble, so as to allow direct compilation of the file to produce a picture this
+way:
+@smallexample
+latex -jobname=RedStar help.RedStar.jpe.pstricks
+dvips -E RedStar.dvi -o RedStar.eps
+@end smallexample
+Please note that:
+@itemize
+@item
+The @code{-jobname=RedStar} option passed to the
+@code{latex} command is necessary only for renaming the file basename, there would be no use for it if the file was directly named @code{RedStar.tex}, which @acronym{jPicEdt} does not prevent.
+@item
+The @LaTeX{} preamble is encapsulated into:
+@smallexample
+\ifx\JPicIsIncluded\undefined
+@tie{}@tie{}@tie{}@dots{}@tie{}@tie{}@tie{}@tie{}@dots{}@tie{}@tie{}@tie{}@tie{}@dots{}@tie{}@tie{}@tie{}@tie{}@dots{}@tie{}@tie{}@tie{}@dots{}
+\fi
+@end smallexample
+so that the file can be not only directly compiled as a master file, but also included through a
+@code{\input@{@dots{}@}} command into another master file, provided that its preamble contains this
+declaration:
+@smallexample
+\newcommand*\JPicIsIncluded@{@}
+@end smallexample
+@end itemize
+@item
+The second part is a mark-up that allows @acronym{jPicEdt} to detect the file format and and the beginning of
+the embedded @acronym{JPIC-XML} code this way:
+
+@smallexample
+%%Created by jPicEdt 1.6-pre1: mixed JPIC-XML/LaTeX format
+%%Mon Feb 25 21:15:38 CET 2013
+%%Begin JPIC-XML
+@end smallexample
+
+@item
+The third part is the embedded @acronym{JPIC-XML} code itself.
+
+@item
+The fourth part is a mark-up that separate the embedded @acronym{JPIC-XML} from the exported @LaTeX{} code
+this way:
+
+@smallexample
+%%End JPIC-XML
+@end smallexample
+
+@item
+The fifth part is the exported @LaTeX{} code, this part is waht @LaTeX{} will compile to produce the picture
+corresponding to your drawing.
+
+@item
+The sixth and seventh part are optional, the sixth part is a mark-up that separates the exported @LaTeX{} code
+from the user postamble like this:
+@smallexample
+%%User Data
+@end smallexample
+
+@item
+The seventh part is the use postamble, you need that the markup that is the sixth part be present for
+@acronym{jPicEdt} to keep this postamble. The typical usage of the user preabmle is for instance:
+@itemize
+@item
+A @LaTeX{} classical postamble that matches the @LaTeX{} preamble within the first part if any. In this
+example that is the following:
+@smallexample
+\ifx\JPicIsIncluded\undefined
+\end@{preview@}
+\end@{document@}
+\fi
+@end smallexample
+Please note that --- for the sake of consistency --- we used the same @code{\ifx\JPicIsIncluded\undefined
+@dots{} \fi} encapsulation trick for this @LaTeX{} postamble as in the @LaTeX{} preamble.
+
+@item
+Special comments that can be interpreted by your text editor software, in this example these are EMACS ``File
+Varaibles'':
+@smallexample
+%%% Local Variables:
+%%% mode: latex
+%%% eval: (TeX-PDF-mode 0)
+%%% End:
+@end smallexample
+
+@end itemize
+
+@end itemize
+
+@end enumerate
+
+@node drawingCap,,,Top
+@chapter Drawing objects
+
+To draw a new object, first select a shape by clicking on one of the
+drawing-tools buttons in the toolkit palette (if the palette is hidden,
+first make it visible by clicking on
+@image{img/action.ui.ToggleToolkitPanel,,,Icon ToggleToolkitPanel} in
+the main toolbar).  Alternatively, you may prefer to leave the palette
+hidden and rather select a drawing-tool from the @kbd{@value{i18n-menu-Toolkit}} menu;
+associated keyboard shortcuts may be modified from the @dialogTab{@value{i18n-preferences-Shortcuts}}
+subpane in the @menuItem{@value{i18n-action-ui-Preferences}} tabpane (click
+@image{img/action.ui.Preferences,,,Icon Preferences} in the main
+toolbar)
+
+@center @image{img/ToolkitPaletteDraw,,,ToolkitPaletteDraw}
+
+Each button can display a tooltip if the mouse hovers around it more
+than two seconds. Once a drawing-tool has been selected, click with the
+mouse's left button anywhere on the canvas to set the object's first
+point, then move the mouse to choose the second point. When you are
+done, simply left-click again.
+
+Objects defined by more than two control points, e.g.  polygons,
+parallelograms, slanted ellipses or splines, work the same way, except
+that you will have to "move'n click" as many times as there are control
+points, then RIGHT-CLICK to complete the drawing process.
+
+@b{Splines} are somewhat special, in that:
+
+@itemize
+@item
+Tangents are set by DRAGGING the mouse, whereas MOVING the mouse
+allows you to set control points;
+@item
+a RIGHT-CLICK, instead of simply signaling the end of the drawing
+process, actually let you proceed through an additional step, namely
+setting the termination tangent. In this case, a further click in effect
+completes the drawing process.
+@end itemize
+
+Following is a list of all available drawing tools as well as their
+associated icon on the toolbar. Some drawing tools support a set of
+alternate functions: these are triggered by a specific combination of
+modifiers (@kbd{Control+Shift}, @kbd{Control+Alt} or
+@kbd{Control+Alt+Shift}, as indicated), and allows you to release or
+enforce one or more geometrical constraints (the same combinations are
+used as in SELECT mode, except for the @kbd{CTRL} modifier which makes
+no sense here).  Modifiers may be pressed or released at any time during
+the drawing process.
+
+@section Draw-tools
+@anchor{drawingTools}
+
+@multitable @columnfractions 0.11 0.26 0.11 0.26 0.26
+@headitem Icon@tab Tool@tab Number of control points@tab Drawing sequence@tab Alternate functions
+@item @image{img/action.draw.Line,,,Icon tool Line}
+@tab Lines
+@tab 2
+@tab First end-point, second end-point.
+@tab N/A
+
+@item @image{img/action.draw.Rectangle,,,Icon tool Rectangle}
+@tab Rectangles.
+@tab 2
+@tab First corner, opposite corner. Sides are kept parallel to the grid axes.
+@tab @kbd{CTRL+ALT}: nail the center of the rectangle to its
+current position.@*
+@kbd{CTRL+ALT+SHIFT}: release the constraint on sides. 
+Hold the modifiers whenever you want to alter the side's orientation, 
+then release it and move the mouse to scale the rectangle).
+
+@item @image{img/action.draw.Parallelogram,,,Icon tool Parallelogram}
+@tab Parallelograms. 
+@tab 3
+@tab Lower-left corner, upper-left corner, opposite side.
+@tab @kbd{CTRL+ALT}: nail the center of the parallelogram to
+its current position. @*
+@kbd{CTRL+ALT+SHIFT}: force the shape to be a square.  Note that
+holding these modifiers while moving the second control-point is
+allowed, yet just makes no sense since there is still a third control
+point to be set !
+
+@item @image{img/action.draw.Ellipse,,,Icon tool Ellipse}
+@tab Circle or ellipse controled by a rectangle.
+@tab 2
+@tab First corner, opposite corner. The sides of the controlling rectangle are kept parallel to the grid axes.
+@tab @kbd{CTRL+ALT}: nail the center of the
+ellipse to its current position. @*
+@kbd{CTRL+ALT+SHIFT}: release the constraint on the sides of
+the controlling rectangle (see @i{Rectangles} above).
+
+@item @image{img/action.draw.ArcOpen,,,Icon tool ArcOpen}@*
+@image{img/action.draw.ArcPie,,,Icon tool ArcPie}@*
+@image{img/action.draw.ArcChord,,,Icon tool ArcChord}
+@tab Arc controled by a rectangle.@*
+
+RIGHT-CLICK cycles through available arc types.
+@tab 4
+@tab First corner, opposite corner, arc start, arc end.
+
+@item @image{img/action.draw.EllipseFromParallelo,,,Icon tool EllipseFromParallelo}
+@tab Slanted ellipse.
+@tab 3
+@tab Lower-left corner, upper-left corner, opposite side of the controlling parallelogram.
+@tab @kbd{CTRL+ALT}: nail the center of the
+ellipse to its current position.@*
+@kbd{CTRL+ALT+SHIFT}: force the ellipse to be a circle.
+
+@item @image{img/action.draw.ArcOpenFromParallelo,,,Icon tool ArcOpenFromParallelo}@*
+@image{img/action.draw.ArcPieFromParallelo,,,Icon tool ArcPieFromParallelo}@*
+@image{img/action.draw.ArcChordFromParallelo,,,Icon tool ArcChordFromParallelo}
+@tab Slanted arc.@*
+
+RIGHT-CLICK cycles through available arc types.
+@tab 5
+@tab Lower-left corner, upper-left corner, opposite side of the controlling parallelogram, arc start, arc end.
+
+@item @image{img/action.draw.CircleFrom3Pts,,,Icon tool CircleFrom3Pts}
+@tab Circle controled by 3 points.
+@tab 3
+@tab First, second and third point.
+@tab N/A.
+
+@item @image{img/action.draw.ArcOpenFrom3Pts,,,Icon tool ArcOpenFrom3Pts}@*
+@image{img/action.draw.ArcPieFrom3Pts,,,Icon tool ArcPieFrom3Pts}@*
+@image{img/action.draw.ArcChordFrom3Pts,,,Icon tool ArcChordFrom3Pts}
+@tab Arc controled by 3 points.@*
+
+RIGHT-CLICK cycles through available arc types.
+
+@item @image{img/action.draw.MultiCurve,,,Icon tool MultiCurve}
+@tab Open Bezier splines, polygons, or a combination thereof.
+Control points and tangents are set by moving (for control points)
+or dragging the mouse (for tangents). 
+A right-click sets the curve's end-point, and move the termination tangent if
+the last segment is curved (otherwise the drawing process ends up here).
+A further left-click signals the end of the drawing process.@*
+
+Note that several Bezier splines can be joined by selecting them, right-clicking to
+open a popup-menu, and selecting @menuItem{@value{i18n-action-editorkit-JoinSelection}}.
+@ref{multicurve,Click here for more details on this object}.
+@tab Variable
+@tab 
+@itemize
+@item
+first point (press)
+@item
+first tangent (drag)*
+@item
+second point (move)
+@item
+second tangent (drag)*
+@item
+etc@dots{}
+@item
+last point (right-click)
+@item
+last tangent (move and click)*
+@end itemize
+
+*: splines specific operations.@*
+
+@tab @*
+
+No modifier: enforce smoothness and symmetry over alternate tangents.@*
+@kbd{CTRL+SHIFT}: enforce smoothness only.@*
+@kbd{CTRL+ALT}: enforce symmetry only.@*
+@kbd{CTRL+ALT+SHIFT}: move tangents freely (no constraint at all)
+
+@item @image{img/action.draw.ClosedMultiCurve,,,Icon tool ClosedMultiCurve}
+@tab Closed Bezier splines, closed polygons, or a combination thereof: 
+same as above, but with the curve being closed. 
+@ref{multicurve,Click here for more details on this object}.
+
+@item @image{img/action.draw.SmoothPoly,,,Icon tool SmoothPoly}
+@tab Smooth Polygon: this is a Bezier spline controled by a
+polygon. 
+@ref{multicurve,Click here for more details on this object.}
+@tab Variable
+@tab 
+First, second, third point@dots{}
+Right-click to complete.
+
+@tab N/A
+
+@item @image{img/action.draw.ClosedSmoothPoly,,,Icon tool ClosedSmoothPoly}
+@tab Closed Smooth Polygon: same as above, yet the curve is closed.
+@ref{multicurve,Click here for more details on this object.}
+
+@item @image{img/action.draw.PsCurve,,,Icon tool PsCurve}
+@tab Interpolating curve (aka @code{\psecurve} in the PSTricks package): 
+this is a spline that interpolates 
+an open curve through the control points given by the user.
+The curvature is controlled by three parameters which can be set by 
+right-clicking on the curve or pressing @kbd{F2} while it is selected (please refer to
+the PSTricks documentation, p. 14, for more on the role of each parameter).
+
+@tab Variable
+@tab 
+First, second, third point@dots{}
+Right-click to complete.
+
+@tab N/A
+
+@item @image{img/action.draw.ClosedPsCurve,,,Icon tool ClosedPsCurve}
+@tab Closed interpolating curve: same as above, yet the curve is closed (aka @code{\psccurve}).
+
+@item @image{img/action.draw.Text,,,Icon tool Text}
+@tab Text (possibly boxed). 
+@tab 1
+@tab Anchor point
+@tab N/A
+
+@end multitable
+
+For all objects, pressing @kbd{F2} once the drawing process has
+completed opens a properties-panel. This in particular allows you to
+edit points coordinates by hand.
+
+@b{Elliptical arcs:} recent releases of PSTricks now support elliptical
+arcs natively: new commands are called @code{\psellipticarc} and
+@code{\psellipticarcn}.  Unfortunately, @LaTeX{} and eepic don't support
+these objects; hence these are emulated and cannot be filled.
+
+@node editing,,,Top
+@chapter Editing shapes
+
+To edit an object, first @b{click on its stroke path} to select it.
+
+@itemize
+@item
+
+If the @image{img/action.editorkit.EditPointsMode,,,Icon tool EditPointsMode} button
+is inactive (LOCAL mode, see also @ref{globalLocalMode,Global/local edit-point mode}),
+the selected element is highlighted in green, with 
+its anchor points transforming into small squares
+(except for groups, where the 
+policy may be altered from group to group, and may be changed by right-clicking
+on a group, and selecting the @b{Toggle group edit Mode} action).
+
+@item
+
+If the mode is set to GLOBAL (ie
+@image{img/action.editorkit.EditPointsMode,,,Icon tool EditPointsMode} has been activated),
+the selection is highlighted globally in red.
+Eight end-points are displayed, which
+allows you to scale the entire selection content.
+
+@item
+
+The floating attribute-editor gets
+updated according to the selected object properties (e.g.
+fill-colour, stroke thickness, arrows@dots{}). 
+
+@end itemize
+
+You can move a particular anchor point by clicking on it and
+dragging the mouse, or you can translate the whole selection by
+clicking somewhere on a stroke path. When moving a @b{group} of
+object, the clicked object serves as a reference for @b{alignment}
+on the grid. 
+
+If you want precise control over the object location, 
+pressing @kbd{F2} directly pops up a properties panel
+that lets you alter the object shape using numerical entries rather than the mouse
+
+@b{Tip: } clicking on a selected object
+with @kbd{SHIFT} pressed let you deselect it.  
+
+@section Multiple selections and groups
+
+You can afford @b{multiple selections} either by holding the
+@kbd{SHIFT} key pressed during the select operation or by
+"wrapping" 
+objects you want to select in a selection rectangle that you create by
+dragging the mouse from anywhere on the sheet. @i{Translation} and
+@i{scaling} operations are then available using the same rules as
+in the previous paragraph. You can also @dfn{group} selected objects
+so that they get linked one to each other, by right-clicking and
+selecting @menuItem{@value{i18n-action-editorkit-GroupSelection}} item in the popup menu; besides, groups are
+nestables. To @dfn{ungroup} previously grouped objects, click with
+the @kbd{right mouse button} somewhere on a selected group to raise
+the @b{popup menu}, then select the @menuItem{@value{i18n-action-editorkit-UngroupSelection}} operation. 
+
+@section Editing arcs angles
+
+You can add or remove geometrical constraints on the editing operation, by
+holding some modifiers during the mouse displacement.
+In addition to the combination of modifiers already used by 
+@ref{drawingCap,draw-tools}, there is an additional
+modifier, namely @kbd{CTRL}, which allows you to move the
+two points controlling 
+the angle start and end in the case they should be at the same position
+as a point controlling the ellipse shape (by default, these last points
+have a higher priority and are moved first; hence
+holding @kbd{CTRL} in effect 
+reverses the priority).
+
+@section Context menu
+
+Right-clicking on an object raises a @b{popup menu}
+which lets you apply various operations on that object, 
+eg conversion to other shapes, grouping/ungrouping, etc.
+
+The picture below sketches a typical popup menu for a Bezier curve.
+This menu gets also displayed in combination with the following objects:
+
+@itemize
+@item
+Lines
+@item
+Closed Bezier-curve/Polygon
+@end itemize
+
+@center @image{img/contextMenu.line,,,Popup menu: line}
+
+There are another four popup menus, which are shown in the table below along with their
+associated objects.
+
+@multitable @columnfractions 0.5 0.5
+@item @image{img/contextMenu.polygon,,,Popup menu: Polygon}
+@tab 
+@itemize
+@item
+smooth Polygon
+@item
+closed smooth Polygon
+@end itemize
+
+@item @image{img/contextMenu.interpolationCurve,,,Popup menu: interpolating curve}
+@tab 
+@itemize
+@item
+interpolating curve
+@item
+closed interpolating curve
+@end itemize
+
+@item @image{img/contextMenu.parallelogram,,,Popup menu: Parallelogramm}
+@tab 
+@itemize
+@item
+rectangle
+@item
+parallelogramm
+@end itemize
+
+@item @image{img/contextMenu.ellipsis,,,Popup menu: Ellipse}
+@tab 
+@itemize
+@item
+ellipse
+@item
+pie
+@item
+arc
+@item
+chord
+@item
+sheared ellipse
+@item
+sheared pie
+@item
+sheared arc
+@item
+sheared chord
+@end itemize
+
+@end multitable
+
+These items have the following meaning (depending on the context and the current
+selection, some items may be grayed, i.e., inactive):
+
+@table @asis
+@c <hr/>
+
+@item Edit geometry@dots{}
+Displays the geometrical properties of the corresponding object in a
+popup-window
+@item Close path
+turns the shape into a closed one
+@item Convert to Bezier curve
+turns the object into a Bezier curve being as close as possible to the original object
+@item Make all points smooth
+see @ref{multicurveStraight,drawing or editing a curve @dots{}}
+@item Make all points symmetric
+see @ref{multicurveStraight,drawing or editing a curve @dots{}}
+@item Make all segments straight
+see @ref{multicurveStraight,drawing or editing a curve @dots{}}
+@item Straighten this segment
+see @ref{multicurveStraight,drawing or editing a curve @dots{}}
+@c <hr/>
+
+@item to back
+Since pictures are built up in a sequential way, recently drawn objects may
+hide previous ones (in other words, objects are drawn on the canvas in ascending
+z-axis order). This item allows you to move the selected object to the lowest z-axis plane,
+thereby making it possible for ALL other objects to hide it.
+@item backward
+move the selected object one step down the z-axis, so that it may now be hidden 
+by the object it was previously hiding.
+@item forward
+move the selected object one step up the z-axis, so that it may now sit on top
+of the object that was previously hiding it.
+@item to front
+move the selected object to the highest z-axis plane
+@c <hr/>
+
+@item View @LaTeX{} file
+displays the @LaTeX{}-formatted file generated from the whole drawing (not the selected object).
+@item Edit Bounding Box
+@anchor{EditBoundingBox}
+
+This item makes it possible to edit the actual bounding box by hand.
+Available entries are the lowest and highest x-coordinate (resp. y-coordinate).
+This proves especially useful whenever one or more objects (in particular, text boxes) happen to 
+stick out of the automatically computed bounding box.
+@end table
+@section Changing attributes
+
+Graphical attributes, e.g. line thickness, fill colour, etc@dots{} can be changed by first
+selecting objects of interest, then changing fields values in the floating @b{Attribute Editor}
+palette. The set of available attributes is tightly related to PSTrick parameters,
+since this @LaTeX{} package offers the widest range of possilibites. Refer to
+the PSTricks documentation for further details.
+
+@center @image{img/en/AttributeEditor,,,Panel attribute editor}
+
+As a result, depending on the current content-type, some attributes
+aren't displayed, though they can be changed in the Attribute Editor. In
+particular, the @LaTeX{} picture environment content-type supports only
+a very limited subset of all the attributes available in the palette
+(e.g. no colour, no texture, only simple arrows, no shadow,@dots{}).  If
+you'd like to use the whole range of graphical attributes offered by the
+palette, including shadows, texture and colour filling
+(@ref{filling,more on filling shapes}), or fine-grained dashing, you
+should really think of switching to the PSTricks content-type, and add
+an @b{\usepackage@{pstricks@}} in your @LaTeX{} files. You won't regret
+it !
+
+@menu
+* filling:: Filling shapes
+@end menu
+
+@node filling
+@section Filling shapes
+
+Any shape may be filled with a colored pattern (including the uniform
+pattern) by first selecting the shape and then choosing the appropriate
+pattern in the @dialogName{@value{i18n-attributes-Fill}} tabpane of the
+Attributes Editor.
+
+The following patterns are available when exporting to PSTricks:
+
+@itemize
+@item
+@image{img/attributes.FillStyleNone,,,Icon: no filling} no filling
+@item
+@image{img/attributes.FillStyleSolid,,,Icon: uniform filling} Uniform filling with a color that can 
+be chosen, either amongst the available colors in the @code{predefined}
+pane (these are actually predefined
+PSTricks colors) or the @code{Swatches} pane, 
+or by altering color components separately
+in the RGB (red-green-blue) or HSB (hue-saturation-brightness) panes.
+
+@item
+@image{img/attributes.FillStyleVlines,,,Icon: filling with vertical lines} Filling with vertical
+lines; default angle is 45 degrees CCW. Color is to be selected
+from the color-chooser of the @code{Hatches} tabpane.
+
+@item
+@image{img/attributes.FillStyleVlinesFilled,,,Icon: filling with vertical lines@comma{} colored background}
+Filling with vertical lines and a colored background; the background
+color is to be selected from the @code{Fill} tabpane.
+@item
+@image{img/attributes.FillStyleHlines,,,Icon: filling with horizontal lines} Filling with horizontal
+lines; default angle is 45 degrees CCW. Color is to be selected
+from the color-chooser of the @code{Hatches} tabpane.
+
+@item
+@image{img/attributes.FillStyleHlinesFilled,,,Icon: filling with horizontal lines@comma{} colored background}
+Filling with horizontal lines and a colored background; the background
+color is to be selected from the @code{Fill} tabpane.
+@item
+@image{img/attributes.FillStyleCrossHatches,,,Icon: filling with
+crosshatches} Filling with crosshatches; default angle is 45 degrees
+CCW. Color is to be selected from the color-chooser of the
+@code{Hatches} tabpane.
+
+@item
+@image{img/attributes.FillStyleCrossHatchesFilled,,,Icon: filling with
+crosshatches@comma{} colored background} Filling with crosshatches and a
+colored background; the background color is to be selected from the
+@code{Fill} tabpane.
+@end itemize
+
+Other tips that may prove useful:
+
+@enumerate
+@item
+
+You can also fill an OPEN polygon like@*
+@image{img/polygon_filled_01,,,open polygon}@*
+
+which results in:@*
+@image{img/polygon_filled_02,,,filled open polygon}
+@item
+A triangle made up of three independant lines is not a @emph{closed} polygon, so that
+it cannot be filled as is; the workaround consists in selecting the three lines,
+right-clicking to open the context popup menu, and selecting 
+@menuItem{@value{i18n-action-editorkit-JoinSelection}}. Now the three lines form a single path that can
+be filled like any other path.
+@item
+A ring section @image{img/annulus_section_filled,,,ring section filled} 
+can be filled the same way: simply draw the corresponding arcs,
+select them, and then select @menuItem{@value{i18n-action-editorkit-JoinSelection}} (arcs are then converted
+to Bezier curves on-the-fly).
+@item
+A ring  @image{img/annulus_filled,,,ring} 
+can be filled by drawing
+to circles, making sure that the innermost circle sits on top (by
+invoking @menuItem{@value{i18n-action-editorkit-BringForward}} in the popup-menu),
+and then filling the outermost circle in whatever color you may wish, and
+finally the innermost one in white.
+@end enumerate
+
+@node multicurve,,,Top
+@chapter Extensible Bezier Curves
+
+@center @image{img/MultiCurveHelp,,,MultiCurveHelp}
+
+An extensible Bezier curve is a concatenation of either straight segments or cubic Bezier curves. 
+For each @i{subdivision point} (ie a point joining two Bezier curves, like A,B,C,D,E
+in the picture above), one can impose two properties on the associated tangents, 
+namely @i{smoothness} and/or @i{symmetry}.
+@i{Smoothness} means that the tangents around the subdivision point are required to be parallel 
+(for instance, BB' is parallel to BB'' in the figure above). More precisely, 
+if smoothness is required at B, and if you move B' with the mouse, then B'' will move
+accordingly as to preserve smoothness. To make an angle (like at point C), the smoothness must NOT enforced.
+@i{Symmetry} at B means that the length of BB' and BB'' are the same. 
+Symmetry is enforced at all points on the picture above.
+If both @i{Symmetry} and @i{Smoothness} are required at B say, then B' and B'' will be symmetric with respect to B.
+@i{Symmetry} and @i{Smoothness} have no effect at the endpoints A and E.
+
+When @b{drawing} or @b{editing} a curve@anchor{multicurveStraight},
+symmetry and smoothness are enforced by default, yet using modifiers
+(alternate functions) allows you to alter this behaviour:
+
+@itemize
+@item
+@kbd{CTRL}: move tangents with smoothness and symmetry
+enforced;
+@item
+@kbd{CTRL+SHIFT}: enforce smoothness only.
+@item
+@kbd{CTRL+ALT}: enforce symmetry only.
+@item
+@kbd{CTRL+ALT+SHIFT}: move tangents freely (no constraint
+at all)
+@end itemize
+
+@i{Note that these combinations and their associated meaning are also reminded in the status bar.}
+
+You may also change these properties for all points at once, or only for a specific point,
+by selecting a curve, right-clicking, and selecting the corresponding action in the
+popup menu. 
+Alternatively, the properties panel (press @kbd{F2}) allows you to carry out the same kind of
+operations, yet in a more precise way since you may also want to enter new coordinates 
+numerically.
+It is important to notice that some changes are irreversible (unless you explicitely call @b{undo}),
+since enforcing one of these properties MIGHT change the position of some control points,
+and the current policy is to NOT remember their previous position; hence Smoothness
+and Symmetry checkboxes in the properties panel are actually "one-way" streets.
+
+@section Straight segments and how-to-unstraighten-them ?
+
+To @i{straighten} a Bezier curve, just move the appropriate tangents until 
+they reduce to a point. To @i{unstraighten} a segment, press the 
+@kbd{CTRL}, @kbd{CTRL+SHIFT}, 
+@kbd{CTRL+ALT} 
+or @kbd{CTRL+ALT+SHIFT} modifiers, click on each segment's
+end-point and drag the tangents.  
+Forgetting to press these modifiers before clicking will result in a translation of the segment end-points,
+not in a modification of their associated tangents.
+
+Here again, the popup menu allows you to straighten all points at once, or only a specific point.
+To reverse the change, simply invoke @menuItem{@value{i18n-action-ui-Undo}}.
+
+@section Smooth Polygons
+@anchor{smoothPoly}
+
+@center @image{img/SmoothPolyHelp,,,SmoothPolyHelp}
+
+A @i{Smooth Polygon} is a smooth curve controled by a polygon.
+For example, the smooth polygon in the picture above is controled by the polygon 
+ABCDE (in green on the picture). The curve is always smooth, and does not usually go through
+the control points. But the curve goes through the midpoints of all the segments of the polygon
+(except the two extremal ones). In the example above, the curve goes through P and Q which are the midpoints of
+[BC] and [CD]. 
+
+To each point of the smooth polygon is attached a coefficient which controls how close to the polygon the curve should go. 
+The greater the coefficient of a point, and the more the curve will stick to
+the polygon along the sides of the corner corresponding to this point.
+The default value is 70, and useful values are generally in the interval 50-100. This coefficient can be set as follows: select the 
+smooth polygon and press @kbd{F2} to make the properties panel appear; if you don't want to adjust the coefficient of all points,
+unckeck some boxes in the @i{adjust} column; then use the slider to adjust the coefficient.
+The picture below shows the effect of changing the value of the coefficients of all points to 50.
+@*
+
+For an alternate way of editing smoothness coefficients, see the section
+@ref{editPoints,Using the Edit Bezier Points tool
+[@image{img/action.editorkit.EditBezierPoint,,,EditBezierPoint}]} below.
+
+@center @image{img/SmoothPolyHelp2,,,example}
+
+More precisely, the smooth polygon is a concatenation of cubic bezier
+curves whose control points lie on the control polygon (on the picture
+above, the control points of the bezier curves are represented by the
+endpoints of the bold dotted lines).  Denote by @math{c} the coefficient
+at @math{B}. Then @math{P'} is such that the vector @math{PP'} is @math{c}
+times the vector @math{PB}.  Similarly, the point @math{A'} is such that the
+vector @math{AA'} is @math{c} times the vector @math{AB}.
+
+@section Using the Edit Bezier Points tool to add, remove and edit points     
+@anchor{editPoints}
+
+There is a specific tool dedicated to adding and removing points to/from 
+Bezier curves and smooth polygons, and additionally to parallelograms and
+ellipses by converting them to Bezier curves on-the-fly. It is accessible through the
+@image{img/action.editorkit.EditBezierPoint,,,EditBezierPoint} icon in the
+toolkit palette or the toolkit menu (see also @ref{toolKit,Toolkit panel}).
+At any time, a right-click brings you back to the standard SELECT mode
+[@image{img/action.editorkit.Select,,,Icon Select tool}].
+
+@i{Selecting the target element:} Once the tool has been activated in the toolbar, 
+the first step must be to select a @b{single} target object, eg a smooth polygon
+or a Bezier curve. If the target is a parallelogram or an ellipse, it is converted
+to a Bezier curve on-the-fly (this may be reversed by a call to undo).
+
+@i{Selecting points:} before removing points, you must select the points
+to be removed. Just click on each point to be selected for removal,
+holding the @kbd{SHIFT} modifier for incremental selection/deselection.
+Alternatively, you may wrap a @i{lasso} around every point to be
+selected, by dragging a rectangular selection area. Selected points are
+highlighted in @b{blue}.
+
+@i{Removing points:} simply click on either one of the points selected
+above (the cursor transforms into a minus sign).  As regards Bezier
+curves, removing a point controlling a tangent straighten the
+corresponding segment, whereas removing a point joining two Bezier
+curves removes this point as well as the associated tangent-controls.
+
+@i{Adding points:} Hold the @b{CONTROL} key while the mouse hovers
+around a @b{segment} (however curved or straight it is), then press the
+mouse to add and drag a new point. A subsequent mouse-release let you
+edit the associated tangent if applicable.  For smooth polygons, you
+must click when the mouse hovers on a @i{segment} of the controlling
+polygon, not on the curve itself.
+
+@i{Adjusting the coefficients of a smooth polygon:} For each point of
+the polygon controling the curve, there is a coefficient telling how
+close to the corners of the polygon the curve should go
+(@uref{#smoothpoly,more details here}).  To edit these coefficients,
+select the points you want to alter, then hold the @kbd{CTRL+ALT}
+modifiers, move the mouse over one of the selected points (the cursor
+transforms into a north-south arrow), and drag the mouse up- or down-
+wards. This will increase (resp. decrease) the coefficients by an amount
+proportional to the mouse displacement. Note that the tool will not work
+if no point is selected!
+
+@node convexZones,,,Top
+@chapter Convex zones
+
+@warningMessage{``Convex zones'' are an experimental feature. This
+documentation in somehow incomplete and erroneous.}
+
+Convex zones are not drawing elements, they are just part of a set of
+tools used to modify drawing elements and for which you need to focus
+only on those control points or this part of the drawing that are within
+some bounded area defined as a union of convex zones. For instance,
+convex zones can be used to move around some of the control points of
+drawing elements, or to trim a drawing element.
+
+Convex zones can be defined for each drawing separately, however they
+are not part of the drawing document, and as such, they are lost when
+you close a drawing board.
+
+As far as extensible Bezier curves are concerned, a simpler and less
+powerful alternative to convex zones, when you want to act on several
+control points at a time, is to use the GLOBAL/LOCAL edit point mode
+(see @ref{globalLocalMode,Global/local edit-point mode}).
+
+Convex zones are visible and can be used only when the convex zone
+palette is visible, and are hidden otherwise. To use convex zones, first
+make the convex zone pallette visible by clicking on
+@image{img/action.ui.ToggleConvexZonePanel,,,Icon tool
+ToggleConvexZonePalette} in the main toolbar).
+
+A convex zone is defined as the intersection of one or more half-planes, each
+half plane is in turn defined by two control points:
+
+@enumerate
+@item
+A point @math{P1} on its boundary line.
+@item
+A point @math{P2} such that its boundary line is orthogonal to
+vector @math{P1 P2} and that half-plane contains @math{P2}.
+@end enumerate
+
+Each half-plane that compose a convex zone is viewed with its border line
+and with a half-plane sign like this:
+
+@center @image{img/convexzoneSign,,,Icon tool convexzoneSign}
+
+The convex zone border is viewed in @b{blue}.  When the
+convex zone is selected the first and second control point are viewed as the
+half-plane sign and as a small square in @b{magenta} color. When the
+convex zone is not selected, only the half-plane sign is visible, and it is
+viewed in grey colour.
+
+When you edit convex zones, there is a number of things that
+@acronym{jPicEdt} prevents you from doing:
+
+@itemize
+@item
+
+You cannot create or move @math{P2} too close to @math{P1}, because this
+would cause undetermination of the half-plane.
+
+@item
+You cannot move a half-plane to a position where it would be useless,
+that is to say to a position where the convex zone defined by the other
+half-planes would be entirely contained in this half-plane. If you don't
+want this half-plane any longer suppress it with the convex zone edit
+tool (see @uref{czedit,Convex zone edition})
+
+@item
+Finally, you are also prevented to move half-planes in a way that would
+result in an empty convex zone, as such a convex zone would be of no use.
+
+@end itemize
+
+@center @image{img/ConvexzonePanelDraw,,,Panel ConvexzonePanelDraw}
+
+Each button can display a tooltip if the mouse hovers around it more than
+two seconds.
+
+@section Convex zone selection
+
+Convex zone selection is possible with the convexe-zone select tool (see
+@ref{CZSelect,Convexe-zone select}).  The convexe-zone-selection and
+@emph{the} selection (of drawing elements) are two different selections.
+
+Menu @anchor{useCZSelection}commands, or keyboard shortcuts such as
+"Select all", "Suppress", "@kbd{F2}" and suchlikes selection-dependent actions, may
+act either on the drawing element selection, or on the convexe-zone selection,
+but never on both of them.
+
+The following rules apply:
+
+@itemize
+@item
+All drawing tools act only on the drawing element selection.
+@item
+All convexe-zone tools act only on the convexe-zone selection.
+@item
+Ambiguous selection dependent actions act on the drawing elements selection
+when the convexe-zone palette is not visible.
+@item
+When the convexe-zone palette is visible then what happens depends on
+the @ref{useCZSelectionTool,Use convex zone selection} tool state:
+
+@itemize
+@item
+If the tool is active, then ambiguous selection dependent actions act on
+the convexe-zone selection.
+@item
+Otherwise, they act on the drawing elements selection.
+@end itemize
+
+@end itemize
+
+An alternative to the "Use convexe-zone selection" tool is to use the
+same shortcuts with @kbd{CTRL-U} prefix. For instance the sequence
+@kbd{CTRL-u CTRL-C} will copy a control zone, @kbd{CTRL-U CTRL-X} will
+cut it, @kbd{CTRL-U CTRL-V} will paste it, @kbd{CTRL-U CTRL-A} will
+select all control zones, etc. @dots{} The sequence @kbd{CTRL-U CTRL-G}
+has no effect, it just relaxes the @kbd{CTRL-U} prefix.
+
+@section Editing Convex zone
+
+When @anchor{CZSelect}the Convex zone selection tool
+@image{img/action.convexzone.Select,,,Icon tool Convexzone Select} is
+active you can edit convex zones as follows:
+
+@itemize
+@item
+@i{Convex zone translation}: When the mouse is in the vicinity of the
+boundary of a selected convex zone it shows as a spider , if you click
+and keep mouse click button down while move the mouse (which is known as
+@emph{dragging}), you can translate this convex zone. With the
+@kbd{CTRL} modifier you translate all the selected convex zones, and not
+only the one for which the mouse is in the vicinity of a boundary
+line. With the @kbd{CTRL+ALT} modifier you translate all the existing
+convexe-zones.  Note that translating convex zone(s) does not have any
+effect on the underlying drawing.
+@item
+@i{Translating a half-plane}: When the mouse is in the vicinity of the
+first control point of a half-plane that is part of a convexe-zone, then
+mouse shows as a small arrow. If you click and keep mouse button down
+then you can translate the half plane (that it to say both control
+points are translated together). With the @kbd{CTRL} modifier, the first
+control point is constrained to move along the half plane boundary line,
+this has no effect on the half-plane itself, but it is useful if you
+want to rotate the half-plane around the first control point in the
+aftermath.
+
+@item
+@i{Rotating a half-plane}: When the mouse is in the vicinity of the
+second control point of a half-plane that is part of a convexe-zone,
+then mouse shows as a small arrow. If you click and keep mouse button
+down then you translate only the second control point, which has the
+effect of rotating the half-plane around the first control
+point. Remember that you cannot bring the second control point too close
+to the first one to prevent half-plane undetermination.
+
+@end itemize
+
+When @anchor{CZEdit}the convex zone edition tool   
+
+@center @image{img/action.convexzone.Edit,,,Icon tool edit Convexzone} 
+
+is active you can add or remove half-planes to a convex zone as follows:
+
+@itemize
+@item
+@i{Selecting target convex zone}: Once the convexe-zone edition tool
+has been activated in the convexe-zone palette, the first step is to select
+a @b{single} target convex zone to act upon. To select the target convex
+zone click on its boundary or on any of the half-plane signs. This step is not
+needed if the target convex zone zone is already selected and there are no
+other selected convex zones.
+
+@item
+@i{Select half-planes for removal}: Once a convex zone is selected you
+can remove half-planes: just click on one of the control point of the
+half-plane to be selected for removal: the half-plane sign will appear
+in @b{green}. @kbd{SHIFT+click} on a control point of the same
+half-plane point will unselect it. @kbd{SHIFT+click} on a control point
+of another half-plane will add it to the seleciton for removal. You may
+also select several half-planes for removal by dragging a @i{lasso}
+around every convex zone control point whose owner half-plane is to be
+selected.
+
+@item
+@i{Removing half-planes}: Simply click on any of half-planes that have been
+selected in to be removed to remove all of them from the selected convex zone. 
+
+@item
+@i{Adding half-planes}: Hold the @kbd{CTRL} modifier,
+then add a plane by 
+click a first time to set the first control point, and a second time to set
+the second control point. Click-Right to cancel. Remember you cannot add a
+half-plane that would make the convex zone empty.
+
+@end itemize
+@section Negating a Convex zone
+
+If @anchor{Negating}you select a convex zone then click-right and choose
+@menuItem{Negate} in the context menu, the convex zone, that is
+an intersection of
+half-planes, is transformed to the union of complementary half-planes.
+
+Negation can be applied to a selection of several convex zones, so that
+it is reversible by negating a second time. In other words negating twice has
+@emph{almost} no effect. @emph{almost} is there just because, if in the
+process of negation some empty convex zones are created, they are
+suppressed. For instance if you select two convexes zones, with the first one
+containing the second one, negating twice will suppress the inner convex
+zone.
+
+@section Convex zone Tools
+
+When using any of the convex zone edition tools, you can go by at any time to
+the standard convex zone SELECT tool
+( @image{img/action.convexzone.Select,,,Icon Convexzone Select}), by a single right-click.
+
+Following is a list of all available convexe-zone tools as well as their
+associated icon on the convex zone palette. Some convexe-zone tools
+support a set of alternate functions: these are triggered by a specific
+combination of modifiers (@kbd{Control+Shift}, @kbd{Control+Alt} or
+@kbd{Control+Alt+Shift}, as indicated), and allows you to release or
+enforce one or more geometrical constraints (the same combinations are
+used as in SELECT mode, except for the @kbd{CTRL} modifier which makes
+no sense here).  Modifiers may be pressed or released at any time during
+the convexe-zone tool process.
+
+@subsection Convexe zone tool pannel
+@anchor{convexZoneTools}
+
+@multitable @columnfractions 0.11 0.26 0.11 0.26 0.26
+@headitem Icon@tab Tool@tab Number of control points@tab Editing sequence@tab Alternate functions
+@item @image{img/action.convexzone.Select,,,Icon Convexzone Select}
+@tab Convex zone Selection
+@tab N/A
+@tab Click on any convex zone boundary or half-plane signs, to select the
+whole convex zone. (See @ref{CZSelect,Convex zone selection} for
+details).
+@tab SHIFT: the same sequence as for selecting a convex zone can be used to
+unselect it, or to add another convex zone to the convexe-zone-selection@*
+
+@item @image{img/action.convexzone.Edit,,,Icon Convexzone Edit}
+@tab Convex zone Edition
+@tab N/A
+@tab  Click on any convex zone boundary or half-plane signs to select the
+whole convex zone.  Remove any half-plane from the convex zone by clicking
+on the corresponding half-plane sign. (See @ref{CZEdit,Convex zone
+edition} for details). 
+@tab @kbd{CTRL} modifier to add half-planes to the convex zone.
+@item @image{img/action.convexzone.Rectangle,,,Icon Convexzone Rectangle}
+@tab Rectangular convex zone.
+@tab 2
+@tab First corner, opposite corner. Sides are kept parallel to the grid axes.
+@tab @kbd{CTRL}: nail the center of the rectangle to its first point
+position.@*
+@kbd{CTRL+ALT}: release the constraint on sides.  (Hold the
+modifiers whenever you want to alter the side's orientation, then release it
+and move the mouse to scale the rectangle).@*
+@kbd{SHIFT}: rectangle is
+negated. (see @uref{#negating,Negation}).@*
+@kbd{CTRL+SHIFT}: nail center and negate.@*
+@kbd{CTRL+ALT+SHIFT}: releasing the constaint on side
+orientation and negate.@*
+
+@item @image{img/action.convexzone.Extensible,,,Icon Convexzone Extensible}
+@tab Extensible convex zone.
+@tab Variable
+@tab First control point of first half-plane, second control point of first
+half-plane, first control point of second half-plane, and so one. Terminate
+with a right-click.
+@tab  N/A
+
+@item @image{img/action.convexzone.BandShape,,,Icon Convexzone BandShape}
+@tab Band-shaped convex zone.
+@tab 2
+@tab First side, Second side. Sides are kept parallel to the grid axes. Band
+direction is orthogonal to the line passing through first and second
+points.
+@tab @kbd{CTRL}: nail the center of the band the  first point
+position.@*
+@kbd{CTRL+ALT}: release the constraint on sides parallel to grid
+axes.@*
+@kbd{SHIFT}: negate (see @uref{#negating,Negation})@*
+@kbd{CTRL+SHIFT}: nail center and negate.@*
+@kbd{CTRL+ALT+SHIFT}: release the constaint on sides
+orientation and negate.@*
+
+@item @image{img/action.convexzone.UShape,,,Icon Convexzone UShape}
+@tab U-shaped convex zone.
+@tab 3
+@tab First corner, Second corner, Top of U. Sides are kept parallel to the
+grid axes.
+@tab @kbd{CTRL}: nail the center of the bottom side of U to the
+first point position.@*
+@kbd{CTRL+ALT}: release the constraint on sides parallel to grid
+axes.@*
+@kbd{SHIFT}: negate (see @uref{#negating,Negation})@*
+@kbd{CTRL+SHIFT}: nail center and negate.@*
+@kbd{CTRL+ALT+SHIFT}: release the constaint on sides
+orientation and negate.@*
+
+@item @image{img/action.convexzone.HalfPlane,,,Icon Convexzone HalfPlane}
+@tab Half-plane convex zone.
+@tab 2
+@tab First control-point Second control point. Sides are kept parallel to the
+grid axes.
+@tab @kbd{CTRL+ALT}: release the constraint on sides parallel
+to grid axes.  Hold 
+the modifiers whenever you want to alter the side's orientation, then release
+it and move the mouse to scale the rectangle).@*
+@kbd{SHIFT}: negate (see @uref{#negating,Negation})@*
+@kbd{CTRL+ALT+SHIFT}: release the constaint on sides
+orientation and negate.@*
+
+@item @image{img/action.convexzone.CzDrawingTranslate,,,Icon Convexzone CzDrawingTranslate}
+@tab Translate all drawing elements control points within the selected convex
+zone.
+@tab N/A
+@tab Click @anchor{CZDrawingTranslate}at one of the convex zone (by
+clicking on its border line, or on one of its control point), and drag
+the mouse, i.e. keep click button down as moving the mouse.  All the
+drawing element control points that are within the considered convex
+zone zone will be translated accordingly as well as the considered
+convex zone. Note that for extensible Bezier curve control points that
+are not subdivision points; but for which the corresponding subdivision
+point is within the selected convex zone are also translated.
+@tab With @kbd{CTRL} modifier, all selected convex zone,
+instead of just the one 
+that you drag upon are used for translation.@*
+With
+the @kbd{CTRL+ALT} modifier all the existing convex zones
+are considered. 
+
+@item @image{img/action.convexzone.CzDrawingTrim,,,Icon Convexzone DrawingTrim}
+@tab Trim all drawing elements.
+@tab N/A
+@tab The intersection of the union of all existing convex zones, and of of
+all the seelcted drawing elements is erased. This can involve conversion of
+some element types (for instance rectangle) to extensible Bezier curves.
+@tab N/A
+
+@item @image{img/action.convexzone.UseCzSelection,,,Icon Convexzone Use Selection}
+@tab Use convex zone selection.
+@tab N/A
+@tab Toggling @anchor{useCZSelectionTool}this button on and off allows
+you to decide selection dependent action like "Cut&Paste", or "Select
+all" act on the drawing element selection, or on the convexe-zone
+selection. (See @ref{useCZSelection,Use convex zone selection} for
+details)
+
+@tab N/A
+
+@end multitable
+
+For all convex zones, when the "Convex zone Select" tool state is active,
+pressing @kbd{F2} will open a properties-panel for the first convex zone in the
+convexe-zone selection. This in particular allows you to edit convexe-zone
+control points coordinates by hand, or to change the angle of the
+vector @math{P1 P2} w.r.t. horizontal by hand. 
+
+@node actions,,,Top
+@chapter Grid-zoom toolbar
+
+@center @image{img/GridZoomToolbar,,,GridZoomToolbar}
+
+Grid and snap steps are in mm, and can be set independently. The
+zoom factor is in percent: you can also type your own value, it will be recorded
+in the popup list for the current session.
+The @image{img/ButtonCenterViewport,,,ButtonCenterViewport} button in the upper-left corner
+moves the scrollbars so that the point (0,0) lies at the center of the scrollpane 
+(this is especially useful for large zoom factors).
+
+@section Toolkit panel
+@anchor{toolKit}
+
+@center @image{img/ToolkitPaletteEdit,,,ToolkitPaletteEdit}
+
+Note: draw-tools (ie greyed icons in the picture above) 
+are explained in details in the @ref{drawingCap,Drawing Objects} section.
+
+@multitable  @columnfractions 0.1 0.2 0.7
+@item @image{img/action.editorkit.Select,,,Icon select}
+@tab Select mode
+@tab Select and edit mode: see the @ref{editing,Editing Objects}
+section for further details. 
+
+@b{Important note}: in every other mode/tool, including drawing-tools,
+a RIGHT-CLICK brings you back to this SELECT mode as soon as the editing process
+for the particular mode/tool has completed (eg for a drawing-tool, this means 
+you have just really finished drawing an object).
+
+@item @image{img/action.editorkit.Zoom,,,Icon Zoom tool}
+@tab Zoom mode
+@tab Click to zoom in; shift-click to zoom out
+
+@item @image{img/action.editorkit.EditBezierPoint,,,Icon tool EditBezierPoint}
+@tab Edit Bezier points
+@tab This @anchor{editBezierPoints}tool is mostly dedicated to adding/removing points to/from Bezier
+curves, polygons and smooth polygons, as well as to/from ellipses and
+parallelograms (by converting them to Bezier curves on-the-fly).
+Additionally, it allows you to alter the coefficients of smooth-polygon
+points.  See the @ref{editPoints,Editing Bezier points}
+section for further details.
+
+@item @image{img/action.editorkit.Translate,,,Icon tool Translate}
+@tab Translate tool
+@tab Translates a selection by a given vector. Click to set the first vector point,
+then drag the second vector point to translate the whole selection.
+
+@item @image{img/action.editorkit.Scale,,,Icon tool Scale}
+@tab Scale tool
+@tab Scales a selection by a given scale factor. Press the left-button to set
+the invariant point, then drag the mouse to set the original (blue) rectangle, finally
+release and move the mouse to alter the scale factor (a red rectangle is displayed
+which allows you to monitor both x- and y- scaling coefficients). 
+
+@item @image{img/action.editorkit.Rotate,,,Icon tool Rotate}
+@tab Rotate tool
+@tab Rotates a selection by a given angle.
+Press the left-button to set the invariant point, then drag the mouse
+to set the original vector (this will act as the reference for angle-measurement),
+finally release and move the mouse to alter the rotation angle.
+
+@item @image{img/action.editorkit.EditPointsMode,,,Icon tool EditPointsMode}
+@tab Global/local edit-point mode
+@tab Toggling @anchor{globalLocalMode}this button on and off allows you to switch between GLOBAL
+(aka Scale- and Translate-tool, dual-in-one) vs LOCAL
+(single-point-editing) mode, either for single- or multiple-selection
+editing.
+
+In GLOBAL mode, the selection is highlighted as a single (red-stroked)
+rectangle, which allows you to move and rescale the entire selection
+content as a whole.
+
+In LOCAL mode, each element in the selection is highlighted instead, its
+end-points being displayed as green barbells; this allows you to edit
+each element separately without having to break the selection.
+
+Whenever a @b{single element} is selected, toggling between these two
+modes also proves useful: for Bezier curves, for instance, setting the
+mode to GLOBAL allows you to rescale the curve globally, whereas setting
+the mode to LOCAL enables control-points and tangents editing.
+
+Note, however, that you may as well want to stick to LOCAL mode and
+never use the GLOBAL mode, and use the Translate- and Scale-tools for
+altering a selection globally.  This is rather a question of personal
+taste, since both approaches lead to the same result, though with a
+slightly distinct user-interface.
+
+@end multitable
+@section Menus
+
+Some of the following menu-items are also available as buttons in the main toolbar.
+
+@multitable @columnfractions 0.5 0.5
+@headitem @value{i18n-menu-File} menu
+@item @value{i18n-action-ui-New}
+@tab create a new drawing sheet.
+
+@item @value{i18n-action-ui-Open}
+@tab load an existing file from disk.
+
+@item @value{i18n-action-ui-Reload}
+@tab reload current drawing from disk
+
+@item @value{i18n-action-ui-Save}
+@tab save current file in @LaTeX{}, epic or PSTricks format, depending on the
+current content-type; default directories can be
+specified in the preferences tabsheet.
+
+@item @value{i18n-action-ui-SaveAs}
+@tab let you choose another file name.
+
+@item @value{i18n-action-ui-SaveAll}
+@tab save all currently open sheets.
+
+@item @value{i18n-action-ui-SaveSelectionAs}
+@tab let you save only selected (namely: highlighted) parts of your
+drawing ; useful to create fragments ; the user's fragment directory is automatically
+pre-selected in the file-chooser, but you can save fragments in other places@dots{}
+
+@item @value{i18n-action-ui-InsertFragment}
+@tab insert a prerecorded fragment into the current active sheet
+(the topmost internal frame), placing it in the bottom-left corner
+of the frame ; by default, the filechooser points to the user's fragment directory,
+but you can obviously insert fragments from other places@dots{}
+See also the @ref{fragments,Fragment} menu below.
+
+@item @value{i18n-menu-RecentFiles}
+@tab this mutable menu keeps track of the last four loaded or
+updated files, and let you quickly load one of them.
+
+@item @value{i18n-action-ui-Close}
+@tab Close active frame
+
+@item @value{i18n-action-ui-Exit}
+@tab Save every open sheet to disk, then quit.
+
+@headitem @value{i18n-menu-Edit} menu
+@item @value{i18n-action-ui-Undo}/@value{i18n-action-ui-Redo}
+@tab undo/redo last change (the number of undoable steps is
+specified in the preferences menu). 
+
+@item @value{i18n-action-editorkit-Cut}
+@tab cut current selection and send it to clipboard.
+
+@item @value{i18n-action-editorkit-Copy}
+@tab copy selection to clipboard.
+
+@item @value{i18n-action-editorkit-Paste}
+@tab 
+paste selection from @acronym{JPicEdt} graphic clipboard, starting from
+bottom-left corner.
+
+@item @value{i18n-action-editorkit-PasteSpecial}
+@tab 
+paste selection by trying to parse the content of the system
+clipboard. For example, you may first copy a @LaTeX{} string to the
+system clipboard from your favorite editor, then paste it to
+@acronym{jPicEdt} using PasteSpecial.  This can obviously lead to a
+parser-error if the text content is not syntaxically correct.@*
+
+Under @acronym{Linux}, use @code{xclipboard} to copy a piece of text to
+the primary selection@dots{} Direct data transfer b/w the
+@acronym{jEdit} editor and @acronym{jPicEdt} works flawlessly however.
+
+@item @value{i18n-action-editorkit-SelectAll}
+@tab 
+select every object in the current board.
+
+@item @value{i18n-action-ui-PageFormat}
+@tab 
+set the page format of the current drawing board, if any. If there's no open board,
+set the default page format for new boards (this is identical as setting the
+page format from the Preferences).
+
+@item @value{i18n-menu-SetContentType}
+@tab 
+set the content-type of the current drawing board, if any. This sets the formatter
+used to format the current drawing to @LaTeX{} (i.e. @LaTeX{} picture env, epic or PSTricks),
+and also affects the way elements are displayed (for example, colour is supported by
+PSTricks only, filling ellipses by PSTricks and eepic only,@dots{}).
+
+@item @value{i18n-action-ui-Preferences}
+@tab 
+opens the @dialogName{set preference} tab pane. See @ref{preferences,setting preferences}.
+
+@headitem @value{i18n-menu-Toolkit} menu
+See @ref{drawingCap,drawing objects}
+and @ref{editing,editing objects} for
+a detailed description of the tools available in this menu.	
+
+@headitem @value{i18n-menu-Commands} menu
+@item @value{i18n-action-command-LaTeX}
+@tab 
+run @LaTeX{} on the current drawing; to sum up: @acronym{jPicEdt}
+creates a temporary @LaTeX{} file on-the-fly, containing all the
+necessary stuff (see how to set the prolog and epilog in the preferences
+tabpane), in the @i{temporary} directory of the underlying platform
+(e.g. @file{/tmp} under @acronym{Unix} and @acronym{MacOS-X},
+@file{c:\windows\temp} under @acronym{Win9x}, @dots{}) then run @LaTeX{}
+on it.@*
+
+Contrary to previous releases, you don't need to save your picture anymore
+before running the @LaTeX{}/DVI/etc@dots{} commands.
+
+@item @value{i18n-action-command-DVI}
+@tab 
+same thing, but run a dvi viewer on the same file (actually the one with
+a @file{.dvi} extension, which then assume you ran @LaTeX{} before).
+
+@item @value{i18n-action-command-Dvips}
+@tab 
+run the referenced Dvips program.
+
+@item @value{i18n-action-command-Ghostview}
+@tab 
+run the referenced Ghostview program.
+
+@item External program path and names (as well as their calling syntax) 
+can be specified in the preferences.
+
+@headitem @value{i18n-menu-Fragments} menu
+@anchor{fragments}
+
+@item List of fragments
+@tab 
+Depending on fragments found in the system-wide's and the user's fragments directory, 
+you may see zero, one or
+more items here. Click to insert. User-saved fragments go into the "fragments" subdirectory
+of the user-settings directory (for instance
+: @file{/home/user/.jpicedt/fragments} on
+Unix).  
+
+@item @value{i18n-action-ui-UpdateFragmentsMenu}
+@tab 
+Rescan the list of fragments.
+
+@headitem @value{i18n-menu-Scripts} menu
+@item @value{i18n-action-ui-OpenBSHConsole}
+@tab 
+Open a @acronym{BSH} Console for interacting on-the-fly with @acronym{jPicEdt}, or
+for debugging your scripts.
+
+@item List of scripts
+@tab 
+Depending on scripts installed in the system-wide's and the user's script directory, 
+you may see zero, one or more items here. Click to run. 
+
+@item @value{i18n-action-ui-UpdateScriptsMenu}
+@tab 
+Rescan the list of installed scripts from the script directory.
+
+@headitem @value{i18n-menu-Window} menu
+@item @value{i18n-action-ui-Cascade}
+@tab 
+Cascade all internal windows.
+
+@item @value{i18n-action-ui-TileHorizontal}
+@tab 
+Tile windows horizontally, creating as new rows as necessary.
+
+@item @value{i18n-action-ui-TileVertical}
+@tab 
+Tile windows vertically, creating as new columns as necessary.
+
+@item @value{i18n-action-ui-ToggleAttributesPanel}
+@tab 
+Toggle the visibility of the floating "@value{i18n-dockable-panel-Attributes}" pannel.
+This can be useful on laptops, because this palette takes up a significant amount
+of the screen ;-).
+
+@item @value{i18n-action-ui-ToggleToolkitPanel}
+@tab 
+Toggle the visibility of the floating "@value{i18n-dockable-panel-Toolkit}" pannel.
+
+@item @value{i18n-action-ui-ToggleConvexZonePanel}
+@tab Toggle the visibility of the floating pannel « @value{i18n-dockable-panel-ConvexZone} ».
+
+@item List of windows
+@tab
+The @emph{@value{i18n-menu-Window}} menu also maintains a list of currently open sheets so
+that you can quickly switch between them (Note: keyboard
+shortcuts may not work on @acronym{Linux} and @acronym{MacOS} platforms).
+
+@end multitable
+@c <hr/>
+
+@node preferences,,,Top
+@chapter Setting preferences
+
+@section General
+
+@itemize
+@item
+@value{i18n-preferences-MDIManager}: let you choose the way windows
+(i.e. drawing sheets and palettes) are managed within @acronym{jPicEdt}.
+In @i{Child-frames} mode, all windows are actually Java internal-frames
+components that are contained in a single application window, whereas in
+the new @i{Gimp-like} mode, all windows are native and are directly laid
+out on your desktop.
+@item
+@value{i18n-preferences-LookAndFeel}: let you choose your favorite Look'n Feel ; defaults to
+@i{metal} (a SUN look'n feel) on startup.
+@item
+@value{i18n-preferences-Language}: English, French,@dots{} You must restart @acronym{jPicEdt} if
+you want a new language choice to take effect.
+@item
+@value{i18n-preferences-UndoMaxStep}: let you specify the number of undoable steps; 0 means
+that undo is deactivated.
+@item
+@value{i18n-preferences-DefaultContentType-label}: this is the default formatter used when creating a new
+drawing. The preferred way is to use PSTricks, because then you get a
+real high quality rendering (colours, textures, shadows,@dots{}), but if you
+don't want to rely on add-ons packages, simply choose the Emulated @LaTeX{}
+content-type (then you'll get only a minimal subset of those graphical attributes,
+i.e. no-filling, no colours,@dots{}). The epic/eepic choice is a reasonable
+choice for those who don't need colours and textures, but are
+willing to draw ellipses, arcs, polygons,@dots{} with a satisfying rendering quality.
+Note also that PSTricks uses PostScript in the background so if your DVI
+Viewer dooesn't handle PostScript special, use @code{dvips} first to
+convert your DVI file to a PS file, then run @code{ghostscript} to
+display it.
+@end itemize
+
+@subsection @LaTeX{}, eepic and PSTricks tab panes
+
+Let you set a variety of package-specific parameters.
+One thing common to all formats is the prolog/epilog string, which
+is used when running @LaTeX{} on the active picture (the one corresponding
+to the highlighted inner frame) from within
+@acronym{jPicEdt}.@*
+
+These strings get prepended/appended to the text generated by the
+formatter (i.e. the text starting with @code{\begin@{picture@}}) so that
+the resulting text is a "stand-alone" @LaTeX{} file, and can be directly
+compiled by @LaTeX{}. The default prolog/epilog simply include necessary
+packages, but you can add your own macro definition here, so that, for
+example, arguments of text-boxes which use macros of your own are
+compiled properly.
+
+@subsubsection Picture scale
+@subsubsection Scale up/down a drawing by a given factor
+
+By default, unitlength is set to 1mm in the saved file. This definition is
+to be found that the beginning or the part encoded in export format (just after
+the embedded JPIC-XML code).
+However, it is often convenient to change the unit to rescale the figure.
+There is a convenient way to do this from the main tex file using by defining the command @code{\JPicScale}.
+Here is an example rescaling the picture at 80%:
+
+@smallexample
+\def\JPicScale@{0.8@}
+\input@{figure.tex@}
+@end smallexample
+
+One can alternatively use @code{\newcommand@{\JPicScale@}@{0.8@}}
+or @code{\renewcommand@{\JPicScale@}@{0.8@}} according to
+whether @code{\JPicScale} is already defined or not (the use of the TeX
+primitive @code{\def} allows you not to bother about this, 
+with the acceptable risk of including a package whose author had
+the strange idea of usig the same @code{\JPicScale} name for one of
+his/her macros).
+
+@subsubsection Change the drawing unit
+
+To change the drawing unit from 1mm to, say, 1point, insert the following code
+before the picture:
+
+@smallexample
+\def\JPicScale#1#2@{0.00625\textwidth@}
+\input@{figure.tex@}
+@end smallexample
+
+The two arguments @code{#1#2} of @code{\JPicScale} are
+just intended to gobble the default @code{mm} unit.
+
+@subsubsection Scale a drawing upto/downto a given width
+
+If you want now that, say, 160 units on the picture correspond to a
+width of @code{\textwidth} insert the following code before the figure:
+
+@smallexample
+\def\JPicScale#1#2@{0.00625\textwidth@}
+\input@{figure.tex@} 
+@end smallexample
+
+The working principle is similar to a change of drawing unit:
+@code{0.00625} is the inverse of @code{160}, the width expressed in
+drawing units that you want to scale to @code{\textwidth}.
+
+@subsubsection Bounding box related issues
+
+Please also remember that @acronym{jPicEdt} does not embed any @LaTeX{}
+compiler. As a result if you place a text element that is aligned left
+on the righmost border of the picture, the text content will extend
+beyond the picture bounding box computed by @acronym{jPicEdt} and on
+which picture centering by @LaTeX{} is based. The figure may then be
+incorrectly centered.@*
+A simple technique to account for the room needed by this text element
+it to place a text element aligned right and containing just a blank
+space @anchor{BoundingDrawingWithBlanks}
+
+("\ ") on the desired righmost border. A similar trick may be
+used for leftmost border, topmost border and bottommost border, as illustrated
+below:
+
+@center @image{img/ManualBoundingBox,,,ManualBoundingBox}
+
+See also @ref{EditBoundingBox,Edit Bounding Box}.
+
+@subsubsection @LaTeX{} picture environment specific parameters
+
+@itemize
+@item
+@b{@value{i18n-format-latex-MaxCircleDiameter-label}}/@b{@value{i18n-format-latex-MaxDiskDiameter-label}}: this
+depends on your own @LaTeX{} installation.  You'll have to set it to the biggest circle/disk diameter
+contained in your @LaTeX{} font (actually, 14mm for circles, and 5.4mm for disks, which incidentally are the
+default values, match almost every TeX distribution).
+@end itemize
+
+@LaTeX{} picture environment only allows for a small number of line
+slopes ; in @b{emulated mode}, @acronym{jPicEdt} use the
+@code{\multiput} command to emulate lines of any slope, using a set of
+very closed and tiny horizontal or vertical segments. As a result, lines
+of any thickness can now be drawn (FYI, the @code{\thickness} command
+doesn't work with standard slanted lines).
+
+@itemize
+@item
+@b{@value{i18n-format-latex-EmLineLength-label}}: this is the length of the small segments that compose emulated
+lines. 
+
+@item
+@b{@value{i18n-format-latex-EmMaxLineSlope-label}}:
+when do we have to switch between an almost (hence emulated)
+vertical emulated line and a TRUE vertical line ? 
+
+@item
+@b{@value{i18n-format-latex-EmCircleSegLength-label}}: this is the length of
+the small segments that compose emulated circles (that is, circles
+having a radius greater than Max-LaTeX-Circle-Diameter). Note: big
+disk can't be emulated using @LaTeX{} picture environment commands, but
+they can if you decide to use the @i{eepic} package. 
+@end itemize
+
+@subsubsection @acronym{eepic} package
+
+@itemize
+@item
+Maximum width for thinlines/thicklines: eepic supports three
+line-thickness values, which correspond to the commands
+@code{\thinlines}, @code{\thicklines} and @code{\Thicklines}.  The
+default values should work (e.g. any line smaller than 0.15mm will be
+considered as thin, and any line larger than 0.3mm will be formatted as
+Thick), yet if you experience discrepancies between what is displayed on
+the screen and what you get after compilation, you may want to alter
+these values to improve the WYSIWYG behaviour.
+@end itemize
+
+@subsubsection @acronym{PSTricks} package
+
+No alterable parameter. 
+
+@subsection External commands
+@anchor{SpecifyExternalCommands}
+@subsubsection How does it work?
+
+When running @LaTeX{}/DVI/@dots{} from within @acronym{jPicEdt}, a
+@LaTeX{} file is created on the fly by @acronym{jPicEdt} in the standard
+temp' directory of the OS you're using (e.g. @file{c:\windows\temp}), or
+another temp' dir if you changed it (see Directories panel).  The
+variety of operating systems and @LaTeX{} distributions made it
+impossible to design a scheme for running external commands that
+wouldn't rely on scripts (e.g. batches on @acronym{DOS},
+@acronym{AppleScript} on @acronym{MacOS}).
+
+So the best thing to do is (as for me) to use external scripts 
+which call the adequate programs (latex, dviwin32.exe/xdvi,@dots{}). You can
+pass argument to this script by using the predefinite symbols
+"@{p@}" and "@{f@}".
+
+@itemize
+@item
+@file{@{p@}} gets replaced by your temp. directory (this is where the @LaTeX{} file gets created),
+e.g. @file{/tmp/} on @acronym{Linux}, @file{c:\windows\temp} on @acronym{Win9@var{x}}, etc@dots{}
+@item
+
+@file{@{f@}} gets replaced by the name of the temp. file (usually
+@file{jpicedt} with a random number appended to it,
+e.g. @file{jpicedt542163}), w/o any @file{tex} extension.
+
+@item
+@file{@{i@}} gets replaced by the location of the "add-ons" directory where some scripts already
+reside for some @LaTeX{} distributions.
+
+@item
+@file{@{u@}} gets replaced by you @file{.jpicedt} directory --- that which contains user preferences, 
+you can store under it your own scripts.
+@end itemize
+
+For a complete list of other @file{@{@var{x}@}} keys, please see
+documentation of the @uref{@value{APIDOC-LOCATION}api-doc/jpicedt/ui/util/CommandLineBuilder.html,
+@code{jpicedt.ui.util.CommandLineBuilder}} class in
+the API documentation.
+
+
+Here's an example of an external batch that will work with
+@acronym{Linux}'s @acronym{bash}-shell:
+
+@smallexample
+#!/bin/sh
+cd $1
+$2 $3
+@end smallexample
+
+Suppose this script was saved in the @file{add-ons} directory, then the
+command line which appears under the @dialogTab{@value{i18n-commands-title}}'s tab
+in the @menuItem{@value{i18n-action-ui-Preferences}} tabsheet will be typeset as
+follows:
+
+@smallexample
+@{i@}/ext_proc @{p@} latex @{f@}
+@end smallexample
+
+(where "latex" can be replaced by any appropriate name,
+e.g. xdvi, kghostview, kdvi,@dots{}). 
+
+This will lead, once @file{@{p@}} and @file{@{f@}} have been 
+replaced, to:
+
+@smallexample
+ext_proc /tmp latex jpicedt46858
+@end smallexample
+
+which finally yields:
+
+@smallexample
+cd /tmp
+latex jpicedt46858
+@end smallexample
+
+(latex accept a file w/o extension on the command line, otherwise simply
+add @file{.tex} manually in your script).
+
+@subsubsection Loading predefined configurations
+
+Currently, there are scripts and predefined configurations for the following @LaTeX{} distribution:
+
+@itemize
+@item
+Unix: TeTeX
+@item
+Windows: MikTeX, WinGUT, and ScientificWorkplace.
+@end itemize
+
+These scripts reside in the @file{add-ons} subdirectory of where
+@acronym{jPicEdt} got installed (you need to have installed the
+@file{add-ons} package during @acronym{jPicEdt}'s installation).@*
+
+To load a predefined configuration file, go to the
+@menuItem{@value{i18n-action-ui-Preferences}}->@dialogTab{@value{i18n-commands-title}} pane, press the
+@b{@value{i18n-commands-LoadPredefinedConfig}} button, and browse the directory tree until you find a file
+matching your @LaTeX{} distribution.
+
+@subsection Shortcuts
+
+@dialogTab{@value{i18n-preferences-Shortcuts}} tab allows you to change keyboard-shortcuts binding for every
+menu item (including tools from the toolkit palette). To add, modify or remove a shortcut, double-click on the
+appropriate cell in the right column, directly type the shortcut, and click OK (to delete a shortcut, just
+click the eraser).
+
+@subsection Page format
+
+@dialogTab{@value{i18n-action-ui-PageFormat}} pane allows you to set the default page format when creating a new
+drawing from scratch (this has no effect on drawings loaded from disk).
+
+@node scripting,,,Top
+@chapter Using and writing BeanShell scripts
+
+@acronym{jPicEdt} now supports scripting (aka @file{macros}) through an
+embedded @acronym{BeanShell} interpreter. @acronym{BeanShell} is a
+lightweight, extensible and embedable scripting extension to Java,
+written by Pat Niemeyer (@uref{mailto:pat@@pat.net,pat@@pat.net}). It
+follows the Java grammar (though with higher tolerance towards syntax
+errors; in particular it has weak typing capabilities), hence anyone
+having a smattering of @acronym{Java} can write @acronym{BeanShell}
+scripts.
+
+A comprehensive documentation about @acronym{BeanShell} can be found at:
+@uref{http://www.beanshell.org,www.beanshell.org}. Yet scrutinizing into
+the scripts shipped with @acronym{jPicEdt} is a good starting point. You
+will also need @uref{../api-doc/index.html,@acronym{jPicEdt}'s API
+documentation} (in case you haven't installed it yet, you can reinstall
+it from @acronym{jPicEdt}'s installer), especially should you need to
+write scripts involving complex operations. The @code{jpicedt.JPicEdt}
+class offers a variety of static methods
+(e.g. @code{JPicEdt.newBoard()}) that might fullfill basic needs. Other
+classes of importance are:
+
+@itemize
+@item
+@code{jpicedt.ui.MDIManager} for managing drawing-boards (creating a new
+board, moving it, cascading boards,@dots{})
+@item
+@code{jpicedt.ui.PEDrawingBoard} and @code{jpicedt.graphic.PECanvas}
+(PEDrawingBoard comprises a PECanvas and a PEScrollPane) for interacting
+with selected objects, zooming, performing I/O operations, or even
+fiddling about with the UndoManager :-), @dots{}
+@item
+@code{jpicedt.graphic.model.Drawing} for adding objects to a
+drawing-board;
+@item
+@code{jpicedt.graphic.model.Element} and concrete implementations
+(ellipses, rectangles,@dots{}) for altering objects shape and
+attributes;
+@item
+@code{jpicedt.graphic.view.View} and concrete implementations (ellipses,
+rectangles,@dots{}) for changing how object LOOK on the screen (but not
+how they're formatted to a @LaTeX{} string);
+@item
+@code{jpicedt.graphic.toolkit.EditorKit} for changing the way objects
+are edited with the mouse (that is, either altering existing behaviours,
+or adding new ones).
+@item
+Classes in the @code{jpicedt.format.*} package, for interacting with
+content-types, i.e. changing the way objects are formatted to @LaTeX{}
+and/or TeX-file are parsed for a given format (@LaTeX{},
+@acronym{eepic},@dots{}).
+@end itemize
+
+All those classes are easily extensible, and can be plugged to each
+other (well, the so famous View-Model-Controller scheme, like@dots{}).
+Besides, @code{jpicedt.JPicEdt} and @code{jpicedt.graphic.toolkit.EditorKit}
+contains a variety of @dfn{Actions} (implemented as static classes) that
+you can subclass, then add to your own graphical interface. Look at the
+documentation in @code{jpicedt.graphic.toolkit.PEAction} to know what is an
+@i{Action} and how you may use it into your own code.
+
+For convenience, some useful variables and methods have been predefined, and are available on start-up 
+both in the BSH Console, and
+from scripts being run from the script-menu. These are:
+
+@itemize
+@item
+@code{board()}: return the currently selected @code{PEDrawingBoard}, or
+null if there's no open board;
+@item
+@code{canvas()}: return a reference to the active @code{PECanvas},
+i.e. being hosted by the currently selected @code{PEDrawingBoard};
+@item
+@code{drawing()}: return a reference to the @code{Drawing} (aka MODEL)
+attached to the active @code{PECanvas};
+@item
+@code{editorkit()}: return a reference to the @code{EditorKit} (aka
+CONTROLER) attached to the active @code{PECanvas};
+@item
+@code{mdimgr}: predefined variable referencing the current @code{MDIManager}.
+@item
+@code{clipboard}: predefined variable referencing the local clipboard
+shared across all drawing boards (as opposed to the system's clipboard,
+which you can access from @acronym{jPicEdt} using the Paste Special menu
+item, yet which doesn't accept anything else but text data); needed for
+copying and pasting things from/into a @code{PECanvas}.
+@item
+@code{preferences}: predefined variable referencing a @code{Properties}
+object holding user's prefs.
+@end itemize
+
+@section OK, where do I put my scripts ?
+
+User's scripts must reside in the @file{macros} subdirectory of the
+user-settings directory (for instance, @file{/home/user/.jpicedt/macros}
+on Unix).  Scripts must have a @file{.bsh} extension.  Names having
+underscores will have these replaced by white-spaces in the script-menu
+(e.g. @file{Repeat_copy.bsh} will show up as @menuItem{Repeat copy}).
+You can call other scripts from inside a script by using the
+@acronym{BSH} @code{source(@var{path_to_other_script})} command, and
+even add your own classes by using the @code{addClassPath()} command.
+
+Use the BSH console to test your script, then put them in the
+script-directory and they'll show up!
+
+@node links,,,Top
+@chapter Useful links
+
+Links to similar tools :
+@itemize
+@item
+@uref{http://tpx.sourceforge.net/,TpX}
+@item
+@uref{http://texcad.sourceforge.net/,TeXCAD}
+@item
+@uref{http://theoval.cmp.uea.ac.uk/~nlct/jpgfdraw/index.html,JpgfDraw}
+@end itemize
+
+
+@node license,,,Top
+@include en/CeCILLv2.texi
+
+@bye

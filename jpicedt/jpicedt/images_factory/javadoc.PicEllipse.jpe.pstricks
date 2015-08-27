@@ -1,0 +1,423 @@
+%%Created by jPicEdt 1.6-pre1: mixed JPIC-XML/LaTeX format
+%%Mon Aug 05 21:11:46 CEST 2013
+%%Begin JPIC-XML
+%<?xml version="1.0" standalone="yes"?>
+%<jpic x-min="-40" x-max="136.5" y-min="0" y-max="185.68" auto-bounding="false">
+%<g lift-pen="0"
+%	 compound-mode="separate"
+%	 closed="false"
+%	>
+%<ellipse p3="(46.81,99.87)"
+%	 p2="(20.51,105.62)"
+%	 p1="(31.2,41.5)"
+%	 closure="open"
+%	 angle-end="312"
+%	 angle-start="123"
+%	 />
+%<ellipse stroke-style="dashed"
+%	 p3="(46.81,99.87)"
+%	 p2="(20.51,105.62)"
+%	 p1="(31.2,41.5)"
+%	 stroke-dasharray="1;1"
+%	 closure="open"
+%	 angle-end="123"
+%	 angle-start="-48"
+%	 stroke-width="0.15"
+%	 />
+%<parallelogram stroke-style="dashed"
+%	 p3="(46.81,99.87)"
+%	 p2="(20.51,105.62)"
+%	 p1="(31.2,41.5)"
+%	 stroke-dasharray="1;1"
+%	 stroke-width="0.15"
+%	 />
+%<text text-vert-align="top"
+%	 anchor-point="(31.2,41.5)"
+%	 text-hor-align="right"
+%	 >
+%$P_{\mathrm{BL}}$
+%</text>
+%<text anchor-point="(31.2,41.5)"
+%	 >
+%$\times$
+%</text>
+%<text text-vert-align="bottom"
+%	 anchor-point="(20.51,105.62)"
+%	 text-hor-align="right"
+%	 >
+%$P_{\mathrm{BR}}$ 
+%</text>
+%<text anchor-point="(20.51,105.62)"
+%	 >
+%$\times$
+%</text>
+%<text text-vert-align="bottom"
+%	 anchor-point="(46.81,99.87)"
+%	 text-hor-align="left"
+%	 >
+%$P_{\mathrm{TR}}$
+%</text>
+%<text anchor-point="(46.81,99.87)"
+%	 >
+%$\times$
+%</text>
+%<text anchor-point="(39,70.68)"
+%	 text-hor-align="right"
+%	 >
+%Centre 
+%</text>
+%<text anchor-point="(39,70.68)"
+%	 >
+%$\times$
+%</text>
+%<g lift-pen="0"
+%	 compound-mode="separate"
+%	 closed="false"
+%	>
+%<ellipse p3="(9.01,174.53)"
+%	 stroke-color="#0000ff"
+%	 p2="(9.01,164.53)"
+%	 p1="(-0.99,164.53)"
+%	 closure="open"
+%	 right-arrow="head"
+%	 angle-end="270"
+%	 angle-start="-30"
+%	 />
+%<text text-vert-align="bottom"
+%	 anchor-point="(4.01,174.53)"
+%	 >
+%\parbox{30\unitlength}{\centering\textcolor{Blue}{sens base canonique}}
+%</text>
+%</g>
+%<g lift-pen="0"
+%	 compound-mode="separate"
+%	 closed="false"
+%	>
+%<ellipse p3="(40.94,176.77)"
+%	 stroke-color="#ff0000"
+%	 p2="(34.42,178.2)"
+%	 p1="(37.07,162.29)"
+%	 closure="open"
+%	 right-arrow="head"
+%	 angle-end="270"
+%	 angle-start="-30"
+%	 />
+%<text text-vert-align="bottom"
+%	 anchor-point="(39,177.7)"
+%	 >
+%\parbox{30\unitlength}{\centering\textcolor{Red}{sens base parallelogramme}}
+%</text>
+%</g>
+%<g lift-pen="0"
+%	 compound-mode="separate"
+%	 closed="false"
+%	>
+%<ellipse p3="(75.1,178.19)"
+%	 stroke-color="#006400"
+%	 p2="(69.15,176.78)"
+%	 p1="(72.91,160.87)"
+%	 closure="open"
+%	 right-arrow="head"
+%	 angle-end="270"
+%	 angle-start="-30"
+%	 />
+%<text text-vert-align="bottom"
+%	 anchor-point="(74,177.7)"
+%	 >
+%\parbox{30\unitlength}{\centering\textcolor{DarkGreen}{sens base ellipse}}
+%</text>
+%</g>
+%<multicurve stroke-style="dashed"
+%	 pstcustom="dash=5pt 2pt 1pt 2pt"
+%	 stroke-dasharray="1;1"
+%	 points="(39,70.68);(39,70.68);(25,154.68);(25,154.68)"
+%	 stroke-width="0.15"
+%	 />
+%<text text-vert-align="bottom"
+%	 anchor-point="(25,154.68)"
+%	 text-hor-align="left"
+%	 >
+% base parallelogramme axe $\vec{U}$
+%</text>
+%<multicurve stroke-style="dashed"
+%	 pstcustom="dash=5pt 2pt 1pt 2pt"
+%	 stroke-dasharray="1;1"
+%	 points="(39,70.68);(39,70.68);(75.25,19.02);(75.25,19.02)"
+%	 stroke-width="0.15"
+%	 />
+%<text text-vert-align="top"
+%	 anchor-point="(75.25,19.02)"
+%	 text-hor-align="left"
+%	 >
+%d\'ebut d'arc
+%</text>
+%<multicurve stroke-style="dashed"
+%	 pstcustom="dash=5pt 2pt 1pt 2pt"
+%	 stroke-dasharray="1;1"
+%	 points="(39,70.68);(39,70.68);(-1.04,141.45);(-1.04,141.45)"
+%	 stroke-width="0.15"
+%	 />
+%<text text-vert-align="bottom"
+%	 anchor-point="(-1.04,141.45)"
+%	 text-hor-align="right"
+%	 >
+%fin d'arc
+%</text>
+%<multicurve stroke-style="dashed"
+%	 pstcustom="dash=5pt 2pt 1pt 2pt"
+%	 stroke-dasharray="1;1"
+%	 points="(39,70.68);(39,70.68);(81.84,70.68);(81.84,70.68)"
+%	 stroke-width="0.15"
+%	 />
+%<text anchor-point="(81.84,70.68)"
+%	 text-hor-align="left"
+%	 >
+%axe horizontal
+%</text>
+%<multicurve stroke-style="dashed"
+%	 pstcustom="dash=5pt 2pt 1pt 2pt"
+%	 stroke-dasharray="1;1"
+%	 points="(39,70.68);(39,70.68);(23.83,134.81);(23.83,134.81)"
+%	 stroke-width="0.15"
+%	 />
+%<text anchor-point="(23.83,134.81)"
+%	 text-hor-align="left"
+%	 >
+%grand axe
+%</text>
+%<multicurve right-arrow="head"
+%	 points="(31.2,41.5);(31.2,41.5);(25.86,73.56);(25.86,73.56)"
+%	 stroke-width="0.6"
+%	 />
+%<text text-vert-align="bottom"
+%	 anchor-point="(25.86,73.56)"
+%	 text-hor-align="left"
+%	 >
+%  $\vec{U}$
+%</text>
+%<multicurve right-arrow="head"
+%	 points="(31.2,41.5);(31.2,41.5);(44.35,38.62);(44.35,38.62)"
+%	 stroke-width="0.6"
+%	 />
+%<text text-vert-align="top"
+%	 anchor-point="(44.35,38.62)"
+%	 text-hor-align="left"
+%	 >
+%\raisebox{-3ex}{$\vec{V}$}
+%</text>
+%<multicurve right-arrow="head"
+%	 points="(39,70.68);(39,70.68);(49,70.68);(49,70.68)"
+%	 stroke-width="0.6"
+%	 />
+%<text anchor-point="(49,70.68)"
+%	 text-hor-align="left"
+%	 >
+%$\vec{I}$
+%</text>
+%<multicurve right-arrow="head"
+%	 points="(39,70.68);(39,70.68);(39,80.68);(39,80.68)"
+%	 stroke-width="0.6"
+%	 />
+%<text text-vert-align="bottom"
+%	 anchor-point="(39,80.68)"
+%	 >
+%$\vec{J}$
+%</text>
+%<multicurve right-arrow="head"
+%	 points="(39,70.68);(39,70.68);(31.42,102.75);(31.42,102.75)"
+%	 stroke-width="0.6"
+%	 />
+%<text anchor-point="(31.42,102.75)"
+%	 text-hor-align="right"
+%	 >
+%$\vec{A}$
+%</text>
+%<multicurve right-arrow="head"
+%	 points="(39,70.68);(39,70.68);(51,73.52);(51,73.52)"
+%	 stroke-width="0.6"
+%	 />
+%<text text-vert-align="bottom"
+%	 anchor-point="(51,73.52)"
+%	 >
+%$\vec{B}$
+%</text>
+%<ellipse p3="(74.95,106.63)"
+%	 stroke-color="#0000ff"
+%	 p2="(74.95,34.74)"
+%	 p1="(3.06,34.74)"
+%	 closure="open"
+%	 right-arrow="head"
+%	 angle-end="103.31"
+%	 angle-start="0"
+%	 />
+%<text text-vert-align="bottom"
+%	 anchor-point="(43.6,106.34)"
+%	 text-hor-align="left"
+%	 >
+%\textcolor{Blue}{\texttt{.getRotationAngle()}$\rightarrow\SI[round-mode=places,round-precision=2]{1.8031111567527407}{\radian}$}
+%</text>
+%<ellipse p3="(80.95,112.63)"
+%	 stroke-color="#0000ff"
+%	 p2="(80.95,28.74)"
+%	 p1="(-2.94,28.74)"
+%	 closure="open"
+%	 right-arrow="head"
+%	 angle-end="305.05"
+%	 angle-start="103.31"
+%	 />
+%<text text-vert-align="bottom"
+%	 anchor-point="(69.2,41.57)"
+%	 text-hor-align="left"
+%	 >
+%\textcolor{Blue}{\texttt{.getCorrectedAngleStart()}$\rightarrow\SI[round-mode=places,round-precision=2]{-2.7622027872836656}{\radian}$}
+%</text>
+%<ellipse p3="(86.95,118.63)"
+%	 stroke-color="#0000ff"
+%	 p2="(86.95,22.74)"
+%	 p1="(-8.94,22.74)"
+%	 closure="open"
+%	 right-arrow="head"
+%	 angle-end="119.51"
+%	 angle-start="103.31"
+%	 />
+%<text text-vert-align="bottom"
+%	 anchor-point="(34.32,118.4)"
+%	 text-hor-align="left"
+%	 >
+%\textcolor{Blue}{\texttt{.getCorrectedAngleEnd()}$\rightarrow\SI[round-mode=places,round-precision=2]{0.2826509954531161}{\radian}$}
+%</text>
+%<ellipse p3="(47.03,134.19)"
+%	 stroke-color="#006400"
+%	 p2="(3.37,123.86)"
+%	 p1="(30.98,7.18)"
+%	 closure="open"
+%	 right-arrow="head"
+%	 angle-end="133.18"
+%	 angle-start="0"
+%	 />
+%<text anchor-point="(63.86,59.02)"
+%	 text-hor-align="left"
+%	 >
+%\textcolor{DarkGreen}{$\texttt{.getRotatedAngleStart()}\rightarrow\SI[round-mode=places,round-precision=2]{133.18347457314115}{\degree}$}
+%</text>
+%<ellipse p3="(48.64,146.9)"
+%	 stroke-color="#006400"
+%	 p2="(-3.76,134.5)"
+%	 p1="(29.37,-5.53)"
+%	 closure="open"
+%	 right-arrow="head"
+%	 angle-end="322.18"
+%	 angle-start="0"
+%	 />
+%<text anchor-point="(16.92,49.77)"
+%	 text-hor-align="right"
+%	 >
+%\textcolor{DarkGreen}{$\texttt{.getRotatedAngleEnd()}\rightarrow\SI[round-mode=places,round-precision=2]{322.18347457314115}{\degree}$}
+%</text>
+%<ellipse p3="(58.89,145.04)"
+%	 stroke-color="#ff0000"
+%	 p2="(-8.12,159.7)"
+%	 p1="(19.12,-3.67)"
+%	 closure="open"
+%	 right-arrow="head"
+%	 angle-end="123"
+%	 angle-start="0"
+%	 />
+%<text anchor-point="(74.14,51.51)"
+%	 text-hor-align="left"
+%	 >
+%\textcolor{Red}{$\texttt{.getAngleStart()}\rightarrow\SI{123.0}{\degree}$}
+%</text>
+%<ellipse p3="(61.73,155.67)"
+%	 stroke-color="#ff0000"
+%	 p2="(-14.85,172.42)"
+%	 p1="(16.28,-14.3)"
+%	 left-arrow="head"
+%	 closure="open"
+%	 angle-end="0"
+%	 angle-start="-48"
+%	 />
+%<text text-vert-align="bottom"
+%	 anchor-point="(3.02,149.05)"
+%	 text-hor-align="right"
+%	 >
+%\textcolor{Red}{$\texttt{.getAngleEnd()}\rightarrow \SI{-48.0}{\degree}$}
+%</text>
+%</g>
+%</jpic>
+%%End JPIC-XML
+%PSTricks content-type (pstricks.sty package needed)
+%Add \usepackage{pstricks} in the preamble of your LaTeX file
+%You can rescale the whole picture (to 80% for instance) by using the command \def\JPicScale{0.8}
+\ifx\JPicScale\undefined\def\JPicScale{1}\fi
+\psset{unit=\JPicScale mm}
+\newrgbcolor{userFillColour}{0 0 0}
+\psset{linewidth=0.3,dotsep=1,hatchwidth=0.3,hatchsep=1.5,shadowsize=1,dimen=middle}
+\psset{dotsize=0.7 2.5,dotscale=1 1,fillcolor=userFillColour}
+\psset{arrowsize=1 2,arrowlength=1,arrowinset=0.25,tbarsize=0.7 5,bracketlength=0.15,rbracketlength=0.15}
+\begin{pspicture}(-40,0)(136.5,185.68)
+{%
+\rput{103.31}(39,70.68){\psellipticarcn[](0,0)(32.95,12.33){-158.26}{16.19}}
+\rput{103.31}(39,70.68){\psellipticarcn[linewidth=0.15,linestyle=dashed,dash=1 1](0,0)(32.95,12.33){16.19}{-158.26}}
+\pspolygon[linewidth=0.15,linestyle=dashed,dash=1 1](31.2,41.5)(20.51,105.62)(46.81,99.87)(57.5,35.75)
+\rput[tr](31.2,41.5){$P_{\mathrm{BL}}$}
+\rput(31.2,41.5){$\times$}
+\rput[br](20.51,105.62){$P_{\mathrm{BR}}$ }
+\rput(20.51,105.62){$\times$}
+\rput[bl](46.81,99.87){$P_{\mathrm{TR}}$}
+\rput(46.81,99.87){$\times$}
+\rput[r](39,70.68){Centre }
+\rput(39,70.68){$\times$}
+{%
+\rput{0}(4.01,169.53){\psellipticarc[linecolor=blue]{->}(0,0)(5,5){-30}{-90}}
+\rput[b](4.01,174.53){\parbox{30\unitlength}{\centering\textcolor{Blue}{sens base canonique}}}
+}%
+{%
+\rput{103.31}(39,169.53){\psellipticarcn[linecolor=red]{->}(0,0)(8.17,3.06){7.68}{64.36}}
+\rput[b](39,177.7){\parbox{30\unitlength}{\centering\textcolor{Red}{sens base parallelogramme}}}
+}%
+{%
+\newrgbcolor{userLineColour}{0 0.39 0}
+\rput{103.31}(74,169.53){\psellipticarcn[linecolor=userLineColour]{->}(0,0)(8.17,3.06){12.19}{90}}
+\rput[b](74,177.7){\parbox{30\unitlength}{\centering\textcolor{DarkGreen}{sens base ellipse}}}
+}%
+\psline[linewidth=0.15,linestyle=dashed,dash=1 1,dash=5pt 2pt 1pt 2pt](39,70.68)(25,154.68)
+\rput[bl](25,154.68){ base parallelogramme axe $\vec{U}$}
+\psline[linewidth=0.15,linestyle=dashed,dash=1 1,dash=5pt 2pt 1pt 2pt](39,70.68)(75.25,19.02)
+\rput[tl](75.25,19.02){d\'ebut d'arc}
+\psline[linewidth=0.15,linestyle=dashed,dash=1 1,dash=5pt 2pt 1pt 2pt](39,70.68)(-1.04,141.45)
+\rput[br](-1.04,141.45){fin d'arc}
+\psline[linewidth=0.15,linestyle=dashed,dash=1 1,dash=5pt 2pt 1pt 2pt](39,70.68)(81.84,70.68)
+\rput[l](81.84,70.68){axe horizontal}
+\psline[linewidth=0.15,linestyle=dashed,dash=1 1,dash=5pt 2pt 1pt 2pt](39,70.68)(23.83,134.81)
+\rput[l](23.83,134.81){grand axe}
+\psline[linewidth=0.6]{->}(31.2,41.5)(25.86,73.56)
+\rput[bl](25.86,73.56){  $\vec{U}$}
+\psline[linewidth=0.6]{->}(31.2,41.5)(44.35,38.62)
+\rput[tl](44.35,38.62){\raisebox{-3ex}{$\vec{V}$}}
+\psline[linewidth=0.6]{->}(39,70.68)(49,70.68)
+\rput[l](49,70.68){$\vec{I}$}
+\psline[linewidth=0.6]{->}(39,70.68)(39,80.68)
+\rput[b](39,80.68){$\vec{J}$}
+\psline[linewidth=0.6]{->}(39,70.68)(31.42,102.75)
+\rput[r](31.42,102.75){$\vec{A}$}
+\psline[linewidth=0.6]{->}(39,70.68)(51,73.52)
+\rput[b](51,73.52){$\vec{B}$}
+\rput{0}(39.01,70.68){\psellipticarc[linecolor=blue]{->}(0,0)(35.95,35.95){0}{103.31}}
+\rput[bl](43.6,106.34){\textcolor{Blue}{\texttt{.getRotationAngle()}$\rightarrow\SI[round-mode=places,round-precision=2]{1.8031111567527407}{\radian}$}}
+\rput{0}(39.01,70.68){\psellipticarc[linecolor=blue]{->}(0,0)(41.95,41.95){103.31}{-54.95}}
+\rput[bl](69.2,41.57){\textcolor{Blue}{\texttt{.getCorrectedAngleStart()}$\rightarrow\SI[round-mode=places,round-precision=2]{-2.7622027872836656}{\radian}$}}
+\rput{0}(39.01,70.68){\psellipticarc[linecolor=blue]{->}(0,0)(47.95,47.95){103.31}{119.51}}
+\rput[bl](34.32,118.4){\textcolor{Blue}{\texttt{.getCorrectedAngleEnd()}$\rightarrow\SI[round-mode=places,round-precision=2]{0.2826509954531161}{\radian}$}}
+\newrgbcolor{userLineColour}{0 0.39 0}
+\rput{103.31}(39,70.68){\psellipticarcn[linecolor=userLineColour]{->}(0,0)(59.95,22.43){-0}{-158.26}}
+\rput[l](63.86,59.02){\textcolor{DarkGreen}{$\texttt{.getRotatedAngleStart()}\rightarrow\SI[round-mode=places,round-precision=2]{133.18347457314115}{\degree}$}}
+\newrgbcolor{userLineColour}{0 0.39 0}
+\rput{103.31}(39,70.68){\psellipticarcn[linecolor=userLineColour]{->}(0,0)(71.95,26.92){-0}{16.19}}
+\rput[r](16.92,49.77){\textcolor{DarkGreen}{$\texttt{.getRotatedAngleEnd()}\rightarrow\SI[round-mode=places,round-precision=2]{322.18347457314115}{\degree}$}}
+\rput{103.31}(39,70.68){\psellipticarcn[linecolor=red]{->}(0,0)(83.95,31.41){-3.85}{-158.26}}
+\rput[l](74.14,51.51){\textcolor{Red}{$\texttt{.getAngleStart()}\rightarrow\SI{123.0}{\degree}$}}
+\rput{103.31}(39,70.68){\psellipticarcn[linecolor=red]{<-}(0,0)(95.95,35.9){16.19}{-3.85}}
+\rput[br](3.02,149.05){\textcolor{Red}{$\texttt{.getAngleEnd()}\rightarrow \SI{-48.0}{\degree}$}}
+}%
+\end{pspicture}

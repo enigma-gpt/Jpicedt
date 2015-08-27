@@ -1,0 +1,38 @@
+%Created by jPicEdt 1.x
+%PsTricks format (pstricks.sty needed)
+%Mon Jan 20 18:19:23 CET 2003
+\psset{xunit=1mm,yunit=1mm,runit=1mm}
+\begin{pspicture}(0,0)(87.50,117.50)
+\rput(50.00,10.00){\psframebox[linewidth=0.15,linecolor=red]{\red{Element}}}
+\psline[linewidth=0.15,linecolor=red]{->}(80.00,10.00)(70.00,10.00)
+\rput[l](87.50,10.00){\red{setPoint, translate, scale ...}}
+\rput(10.00,10.00){\psframebox[linewidth=0.15,linecolor=blue]{\blue{View}}}
+\psline[linewidth=0.15,linecolor=blue]{<-}(25.00,10.00)(35.00,10.00)
+\psline[linewidth=0.15,linecolor=magenta]{->}(50.00,20.00)(60.00,40.00)
+\rput(30.00,15.00){\blue{changedUpdate}}
+\rput(75.00,15.00){\red{fireChangedUpdate}}
+\rput(50.00,45.00){\psframebox[linewidth=0.15,linecolor=magenta]{\magenta{Element's parent}}}
+\rput[l](57.50,27.50){\magenta{forwardChangedUpdate}}
+\rput(50.00,75.00){\psframebox[linewidth=0.15,linecolor=green]{\green{Drawing.RootElement}}}
+\psline[linewidth=0.15,linecolor=green]{->}(50.00,65.00)(52.50,70.00)
+\rput[l](52.50,60.00){\green{forwardChangedUpdate}}
+\psline[linewidth=0.15,linecolor=green,linestyle=dashed,dash=1.00 1.00]{-}(50.00,65.00)(45.00,55.00)
+\psline[linewidth=0.15,linecolor=green]{-}(45.00,55.00)(42.50,50.00)
+\rput(50.00,105.00){\psframebox[linewidth=0.15,linecolor=green]{\green{Drawing}}}
+\psline[linewidth=0.15,linecolor=green]{->}(50.00,80.00)(50.00,100.00)
+\rput[l](52.50,90.00){\green{fireChangedUpdate}}
+\psline[linewidth=0.15,linecolor=black]{->}(40.00,105.00)(30.00,115.00)
+\psline[linewidth=0.15,linecolor=black]{->}(40.00,105.00)(30.00,105.00)
+\psline[linewidth=0.15,linecolor=black]{->}(40.00,105.00)(30.00,95.00)
+\rput[r](27.50,105.00){\psovalbox[linewidth=0.15,linecolor=black]{DrawingListeners}}
+\rput(35.00,117.50){DrawingEvent's}
+\rput[l](75.00,45.00){\magenta{may synchronize state with children}}
+\rput[r](50.00,35.00){\magenta{fireChangeUpdate}}
+\psbezier[linewidth=0.15,linecolor=magenta]{->}(57.50,40.00)(52.50,35.00)(47.50,35.00)(42.50,40.00)
+\psbezier[linewidth=0.15,linecolor=magenta]{<-}(77.50,42.50)(72.50,35.00)(67.50,35.00)(62.50,40.00)
+\rput(5.00,45.00){\psframebox[linewidth=0.15,linecolor=blue]{\blue{View}}}
+\psline[linewidth=0.15,linecolor=blue]{<-}(20.00,45.00)(30.00,45.00)
+\rput[l](87.50,5.00){\red{addChild, removeChild, ...}}
+\rput[l](87.50,0.00){\red{setAttribute,...}}
+\rput(25.00,50.00){\blue{changedUpdate}}
+\end{pspicture}

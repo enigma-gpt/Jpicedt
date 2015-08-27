@@ -1,0 +1,28 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+  </head>
+
+  <body>
+    <p>This document is the API specification for jPicEdt @VERSION@ </p>
+
+    <p>The tree class contains three main branches:</p>
+	<ul>
+	<li> <code>jpicedt.graphic.*</code> : these are the core packages ; they provide
+	a canvas where we can draw and edit graphical elements, classes for
+	modeling graphical elements and their attributes, editor kits and event
+	management, and general contracts for formatters and parsers. This
+	branch can be used (and compiled) independently of jpicedt.ui.*.
+	<li> <code>jpicedt.ui.*</code> : this is the user interface for the jPicEdt
+	application.
+	<li> <code>jpicedt.format.*</code> : concrete implementation of
+	formatters/parsers/view-factories for various content-types. Developpers might easily add new
+	content-type implementation here (e.g. postscript, PDF,&hellip;). See
+	<a href="jpicedt/MiscUtilities.html">jpicedt.MiscUtilities</a> to know how to register new content-types.
+	<li> <code>jpicedt.test.*</code> : this branch is for developpers only.
+	<li> <code>jpicedt.widgets.*</code> : provide some (Swing) widgets that can be
+	used independently of the rest of the tree.
+	</ul>
+
+  </body>
+</html>
