@@ -49,18 +49,17 @@ package jpicedt.ui.internal;
 
 import jpicedt.Version;
 import jpicedt.JPicEdt;
-
 import jpicedt.graphic.PEToolKit;
+import jpicedt.graphic.event.DropListener;
 import jpicedt.graphic.toolkit.CustomizerDialog;
 import jpicedt.graphic.toolkit.AbstractCustomizer;
 import jpicedt.graphic.toolkit.PopupMenuFactory;
-
 import jpicedt.ui.PEDrawingBoard;
 import jpicedt.ui.MDIManager;
 import jpicedt.ui.util.SystemOutUtilities;
 import jpicedt.ui.util.PEProgressBar;
 import jpicedt.ui.action.*;
-
+import jpicedt.ui.dialog.DockableAttributesCustomizer;
 import jpicedt.widgets.PEInternalDialog;
 import jpicedt.widgets.PEInternalFrame;
 import jpicedt.widgets.MDIComponent;
@@ -80,6 +79,7 @@ import javax.swing.WindowConstants;
 import javax.swing.JOptionPane;
 import javax.swing.BorderFactory;
 import javax.swing.JLayeredPane;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -87,17 +87,20 @@ import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.Container;
 import java.awt.Component;
+import java.awt.dnd.DropTarget;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
+import java.lang.reflect.Field;
 import java.util.MissingResourceException;
 import java.util.EnumSet;
 import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ArrayList;
+
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
@@ -161,6 +164,8 @@ public class InternalFrameMDIManager extends MDIManager {
 		mainFrame = new JFrame("jPicEdt "+Version.getVersion());
 
 		PEToolKit.setAppIconToDefault(mainFrame);
+		
+		enableDragAndDrop(mainFrame);
 
 		mainFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		mainFrame.getContentPane().setLayout(new BorderLayout());
@@ -241,6 +246,12 @@ public class InternalFrameMDIManager extends MDIManager {
 		// setVisible "realizes" the main JFrame (i.e. create new Swing thread)
 		mainFrame.setVisible(true);
 	}
+	
+	
+	private void enableDragAndDrop(Frame mainFrame) {
+		new DropTarget(mainFrame, new DropListener(mainFrame));
+	}
+
 
 
 	/**
