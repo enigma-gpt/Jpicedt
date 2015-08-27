@@ -65,9 +65,12 @@ import jpicedt.widgets.*;
 import jpicedt.format.output.util.FormatterException;
 
 import javax.swing.*;
-import javax.swing.JPanel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import java.io.*;
 import java.awt.*;
+import java.awt.dnd.DropTarget;
 import java.awt.event.*;
 import java.util.*;
 import java.beans.*;
@@ -631,15 +634,17 @@ public class PEDrawingBoard extends JPanel {
 		// see Grid for PREDEFINED_SNAP_STEP_STRINGS and PREDEFINED_SNAP_STEPS
 
 		// --------------- zoom ------------------------
-		private JComboBox zoomCB;
 		private ZoomAction zoomAction;
+		private JSlider zoomSL;
+		private JTextField zoomTF;
 		// see PECanvas for PREDEFINED_ZOOMS
 
 		// new *************************** begin (by ss & bp)
 		// --------------- rotate ----------------------
 		private JLabel rotateLabel;
 		private JTextField rotateTF;
-		private JLabel dummy;
+		//private JLabel dummy;
+		private JPanel dummy;
 		private DecimalFormat angleDecimalFormat = new DecimalFormat("0.00");
 		// new *************************** end (by ss & bp)
 
@@ -654,7 +659,7 @@ public class PEDrawingBoard extends JPanel {
 			this.setOrientation(HORIZONTAL);
 			this.setFloatable(true);
 			this.setBorder(BorderFactory.createEtchedBorder());
-
+			
 			// grid ON/OFF:
 			gridVisibleTB = add(gridVisibleAction=new EditorKit.ShowGridAction(actionDispatcher, localizer));
 			Dimension dimButton = gridVisibleTB.getPreferredSize(); // used later to compute other widgets maximum size
@@ -681,19 +686,30 @@ public class PEDrawingBoard extends JPanel {
 			snapStepCB.setMaximumSize(new Dimension(dimButton.width * 4,dimButton.height));
 			this.add(snapStepCB);
 			addSeparator();
-
-			// zoom factors:
-			zoomCB = new JComboBox();
-			zoomCB.setEditable(true);
-			for(double x: PECanvas.PREDEFINED_ZOOMS){
-				zoomCB.addItem(formatPercent.format(x)); // Strings
-			}
-			zoomCB.setAlignmentY(CENTER_ALIGNMENT);
-			zoomCB.addActionListener(zoomAction=new ZoomAction());
-			zoomCB.setMaximumSize(new Dimension(dimButton.width * 3,dimButton.height));
-			this.add(zoomCB);
+			
+			zoomTF = new JTextField();
+			zoomTF.setColumns(4);
+			zoomTF.setAlignmentY(CENTER_ALIGNMENT);
+			zoomTF.setMinimumSize(new Dimension(40, dimButton.height));
+			zoomTF.setMaximumSize(new Dimension(40, dimButton.height));
+			zoomTF.addActionListener(new ZoomAction());
+			zoomTF.setText("100%");
+			this.add(zoomTF);
 			addSeparator();
-
+			
+			zoomSL = new JSlider(); 
+			zoomSL.setAlignmentY(CENTER_ALIGNMENT);
+			zoomSL.setMinimumSize(new Dimension(100,dimButton.height));
+			zoomSL.setMaximumSize(new Dimension(100,dimButton.height));
+			zoomSL.setMajorTickSpacing(1);
+			zoomSL.setMinimum(100);
+			zoomSL.setMaximum(1000);
+			zoomSL.setValue(100);
+			zoomSL.addChangeListener(new Zoom4SliderAction());
+			this.add(zoomSL);
+			addSeparator();
+			
+			
 			// rotate textfield
 			rotateLabel = new JLabel(localize("action.editorkit.Rotate.Angle"));
 			rotateLabel.setVisible(false);
@@ -722,16 +738,14 @@ public class PEDrawingBoard extends JPanel {
 				}
 			});
 			this.add(rotateTF);
-
-			dummy = new JLabel("                                         ");
-			dummy.setVisible(true);
+			
+			dummy = new JPanel() {
+				   public Dimension getPreferredSize() {
+				       return this.getSize();
+				   };
+				};
+				
 			this.add(dummy);
-
-			addSeparator();
-			// remaining gap:
-			this.add(Box.createGlue());
-
-			//this.setMargin(new Insets(0,0,0,0));
 		}
 
 		/**
@@ -758,7 +772,7 @@ public class PEDrawingBoard extends JPanel {
 				gridStepCB.setSelectedIndex(gridStepCB.getItemCount()-1);
 			}
 			// zoom
-			i = PECanvas.getZoomIndex(canvas.getZoomFactor());
+			/*i = PECanvas.getZoomIndex(canvas.getZoomFactor());
 			if (i != -1) zoomCB.setSelectedIndex(i);
 			else {
 				NumberFormat formatPercent = NumberFormat.getPercentInstance(Locale.US);
@@ -766,28 +780,24 @@ public class PEDrawingBoard extends JPanel {
 				String s = formatPercent.format(canvas.getZoomFactor());
 				zoomCB.addItem(s);
 				zoomCB.setSelectedIndex(zoomCB.getItemCount()-1);
-			}
+			}*/
 		}
 
 		/** ZoomListener interface ; called when the zoom changed in the sourcing canvas
 		 *  following a ZoomTool operation -> update widget */
 		public void zoomUpdate(ZoomEvent e){
-			double zoom = e.getNewZoomValue();
+			float zoom = (float)e.getNewZoomValue();
+			
 			NumberFormat formatPercent = NumberFormat.getPercentInstance(Locale.US);
 			formatPercent.setGroupingUsed(false);
-			String s = formatPercent.format(zoom); // display in "%" format
-			int i;
-			boolean b;
-			for (i=0,b=false; i<zoomCB.getItemCount(); i++){
-				if (zoomCB.getItemAt(i).equals(s)) { // ComboBox was built from e.g. "200%" Strings
-					zoomCB.setSelectedIndex(i); b=true;
-					break;
-				}
-			}
-			if (b==false) {
-				zoomCB.addItem(s);
-				zoomCB.setSelectedIndex(zoomCB.getItemCount()-1);
-			}
+			
+			String percent = formatPercent.format(zoom);
+			
+			if(zoomTF.getText() != percent)
+				zoomTF.setText(percent);
+			
+			if(zoomSL.getValue() != zoom)
+				zoomSL.setValue((int)(zoom * 100));
 		}
 		/**
 		 * RotateListener interface
@@ -801,7 +811,7 @@ public class PEDrawingBoard extends JPanel {
 		 */
 		public void setRotateAngleLabelVisible(boolean b){
 			rotateTF.setVisible(b);
-			dummy.setVisible(!b);
+			//dummy.setVisible(!b);
 			rotateTF.setText("0");
 			rotateLabel.setVisible(b);
 		}
@@ -849,7 +859,7 @@ public class PEDrawingBoard extends JPanel {
 				this.getCanvas().repaint();
 			}
 		}
-
+		
 		/**
 		 * Updates zoom-factor in the current active frame as soon as
 		 * a new item gets selected by user in the list of available zoom factors (e.g. 100%, 200%, ...)
@@ -857,17 +867,26 @@ public class PEDrawingBoard extends JPanel {
 		 * @since PicEdt 1.2.1
 		 */
 		class ZoomAction extends PEAction {
-
+			
 			public ZoomAction(){
 				super(actionDispatcher,"ZoomList",null);
 			}
-
-			public void actionPerformed(ActionEvent e){
-				int i = zoomCB.getSelectedIndex();
+			
+			public void actionPerformed(ActionEvent e) {
+				String txt = zoomTF.getText();
+				if(txt.endsWith("%")) txt = txt.substring(0, txt.indexOf('%'));
+				Double percentage = Double.parseDouble(txt);
+				
+				if(percentage < 100) percentage = 100d;
+				else if(percentage > 1000) percentage = 1000d;
+				
+				Double zoom = Double.parseDouble(txt) / 100;
+				if(zoom == getCanvas().getZoomFactor()) return;
+				
 				try {
-					double zoom = jpicedt.MiscUtilities.parseDouble((String)zoomCB.getSelectedItem());
-					if (zoom == this.getCanvas().getZoomFactor()) return; // no change
-					this.getCanvas().setZoomFactor(zoom);
+				
+				getCanvas().setZoomFactor(zoom);
+				
 				}
 				catch(Exception ex){
 					ex.printStackTrace();
@@ -878,6 +897,17 @@ public class PEDrawingBoard extends JPanel {
 					return;
 				}
 				this.getCanvas().repaint();
+			}
+		}
+		
+		class Zoom4SliderAction implements ChangeListener {
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				Double zoom = new Double(zoomSL.getValue()) / 100F;
+				
+				if(zoom == getCanvas().getZoomFactor()) return;
+					getCanvas().setZoomFactor(zoom);
 			}
 		}
 	} // GridZoomToolBar
