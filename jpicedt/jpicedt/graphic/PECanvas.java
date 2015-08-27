@@ -48,6 +48,13 @@
 /// Code:
 package jpicedt.graphic;
 
+import jpicedt.MiscUtilities;
+import jpicedt.format.output.dxf.DXFCommentFormatter;
+import jpicedt.format.output.dxf.DXFContentType;
+import jpicedt.format.output.eepic.EepicContentType;
+import jpicedt.format.output.latex.LatexContentType;
+import jpicedt.format.output.pstricks.PstricksContentType;
+import jpicedt.format.output.tikz.TikzContentType;
 import jpicedt.graphic.event.SelectionListener;
 import jpicedt.graphic.event.SelectionEvent;
 import jpicedt.graphic.event.ZoomListener;
@@ -81,13 +88,16 @@ import jpicedt.graphic.io.util.JpicDocUserData;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.*;
+
 import javax.swing.*;
 import javax.swing.event.*;
+
 import java.util.*;
 import java.io.*;
-import java.io.StringWriter;
 import java.beans.*;
 import java.awt.datatransfer.*;
+import java.awt.dnd.DropTarget;
+
 import javax.swing.undo.*;
 
 import static jpicedt.Log.*;
@@ -283,7 +293,7 @@ public class PECanvas extends JPanel implements Scrollable {
 		this.undoManager = new UndoManager();
 		setUndoLimit(MAX_UNDOABLE_STEPS_DEFAULT);
 		this.undoableEditSupport.addUndoableEditListener(this.undoManager);
-
+		
 		if (DEBUG) debug("completed !");
 
 		// [pending] debug (press F3 to write a comment line for lisibility)
@@ -333,6 +343,9 @@ public class PECanvas extends JPanel implements Scrollable {
 
 		this.addMouseMotionListener(new IconizedTextTooltipDisplayListener(this));
 	}
+	
+	
+	
 
 
 
@@ -416,9 +429,6 @@ public class PECanvas extends JPanel implements Scrollable {
 	public RenderingHints getRenderingHints(){
 		return renderingHints;
 	}
-
-
-
 
 	////////////////////////////////////////////////////
 	//// CONTENT HANDLING
@@ -721,6 +731,12 @@ public class PECanvas extends JPanel implements Scrollable {
 		getEditorKit().getSelectionHandler().clear(); // don't fire selection event
 		ParsedDrawing parsed = parser.extractAndParse(reader); // takes some time...
 		Drawing dr = parsed.drawing;
+
+		if(parsed.sourceType != null) {
+			ContentType ct = contentTypeToClass(parsed.sourceType); // get class by method
+			if(null != ct) setContentType(ct);
+		}
+
 		setDrawing(dr);
 		refreshPageFormatToBoundingBox();
 		repaint();
@@ -1710,4 +1726,24 @@ public class PECanvas extends JPanel implements Scrollable {
 				canvas.setToolTipText(null);
 			}
     	};
+    	
+    	private ContentType contentTypeToClass(String type) {
+    		ContentType clazz = null;
+    		if(type.equals(new DXFContentType().getPresentationName())) {
+    			clazz = new DXFContentType();
+    		}
+    		else if(type.equals(new EepicContentType().getPresentationName())) {
+    			clazz = new EepicContentType();
+    		}
+    		else if(type.equals(new LatexContentType().getPresentationName())) {
+    			clazz = new LatexContentType();
+    		}
+    		else if(type.equals(new PstricksContentType().getPresentationName())) {
+    			clazz = new PstricksContentType();
+    		}
+    		else if(type.equals(new TikzContentType().getPresentationName())) {
+    			clazz = new TikzContentType();
+    		}
+    		return clazz;
+    	}  	
 } // class PECanvas

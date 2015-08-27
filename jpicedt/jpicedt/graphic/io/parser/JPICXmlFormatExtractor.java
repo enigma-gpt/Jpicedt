@@ -103,6 +103,8 @@ public class JPICXmlFormatExtractor extends JPICXmlExtractor implements JPICXmlE
 			"^"+startCommentRegexp+XML_HEAD_MARK_REGEXP+endCommentRegexp+"$");
 		Pattern commentedLinePattern = Pattern.compile(
 			"^" +startCommentRegexp + "(.*)"+endCommentRegexp+"$");
+		Pattern typePattern = Pattern.compile(
+			"^" +startCommentRegexp + "%File type: (.*)" + endCommentRegexp + "$");
 		Pattern beginPattern = Pattern.compile(
 			"^" +startCommentRegexp + XML_BEGIN_MARK_REGEXP + endCommentRegexp+"$");
 		Pattern endPattern = Pattern.compile(
@@ -168,8 +170,12 @@ public class JPICXmlFormatExtractor extends JPICXmlExtractor implements JPICXmlE
 					// en-tête de démarrage
 					//-------------------------------------------------------
 					m = beginPattern.matcher(metaLine);
-					if(m.matches())
-						state = 2;
+					if(m.matches()) state = 2;
+					else 
+					{
+						m = typePattern.matcher(metaLine);
+						if(m.matches()) { extractedXml.sourceType = m.group(1); }
+					}
 					break;
 				}
 				case 2:

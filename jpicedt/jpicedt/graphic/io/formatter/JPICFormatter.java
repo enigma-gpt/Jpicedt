@@ -242,6 +242,9 @@ public class JPICFormatter extends AbstractFormatterFactory {
 					   +commentFormatter.getContentTypeCommentFormatting()
 					   +" format");
 			buf.append(lineSeparator);
+			buf.append("File type: "
+					   +commentFormatter.getConcreteContentType());
+			buf.append(lineSeparator);
 			buf.append(new Date());
 			buf.append(lineSeparator);
 			buf.append("Begin JPIC-XML");

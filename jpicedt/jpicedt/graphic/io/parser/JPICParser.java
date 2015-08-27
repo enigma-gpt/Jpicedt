@@ -115,6 +115,7 @@ public class JPICParser implements ExtractionParsing{
 					new StringReader(extractedCodedContent.getExtractedCodedText()),
 					parsedDrawing);
 				extractedCodedContent.qualifyDrawing(parsedDrawing);
+				parsedDrawing.sourceType = extractedCodedContent.sourceType;
 				return parsedDrawing;
 			}
 		}

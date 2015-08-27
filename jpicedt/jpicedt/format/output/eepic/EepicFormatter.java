@@ -44,6 +44,7 @@ package jpicedt.format.output.eepic;
 
 import jpicedt.format.output.util.*;
 import jpicedt.graphic.io.formatter.*;
+import jpicedt.format.output.dxf.DXFCommentFormatter;
 import jpicedt.format.output.latex.*;
 import jpicedt.graphic.*;
 import jpicedt.graphic.model.*;
@@ -152,6 +153,14 @@ public class EepicFormatter extends LatexFormatter  {
 		buf.append(p1);
 		buf.append(p2);
 		buf.append(getLineSeparator());
+	}
+	
+	/**
+	 * @since jPicEdt 1.6
+	 */
+	public CommentFormatting getCommentFormatter()
+	{
+		return new EepicCommentFormatter(this);
 	}
 		
 

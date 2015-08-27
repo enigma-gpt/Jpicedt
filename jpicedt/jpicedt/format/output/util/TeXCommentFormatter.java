@@ -37,9 +37,6 @@
 
 /// Code:
 package jpicedt.format.output.util;
-import  java.io.Writer;
-import  java.lang.*;
-
 import jpicedt.graphic.io.formatter.CommentFormatting;
 import jpicedt.graphic.io.formatter.FormatterFactory;
 
@@ -64,6 +61,9 @@ public class TeXCommentFormatter
 			commentFormat("%",s);
 		}
 
+	public String getConcreteContentType() {
+		return "LaTeX";
+	}
 }
 
 /// TeXCommentFormatter.java ends here

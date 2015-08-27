@@ -51,6 +51,7 @@ package jpicedt.format.output.pstricks;
 
 //import jpicedt.format.output.util.PicGroupFormatter;
 
+import jpicedt.format.output.dxf.DXFCommentFormatter;
 import jpicedt.graphic.PEToolKit;
 import jpicedt.graphic.model.AbstractCurve;
 import jpicedt.graphic.model.Drawing;
@@ -60,7 +61,7 @@ import jpicedt.graphic.model.PicEllipse;
 import jpicedt.graphic.model.PicGroup;
 import jpicedt.graphic.model.PicParallelogram;
 import jpicedt.graphic.model.PicText;
-
+import jpicedt.graphic.io.formatter.CommentFormatting;
 import jpicedt.graphic.io.formatter.Formatter;
 import jpicedt.graphic.io.formatter.FormatterFactory;
 import jpicedt.graphic.io.formatter.AbstractFormatterFactory;
@@ -68,22 +69,22 @@ import jpicedt.graphic.io.formatter.AbstractDrawingFormatter;
 
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
-
 import java.util.Properties;
 import java.util.Iterator;
 import java.util.Stack;
+
 
 // debug (see main())
 import jpicedt.*;
 import jpicedt.graphic.*;
 import jpicedt.graphic.grid.*;
 import jpicedt.graphic.io.parser.*;
+
 import java.io.*;
 
 import static jpicedt.format.output.pstricks.PstricksConstants.*;
 import static jpicedt.graphic.model.StyleConstants.*;
 import static jpicedt.graphic.model.PicAttributeName.*;
-
 import static jpicedt.Log.*;
 /**
  * Produces formatters for the PsTricks macro package.
@@ -103,6 +104,8 @@ public class PstricksFormatter extends AbstractFormatterFactory {
 	private Stack<PicAttributeSet>  defaultAttributesStack = new Stack<PicAttributeSet>();
 
 	private PicGroup containerPsCustom = null;
+	
+	private PstricksCommentFormatter pstricksCommentFormatter = new PstricksCommentFormatter(this);
 
 	public PstricksCustomProperties getCustomProperties(){ return pstricksCustomProperties; }
 
@@ -778,5 +781,12 @@ public class PstricksFormatter extends AbstractFormatterFactory {
 			e.printStackTrace();
 		}
 	}
-
+	
+	/**
+	 * @since jPicEdt 1.6
+	 */
+	public CommentFormatting getCommentFormatter()
+	{
+		return pstricksCommentFormatter;
+	}
 }

@@ -40,10 +40,13 @@ import java.util.BitSet;
 import java.util.Properties;
 import java.util.Stack;
 import java.awt.geom.Rectangle2D;
+
+import jpicedt.format.output.dxf.DXFCommentFormatter;
 import jpicedt.format.output.util.*;
 import jpicedt.graphic.PicPoint;
 import jpicedt.graphic.io.formatter.AbstractFormatterFactory;
 import jpicedt.graphic.io.formatter.AbstractDrawingFormatter;
+import jpicedt.graphic.io.formatter.CommentFormatting;
 import jpicedt.graphic.io.formatter.Formatter;
 import jpicedt.graphic.io.formatter.FormatterFactory;
 import jpicedt.graphic.model.AbstractCurve;
@@ -262,7 +265,14 @@ public class TikzFormatter  extends AbstractFormatterFactory
 	public Formatter createFormatter(Drawing d, Object outputConstraints){
 		return new DrawingFormatter(d, outputConstraints,this);
 	}
-
+	
+	/**
+	 * @since jPicEdt 1.6
+	 */
+	public CommentFormatting getCommentFormatter()
+	{
+		return new TikzCommentFormatter(this);
+	}
 }
 
 

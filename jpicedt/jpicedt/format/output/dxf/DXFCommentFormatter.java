@@ -84,6 +84,11 @@ public class DXFCommentFormatter
 		{
 			commentFormat(weakPrefix,s);
 		}
+
+	public String getConcreteContentType() 
+	{
+		return new DXFContentType().getPresentationName();
+	}
 }
 
 

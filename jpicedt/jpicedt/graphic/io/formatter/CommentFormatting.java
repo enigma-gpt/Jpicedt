@@ -52,6 +52,7 @@ import  java.lang.*;
 public interface CommentFormatting
 {
 	String  getContentTypeCommentFormatting();
+	String  getConcreteContentType();
 	void    setWriter(Writer writer);
 	void    verbatimWriteLine(String s) throws java.io.IOException;
 	void    strongCommentFormat(String s);

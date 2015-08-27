@@ -53,6 +53,8 @@ public interface CodedContentExtraction{
 	 */
 	public class ExtractedCodedContent{
 		public String            extractedCodedText;
+		
+		public String			 sourceType;
 
 		public String            getExtractedCodedText(){
 			return extractedCodedText;

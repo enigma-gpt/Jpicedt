@@ -50,6 +50,7 @@ public class ParsedDrawing{
 	public Drawing  drawing;
 	public JpicDocUserData preambleUserData;
 	public JpicDocUserData postambleUserData;
+	public String sourceType;
 
 
 	public void weakCopy(ParsedDrawing x){
