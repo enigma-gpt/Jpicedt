@@ -540,14 +540,14 @@ public abstract class MDIManager implements DialogFactory {
 		public String getKey(){ return key; }
 
 		/**
-		 * ajoute un <code>PropertyChangeListener</code> à la liste des auditeurs.
+		 * ajoute un <code>PropertyChangeListener</code> ï¿½ la liste des auditeurs.
 		 */
 		public void addPropertyChangeListener(PropertyChangeListener l) {
 			listenerList.add(PropertyChangeListener.class, l);
 		}
 
 		/**
-		 * ôte un <code>PropertyChangeListener</code> du <code>DockablePanel</code>.
+		 * ï¿½te un <code>PropertyChangeListener</code> du <code>DockablePanel</code>.
 		 */
 		public void removePropertyChangeListener(PropertyChangeListener l) {
 			listenerList.remove(PropertyChangeListener.class, l);
@@ -565,7 +565,6 @@ public abstract class MDIManager implements DialogFactory {
 			mdiComponent.setTitle(localize(key));
 			//this.content = pane;
 			this.key = key;
-			mdiComponent.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE); // the only way to close it is through a call to toggleDockablePanel()
 			addMDIComponent(mdiComponent);
 		}
 

@@ -765,17 +765,24 @@ public class InternalFrameMDIManager extends MDIManager {
 		 */
 		public void closeFrame(JInternalFrame f){
 			//debug("iframe="+f.getTitle());
-			boolean wasSelected = f.isSelected(); // remember its selected state for later
-			super.closeFrame(f); // closeFrame() sometimes tries to activate a DockablePanel (which is not what we want),
+			boolean wasSelected = f.isSelected(); // remember its selected state for later	
+			
+			 // closeFrame() sometimes tries to activate a DockablePanel (which is not what we want),
 			if (f.getContentPane() instanceof PEDrawingBoard){
+				super.closeFrame(f);
 				if (wasSelected) {
 					activeBoard = activateNextBoard(); // ... so we gotta do the job ourselves...
 					PropertyChangeEvent propevt = new PropertyChangeEvent(this,ACTIVE_BOARD_CHANGE, null, activeBoard);
 					boardEventHandler.propertyChange(propevt);
 				}
 			}
+			else {
+				String dialogKey = getDialogKey(f);
+				if(dialogKey !=  null) {
+					JPicEdt.getMDIManager().toggleDockablePanel(dialogKey);
+				}
+			}
 		}
-
 
 		private PEDrawingBoard activateNextBoard() { // copied from DefaultDesktopManager with minor changes...
 			int i;
@@ -809,6 +816,21 @@ public class InternalFrameMDIManager extends MDIManager {
 				s += jif[i].getTitle() + "; ";
 			}
 			return s;
+		}
+		
+		/**
+		 * uses reflection to get Panel key
+		 */
+		private String getDialogKey(JInternalFrame f) {
+			String dialogKey = null;
+			try {
+				Field field = f.getContentPane().getClass().getDeclaredField("KEY");
+				dialogKey = field.get(String.class).toString();
+			} 
+			catch(Exception ex) {
+				dialogKey = null;
+			}
+			return dialogKey;
 		}
 
 	} // InternalDesktopManager
